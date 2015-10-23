@@ -1,6 +1,8 @@
 # feature-creature-client
 Elm client for feature-creature cucumber visualization tool
 
+![Feature Creature Client](http://static.tumblr.com/60f54be84b71e5e5e1e3a8f5e088e50c/b5bwnwn/expmtbzrf/tumblr_static_good3.jpg)
+
 ## Setup
 1. Clone this repository.
 2. Download and install Elm: http://elm-lang.org/install
