@@ -1,3 +1,5 @@
+module FeatureCreature where
+
 import ProductList as PL exposing (update, init, view)
 
 import Task     exposing (Task)
