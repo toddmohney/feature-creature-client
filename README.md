@@ -6,7 +6,6 @@ Elm client for feature-creature cucumber visualization tool
 ## Setup
 1. Clone this repository.
 2. Download and install Elm: http://elm-lang.org/install
-3. In order to compile the Main.elm file into HTML, use the following command:
-```elm
-elm-make Main.elm --output=main.html
-```
+3. To install all dependencies, run `elm-package install`.
+4. In order to compile the Main.elm file into HTML, use the command: `elm-make Main.elm --output=main.html`
+5. To run the application locally, view `main.html` directly in your browser. Or for a hot-swapping version, run `elm-reactor` and visit `localhost:8000`.
