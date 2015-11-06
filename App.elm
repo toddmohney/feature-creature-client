@@ -1,8 +1,9 @@
 module App where
 
-import Effects exposing (Effects)
-import Html    exposing (Html)
-import Debug   exposing (crash)
+import Effects     exposing (Effects)
+import Html        exposing (Html)
+import Html.Events exposing (onClick)
+import Debug       exposing (crash)
 
 import FeatureList as FeatL
 import ProductList as ProdL
@@ -27,6 +28,7 @@ init = let (prodList, fx) = ProdL.init productsEndpoint
 
 type Action = ProductListAction ProdL.Action
             | FeatureListAction FeatL.Action
+            | DeselectProduct
 
 update : Action -> Model -> (Model, Effects Action)
 update action model = case action of
@@ -49,6 +51,10 @@ update action model = case action of
            , Effects.map FeatureListAction fx
            )
       Nothing        -> (model, Effects.none)
+  DeselectProduct ->
+    ( { model | featureList <- Nothing }
+    , Effects.none
+    )
 
 initFeatListFromProdList : ProdL.Model -> (Maybe FeatL.Model, Effects FeatL.Action)
 initFeatListFromProdList prodList = case prodList.selectedProduct of
@@ -61,7 +67,18 @@ initFeatListFromProdList prodList = case prodList.selectedProduct of
 
 view : Signal.Address Action -> Model -> Html
 view address model = case model.featureList of
-  Just featL -> FeatL.view (Signal.forwardTo address FeatureListAction) featL
-  Nothing    -> ProdL.view (Signal.forwardTo address ProductListAction) model.productList
+  Just featL -> featureListView address featL
+  Nothing    -> productListView address model.productList
+
+featureListView : Signal.Address Action -> FeatL.Model -> Html
+featureListView address featureList = Html.div [] 
+  [
+    FeatL.view (Signal.forwardTo address FeatureListAction) featureList
+  , Html.button [ onClick address DeselectProduct ] [ Html.text "Back" ]
+  ]
+
+productListView : Signal.Address Action -> ProdL.Model -> Html
+productListView address productList =  ProdL.view (Signal.forwardTo address ProductListAction) productList
+
 
 
