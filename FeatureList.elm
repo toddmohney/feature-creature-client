@@ -15,11 +15,15 @@ type alias Model =
   , url: String
   }
 
-init : String -> (Model, Effects Action)
-init url =
-  ( { features = (DT.createNode "/" []), url = url }
-  , getFeaturesList url
-  )
+init : Int -> (Model, Effects Action)
+init id =
+  let url = featuresUrl id
+  in ( { features = (DT.createNode "/" []), url = url }
+     , getFeaturesList url
+     )
+
+featuresUrl : Int -> String
+featuresUrl id = "http://localhost:8081/products/" ++ (toString id) ++ "/features"
 
 getFeaturesList : String -> Effects Action
 getFeaturesList url =

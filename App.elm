@@ -4,45 +4,64 @@ import Effects exposing (Effects)
 import Html    exposing (Html)
 import Debug   exposing (crash)
 
+import FeatureList as FeatL
 import ProductList as ProdL
-import Product     as Prod
 
 {- top-level values compile to JS as *CONSTANTS*, not functions -}
-productsEndpoint = "http://private-d50ac-featurecreature.apiary-mock.com/products"
+productsEndpoint = "http://localhost:8081/products"
 
 -- MODEL
 
 type alias Model = 
-  { productList: ProdL.Model
-  , selectedProduct: Maybe Prod.Model
-}
+  { productList : ProdL.Model 
+  , featureList : Maybe FeatL.Model
+  }
 
 init : (Model, Effects Action)
 init = let (prodList, fx) = ProdL.init productsEndpoint
-       in  ( { productList = prodList
-             , selectedProduct = Nothing
-             }
+       in  ( { productList = prodList, featureList = Nothing }
            , Effects.map ProductListAction fx
            )
-
 
 -- UPDATE
 
 type Action = ProductListAction ProdL.Action
+            | FeatureListAction FeatL.Action
 
 update : Action -> Model -> (Model, Effects Action)
 update action model = case action of
   ProductListAction prodLAction ->
-    let (prodList, fx) = ProdL.update prodLAction model.productList
-    in  ( { model | productList <- prodList }
-        , Effects.map ProductListAction fx
+    let (prodList, prodFx) = ProdL.update prodLAction model.productList
+        (maybeFeatList, featFx) = initFeatListFromProdList prodList
+    in  ( { productList = prodList
+          , featureList = maybeFeatList
+          }
+        , Effects.batch [
+            Effects.map ProductListAction prodFx
+          , Effects.map FeatureListAction featFx
+          ]
         )
+  FeatureListAction featLAction ->
+    case model.featureList of
+      Just origFeatL ->
+        let (featL, fx) = FeatL.update featLAction origFeatL
+        in ( { model | featureList <- Just featL }
+           , Effects.map FeatureListAction fx
+           )
+      Nothing        -> (model, Effects.none)
+
+initFeatListFromProdList : ProdL.Model -> (Maybe FeatL.Model, Effects FeatL.Action)
+initFeatListFromProdList prodList = case prodList.selectedProduct of
+  Just prod -> 
+    let (featList, fx) = FeatL.init prod.id
+    in  (Just featList, fx)
+  Nothing   -> (Nothing, Effects.none)
 
 -- VIEW
 
 view : Signal.Address Action -> Model -> Html
-view address model = case model.selectedProduct of
-  Just prod -> crash "Implement selected product view!"
-  Nothing   -> ProdL.view (Signal.forwardTo address ProductListAction) model.productList
+view address model = case model.featureList of
+  Just featL -> FeatL.view (Signal.forwardTo address FeatureListAction) featL
+  Nothing    -> ProdL.view (Signal.forwardTo address ProductListAction) model.productList
 
 

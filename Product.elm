@@ -20,4 +20,4 @@ type Action = PlaceholderAction
 -- VIEW
 
 view : Model -> Html
-view model = li [] [ text model.name ]
+view model = div [] [ text model.name ]

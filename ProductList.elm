@@ -21,11 +21,15 @@ import Effects exposing (Effects)
 type alias Model = 
   { products: List P.Model
   , url: String
+  , selectedProduct: Maybe P.Model
   }
 
 init : String -> (Model, Effects Action)
 init url = 
-  ( { products = [], url = url }
+  ( { products = []
+    , url = url
+    , selectedProduct = Nothing
+    }
   , getProductList url
   )
 
@@ -45,6 +49,7 @@ jsonToProducts =
 
 type Action = RequestProducts
             | UpdateProducts (Result Error (List P.Model))
+            | SelectProduct P.Model
 
 update : Action -> Model -> (Model, Effects Action)
 update action model =
@@ -58,16 +63,21 @@ update action model =
           , Effects.none
           )
         Err string -> (model, Effects.none)
+    SelectProduct prod ->
+      ( { model | selectedProduct <- Just prod }
+      , Effects.none
+      )
 -- VIEW
 
 view : Signal.Address Action -> Model -> Html
 view address model =
-  let products = List.map viewProduct model.products
+  let products = List.map (viewProduct address) model.products
   in
     Html.div []
       [ Html.ul [] products
       , Html.button [onClick address RequestProducts] [Html.text "Reload products"]
       ]
 
-viewProduct : P.Model -> Html
-viewProduct model = P.view model 
+viewProduct : Signal.Address Action -> P.Model -> Html
+viewProduct address model = Html.li [ onClick address (SelectProduct model) ] [ P.view model ]
+
