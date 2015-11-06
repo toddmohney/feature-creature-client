@@ -1,4 +1,96 @@
 var Elm = Elm || { Native: {} };
+Elm.App = Elm.App || {};
+Elm.App.make = function (_elm) {
+   "use strict";
+   _elm.App = _elm.App || {};
+   if (_elm.App.values)
+   return _elm.App.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "App",
+   $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $Effects = Elm.Effects.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Product = Elm.Product.make(_elm),
+   $ProductList = Elm.ProductList.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var ProductListAction = function (a) {
+      return {ctor: "ProductListAction"
+             ,_0: a};
+   };
+   var update = F2(function (action,
+   model) {
+      return function () {
+         switch (action.ctor)
+         {case "ProductListAction":
+            return function () {
+                 var $ = A2($ProductList.update,
+                 action._0,
+                 model.productList),
+                 prodList = $._0,
+                 fx = $._1;
+                 return {ctor: "_Tuple2"
+                        ,_0: _U.replace([["productList"
+                                         ,prodList]],
+                        model)
+                        ,_1: A2($Effects.map,
+                        ProductListAction,
+                        fx)};
+              }();}
+         _U.badCase($moduleName,
+         "between lines 34 and 39");
+      }();
+   });
+   var view = F2(function (address,
+   model) {
+      return function () {
+         var _v2 = model.selectedProduct;
+         switch (_v2.ctor)
+         {case "Just":
+            return $Debug.crash("Implement selected product view!");
+            case "Nothing":
+            return A2($ProductList.view,
+              A2($Signal.forwardTo,
+              address,
+              ProductListAction),
+              model.productList);}
+         _U.badCase($moduleName,
+         "between lines 44 and 46");
+      }();
+   });
+   var Model = F2(function (a,b) {
+      return {_: {}
+             ,productList: a
+             ,selectedProduct: b};
+   });
+   var productsEndpoint = "http://private-d50ac-featurecreature.apiary-mock.com/products";
+   var init = function () {
+      var $ = $ProductList.init(productsEndpoint),
+      prodList = $._0,
+      fx = $._1;
+      return {ctor: "_Tuple2"
+             ,_0: {_: {}
+                  ,productList: prodList
+                  ,selectedProduct: $Maybe.Nothing}
+             ,_1: A2($Effects.map,
+             ProductListAction,
+             fx)};
+   }();
+   _elm.App.values = {_op: _op
+                     ,productsEndpoint: productsEndpoint
+                     ,Model: Model
+                     ,init: init
+                     ,ProductListAction: ProductListAction
+                     ,update: update
+                     ,view: view};
+   return _elm.App.values;
+};
 Elm.Array = Elm.Array || {};
 Elm.Array.make = function (_elm) {
    "use strict";
@@ -1931,41 +2023,6 @@ Elm.Effects.make = function (_elm) {
                          ,batch: batch
                          ,toTask: toTask};
    return _elm.Effects.values;
-};
-Elm.FeatureCreature = Elm.FeatureCreature || {};
-Elm.FeatureCreature.make = function (_elm) {
-   "use strict";
-   _elm.FeatureCreature = _elm.FeatureCreature || {};
-   if (_elm.FeatureCreature.values)
-   return _elm.FeatureCreature.values;
-   var _op = {},
-   _N = Elm.Native,
-   _U = _N.Utils.make(_elm),
-   _L = _N.List.make(_elm),
-   $moduleName = "FeatureCreature",
-   $Basics = Elm.Basics.make(_elm),
-   $Effects = Elm.Effects.make(_elm),
-   $List = Elm.List.make(_elm),
-   $Maybe = Elm.Maybe.make(_elm),
-   $ProductList = Elm.ProductList.make(_elm),
-   $Result = Elm.Result.make(_elm),
-   $Signal = Elm.Signal.make(_elm),
-   $StartApp = Elm.StartApp.make(_elm),
-   $Task = Elm.Task.make(_elm);
-   var productsEndpoint = "http://private-d50ac-featurecreature.apiary-mock.com/products";
-   var app = $StartApp.start({_: {}
-                             ,init: $ProductList.init(productsEndpoint)
-                             ,inputs: _L.fromArray([])
-                             ,update: $ProductList.update
-                             ,view: $ProductList.view});
-   var main = app.html;
-   var tasks = Elm.Native.Task.make(_elm).performSignal("tasks",
-   app.tasks);
-   _elm.FeatureCreature.values = {_op: _op
-                                 ,productsEndpoint: productsEndpoint
-                                 ,app: app
-                                 ,main: main};
-   return _elm.FeatureCreature.values;
 };
 Elm.Graphics = Elm.Graphics || {};
 Elm.Graphics.Collage = Elm.Graphics.Collage || {};
@@ -3968,6 +4025,39 @@ Elm.List.make = function (_elm) {
                       ,sortBy: sortBy
                       ,sortWith: sortWith};
    return _elm.List.values;
+};
+Elm.Main = Elm.Main || {};
+Elm.Main.make = function (_elm) {
+   "use strict";
+   _elm.Main = _elm.Main || {};
+   if (_elm.Main.values)
+   return _elm.Main.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Main",
+   $App = Elm.App.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Effects = Elm.Effects.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $StartApp = Elm.StartApp.make(_elm),
+   $Task = Elm.Task.make(_elm);
+   var app = $StartApp.start({_: {}
+                             ,init: $App.init
+                             ,inputs: _L.fromArray([])
+                             ,update: $App.update
+                             ,view: $App.view});
+   var main = app.html;
+   var tasks = Elm.Native.Task.make(_elm).performSignal("tasks",
+   app.tasks);
+   _elm.Main.values = {_op: _op
+                      ,app: app
+                      ,main: main};
+   return _elm.Main.values;
 };
 Elm.Maybe = Elm.Maybe || {};
 Elm.Maybe.make = function (_elm) {
