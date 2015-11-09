@@ -18,7 +18,7 @@ type alias Model =
 init : Int -> (Model, Effects Action)
 init id =
   let url = featuresUrl id
-  in ( { features = (DT.createNode "/" []), url = url }
+  in ( { features = DT.rootNode, url = url }
      , getFeaturesList url
      )
 
@@ -35,8 +35,14 @@ getFeaturesList url =
 jsonToFeatureTree : Json.Decoder DT.DirectoryTree
 jsonToFeatureTree =
   Json.object2 DT.DirectoryTree
-  ("label" := Json.string)
-  ("forest" := Json.list (lazy (\_ -> jsonToFeatureTree)))
+  ("fileDescription" := parseFileDescription)
+  ("forest"          := Json.list (lazy (\_ -> jsonToFeatureTree)))
+
+parseFileDescription : Json.Decoder DT.FileDescription
+parseFileDescription =
+  Json.object2 DT.FileDescription
+  ("fileName" := Json.string)
+  ("filePath" := Json.string)
 
 lazy : (() -> Json.Decoder a) -> Json.Decoder a
 lazy thunk =
@@ -60,8 +66,9 @@ update action model =
           , Effects.none
           )
         Err string ->
-          let errorModel = { features = (DT.createNode "/I-errored" []), url = model.url }
-              in (errorModel, Effects.none)
+          let errorFileDescription = DT.createNode { fileName = "/I-errored", filePath = "/I-errored" } []
+              errorModel = { features = errorFileDescription, url = model.url }
+            in (errorModel, Effects.none)
 
 -- VIEW
 

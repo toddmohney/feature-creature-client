@@ -6,35 +6,43 @@ import List exposing (map)
 -- MODEL
 
 type alias FilePath = String
-type DirectoryTree =
-  DirectoryTree FilePath (List DirectoryTree)
 
-createNode : String -> (List DirectoryTree) -> DirectoryTree
-createNode label forest = DirectoryTree label forest
+type DirectoryTree =
+  DirectoryTree FileDescription (List DirectoryTree)
+
+type alias FileDescription = { fileName : String
+                             , filePath : FilePath
+                             }
+
+createNode : FileDescription -> (List DirectoryTree) -> DirectoryTree
+createNode fileDesc forest = DirectoryTree fileDesc forest
+
+rootNode : DirectoryTree
+rootNode = createNode { fileName = "/", filePath = "/" } []
 
 -- VIEW
 
 view : DirectoryTree -> Html
-view (DirectoryTree label forest) =
+view (DirectoryTree fileDesc forest) =
   ul
     []
     [
-      drawNode label
+      drawNode fileDesc
     , li [] (map drawTree forest)
     ]
 
-drawNode : FilePath -> Html
-drawNode path = li [] [ text path ]
+drawNode : FileDescription -> Html
+drawNode fileDesc = li [] [ text fileDesc.fileName ]
 
 drawTree : DirectoryTree -> Html
 drawTree tree =
   case tree of
-    DirectoryTree label [] ->
-      drawNode label
-    DirectoryTree label forest ->
+    DirectoryTree fileDesc [] ->
+      drawNode fileDesc
+    DirectoryTree fileDesc forest ->
       ul
         []
         [
-          drawNode label
+          drawNode fileDesc
         , li [] (map drawTree forest)
         ]
