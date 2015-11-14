@@ -23,26 +23,17 @@ rootNode = createNode { fileName = "/", filePath = "/" } []
 -- VIEW
 
 view : DirectoryTree -> Html
-view (DirectoryTree fileDesc forest) =
-  ul
-    []
-    [
-      drawNode fileDesc
-    , li [] (map drawTree forest)
-    ]
-
-drawNode : FileDescription -> Html
-drawNode fileDesc = li [] [ text fileDesc.fileName ]
+view tree = ul [] [ drawTree tree ]
 
 drawTree : DirectoryTree -> Html
 drawTree tree =
   case tree of
     DirectoryTree fileDesc [] ->
-      drawNode fileDesc
+      li [] [ text fileDesc.fileName ]
     DirectoryTree fileDesc forest ->
-      ul
+      li
         []
         [
-          drawNode fileDesc
-        , li [] (map drawTree forest)
+          text fileDesc.fileName,
+          ul [] (map drawTree forest)
         ]
