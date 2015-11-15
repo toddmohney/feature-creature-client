@@ -13,9 +13,9 @@ productsEndpoint = "http://localhost:8081/products"
 
 -- MODEL
 
-type alias Model = 
-  { productList : ProdL.ProductList 
-  , featureList : Maybe FeatL.Model
+type alias Model =
+  { productList : ProdL.ProductList
+  , featureList : Maybe FeatL.FeatureList
   }
 
 init : (Model, Effects Action)
@@ -56,9 +56,9 @@ update action model = case action of
     , Effects.none
     )
 
-initFeatListFromProdList : ProdL.ProductList -> (Maybe FeatL.Model, Effects FeatL.Action)
+initFeatListFromProdList : ProdL.ProductList -> (Maybe FeatL.FeatureList, Effects FeatL.Action)
 initFeatListFromProdList prodList = case prodList.selectedProduct of
-  Just prod -> 
+  Just prod ->
     let (featList, fx) = FeatL.init prod.id
     in  (Just featList, fx)
   Nothing   -> (Nothing, Effects.none)
@@ -70,8 +70,8 @@ view address model = case model.featureList of
   Just featL -> featureListView address featL
   Nothing    -> productListView address model.productList
 
-featureListView : Signal.Address Action -> FeatL.Model -> Html
-featureListView address featureList = Html.div [] 
+featureListView : Signal.Address Action -> FeatL.FeatureList -> Html
+featureListView address featureList = Html.div []
   [
     FeatL.view (Signal.forwardTo address FeatureListAction) featureList
   , Html.button [ onClick address DeselectProduct ] [ Html.text "Back" ]
