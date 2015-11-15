@@ -13,12 +13,12 @@ productsEndpoint = "http://localhost:8081/products"
 
 -- MODEL
 
-type alias Model = 
-  { productList : ProdL.Model 
-  , featureList : Maybe FeatL.Model
+type alias App =
+  { productList : ProdL.ProductList
+  , featureList : Maybe FeatL.FeatureList
   }
 
-init : (Model, Effects Action)
+init : (App, Effects Action)
 init = let (prodList, fx) = ProdL.init productsEndpoint
        in  ( { productList = prodList, featureList = Nothing }
            , Effects.map ProductListAction fx
@@ -30,10 +30,10 @@ type Action = ProductListAction ProdL.Action
             | FeatureListAction FeatL.Action
             | DeselectProduct
 
-update : Action -> Model -> (Model, Effects Action)
-update action model = case action of
+update : Action -> App -> (App, Effects Action)
+update action app = case action of
   ProductListAction prodLAction ->
-    let (prodList, prodFx) = ProdL.update prodLAction model.productList
+    let (prodList, prodFx) = ProdL.update prodLAction app.productList
         (maybeFeatList, featFx) = initFeatListFromProdList prodList
     in  ( { productList = prodList
           , featureList = maybeFeatList
@@ -44,40 +44,40 @@ update action model = case action of
           ]
         )
   FeatureListAction featLAction ->
-    case model.featureList of
+    case app.featureList of
       Just origFeatL ->
         let (featL, fx) = FeatL.update featLAction origFeatL
-        in ( { model | featureList <- Just featL }
+        in ( { app | featureList <- Just featL }
            , Effects.map FeatureListAction fx
            )
-      Nothing        -> (model, Effects.none)
+      Nothing        -> (app, Effects.none)
   DeselectProduct ->
-    ( { model | featureList <- Nothing }
+    ( { app | featureList <- Nothing }
     , Effects.none
     )
 
-initFeatListFromProdList : ProdL.Model -> (Maybe FeatL.Model, Effects FeatL.Action)
+initFeatListFromProdList : ProdL.ProductList -> (Maybe FeatL.FeatureList, Effects FeatL.Action)
 initFeatListFromProdList prodList = case prodList.selectedProduct of
-  Just prod -> 
+  Just prod ->
     let (featList, fx) = FeatL.init prod.id
     in  (Just featList, fx)
   Nothing   -> (Nothing, Effects.none)
 
 -- VIEW
 
-view : Signal.Address Action -> Model -> Html
-view address model = case model.featureList of
+view : Signal.Address Action -> App -> Html
+view address app = case app.featureList of
   Just featL -> featureListView address featL
-  Nothing    -> productListView address model.productList
+  Nothing    -> productListView address app.productList
 
-featureListView : Signal.Address Action -> FeatL.Model -> Html
-featureListView address featureList = Html.div [] 
+featureListView : Signal.Address Action -> FeatL.FeatureList -> Html
+featureListView address featureList = Html.div []
   [
     FeatL.view (Signal.forwardTo address FeatureListAction) featureList
   , Html.button [ onClick address DeselectProduct ] [ Html.text "Back" ]
   ]
 
-productListView : Signal.Address Action -> ProdL.Model -> Html
+productListView : Signal.Address Action -> ProdL.ProductList -> Html
 productListView address productList =  ProdL.view (Signal.forwardTo address ProductListAction) productList
 
 

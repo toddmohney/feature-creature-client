@@ -10,12 +10,12 @@ import Task as Task        exposing (..)
 
 -- MODEL
 
-type alias Model =
+type alias FeatureList =
   { features: DT.DirectoryTree
   , url: String
   }
 
-init : Int -> (Model, Effects Action)
+init : Int -> (FeatureList, Effects Action)
 init id =
   let url = featuresUrl id
   in ( { features = DT.rootNode, url = url }
@@ -54,23 +54,23 @@ lazy thunk =
 type Action = RequestFeatures
             | UpdateFeatures (Result Error DT.DirectoryTree)
 
-update : Action -> Model -> (Model, Effects Action)
-update action model =
+update : Action -> FeatureList -> (FeatureList, Effects Action)
+update action featureList =
   case action of
     RequestFeatures ->
-      (model, getFeaturesList model.url)
+      (featureList, getFeaturesList featureList.url)
     UpdateFeatures resultFeatureTree ->
       case resultFeatureTree of
         Ok featureTree ->
-          ( { model | features <- featureTree }
+          ( { featureList | features <- featureTree }
           , Effects.none
           )
         Err string ->
           let errorFileDescription = DT.createNode { fileName = "/I-errored", filePath = "/I-errored" } []
-              errorModel = { features = errorFileDescription, url = model.url }
+              errorModel = { features = errorFileDescription, url = featureList.url }
             in (errorModel, Effects.none)
 
 -- VIEW
 
-view : Signal.Address Action -> Model -> Html
-view address model = Html.div [] [ DT.view model.features ]
+view : Signal.Address Action -> FeatureList -> Html
+view address featureList = Html.div [] [ DT.view featureList.features ]
