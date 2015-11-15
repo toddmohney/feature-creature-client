@@ -9,4 +9,4 @@ type alias Feature = { featureID : String
 -- VIEW
 
 view : Feature -> Html
-view feature = Html.div [] [ text "hi" ]
+view feature = Html.pre [] [ text feature.description ]

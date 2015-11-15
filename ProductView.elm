@@ -40,18 +40,18 @@ getFeaturesList url =
     |> Task.map UpdateFeatures
     |> Effects.task
 
--- getFeature : String -> Effects Action
--- getFeature url =
-   -- Http.get parseFeature url
-    -- |> Task.toResult
-    -- |> Task.map ShowFeatureDetails
-    -- |> Effects.task
+getFeature : String -> Effects Action
+getFeature url =
+   Http.get parseFeature url
+    |> Task.toResult
+    |> Task.map ShowFeatureDetails
+    |> Effects.task
 
--- parseFeature : Json.Decoder F.Feature
--- parseFeature =
-  -- Json.object2 F.Feature
-  -- ("featureID"   := Json.string)
-  -- ("description" := Json.string)
+parseFeature : Json.Decoder F.Feature
+parseFeature =
+  Json.object2 F.Feature
+  ("featureID"   := Json.string)
+  ("description" := Json.string)
 
 parseFeatureTree : Json.Decoder DT.DirectoryTree
 parseFeatureTree =
@@ -62,8 +62,8 @@ parseFeatureTree =
 featuresUrl : Product -> String
 featuresUrl product = "http://localhost:8081/products/" ++ (toString product.id) ++ "/features"
 
--- featureUrl : Product -> DT.FilePath -> String
--- featureUrl path = "http://localhost:8081/products/" ++ product.id ++ "/feature?path=" ++ path
+featureUrl : Product -> DT.FilePath -> String
+featureUrl product path = "http://localhost:8081/products/" ++ (toString product.id) ++ "/feature?path=" ++ path
 
 parseFileDescription : Json.Decoder DT.FileDescription
 parseFileDescription =
@@ -87,7 +87,7 @@ update action productView =
           let featureList = { features = featureTree }
               newProductView = { productView | featureList <- Just featureList }
             in (newProductView, Effects.none)
-        Err string ->
+        Err _ ->
           let errorFileDescription = DT.createNode { fileName = "/I-errored", filePath = "/I-errored" } []
               featureList = { features = errorFileDescription }
               errorModel = { product = productView.product
@@ -95,6 +95,15 @@ update action productView =
                            , feature = Nothing
                            }
             in (errorModel, Effects.none)
+    ShowFeature fileDescription ->
+      (productView, getFeature (featureUrl productView.product fileDescription.filePath))
+    ShowFeatureDetails resultFeature ->
+      case resultFeature of
+        Ok feature ->
+          ({ productView | feature <- Just feature }, Effects.none)
+        Err _ ->
+          let errorFeature = { featureID = "uh oh!", description = "Something went wrong!" }
+          in ({ productView | feature <- Just errorFeature }, Effects.none)
 
 view : Signal.Address Action -> ProductView -> Html
 view address productView =
