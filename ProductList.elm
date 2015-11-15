@@ -10,12 +10,6 @@ import Html.Events         exposing (onClick)
 
 import Effects exposing (Effects)
 
--- import Effects exposing (Effects, Never)
--- import Html.Attributes exposing (style)
--- import Html.Events exposing (onClick)
--- import Json.Decode as Json
--- import Task
-
 -- MODEL
 
 type alias ProductList =
@@ -24,14 +18,16 @@ type alias ProductList =
   , selectedProduct: Maybe P.Product
   }
 
-init : String -> (ProductList, Effects Action)
-init url =
+init : (ProductList, Effects Action)
+init =
   ( { products = []
-    , url = url
+    , url = productsEndpoint
     , selectedProduct = Nothing
     }
-  , getProductList url
+  , getProductList productsEndpoint
   )
+
+productsEndpoint = "http://localhost:8081/products"
 
 getProductList : String -> Effects Action
 getProductList url =
@@ -67,6 +63,7 @@ update action productList =
       ( { productList | selectedProduct <- Just prod }
       , Effects.none
       )
+
 -- VIEW
 
 view : Signal.Address Action -> ProductList -> Html
