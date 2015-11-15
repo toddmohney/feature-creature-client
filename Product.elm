@@ -4,14 +4,14 @@ import Html exposing (..)
 
 -- MODEL
 
-type alias Model = {
+type alias Product = {
     id : Int
   , name : String
   , repoUrl : String
 }
 
-init : String -> String -> Model
-init = Model 0
+init : String -> String -> Product
+init = Product 0
 
 -- UPDATE (nothing here for now)
 
@@ -19,5 +19,5 @@ type Action = PlaceholderAction
 
 -- VIEW
 
-view : Model -> Html
-view model = div [] [ text model.name ]
+view : Product -> Html
+view product = div [] [ text product.name ]

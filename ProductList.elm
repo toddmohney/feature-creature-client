@@ -19,9 +19,9 @@ import Effects exposing (Effects)
 -- MODEL
 
 type alias ProductList =
-  { products: List P.Model
+  { products: List P.Product
   , url: String
-  , selectedProduct: Maybe P.Model
+  , selectedProduct: Maybe P.Product
   }
 
 init : String -> (ProductList, Effects Action)
@@ -40,16 +40,16 @@ getProductList url =
     |> Task.map UpdateProducts
     |> Effects.task
 
-jsonToProducts : Json.Decoder (List P.Model)
+jsonToProducts : Json.Decoder (List P.Product)
 jsonToProducts =
-  Json.object3 P.Model ("id" := Json.int) ("name" := Json.string) ("repoUrl" := Json.string)
+  Json.object3 P.Product ("id" := Json.int) ("name" := Json.string) ("repoUrl" := Json.string)
     |> Json.list
 
 -- UPDATE
 
 type Action = RequestProducts
-            | UpdateProducts (Result Error (List P.Model))
-            | SelectProduct P.Model
+            | UpdateProducts (Result Error (List P.Product))
+            | SelectProduct P.Product
 
 update : Action -> ProductList -> (ProductList, Effects Action)
 update action productList =
@@ -78,7 +78,7 @@ view address productList =
       , Html.button [onClick address RequestProducts] [Html.text "Reload products"]
       ]
 
-viewProduct : Signal.Address Action -> P.Model -> Html
+viewProduct : Signal.Address Action -> P.Product -> Html
 viewProduct address productList =
   Html.li
   [ onClick address (SelectProduct productList) ]
