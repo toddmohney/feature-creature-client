@@ -117,7 +117,7 @@ view address productView =
           [ id "product_view" ]
           [
             renderFeatureList address featureList,
-            F.view feature
+            Html.div [ class "pull-right" ] [ F.view feature ]
           ]
         Nothing ->
           div
@@ -125,7 +125,10 @@ view address productView =
           [ renderFeatureList address featureList ]
 
 renderFeatureList : Signal.Address Action -> FeatureList -> Html
-renderFeatureList address featureList = Html.div [] [ drawFeatureFiles address featureList.features ]
+renderFeatureList address featureList =
+  Html.div
+  [ class "pull-left" ]
+  [ drawFeatureFiles address featureList.features ]
 
 drawFeatureFiles : Signal.Address Action -> DT.DirectoryTree -> Html
 drawFeatureFiles address tree = ul [] [ drawTree address tree ]

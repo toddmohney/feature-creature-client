@@ -2,13 +2,14 @@ module ProductList where
 
 import Product as P
 
-import Json.Decode as Json exposing ((:=))
-import Http as Http        exposing (..)
-import Html as Html        exposing (..)
-import Task as Task        exposing (..)
-import Html.Events         exposing (onClick)
-
 import Effects exposing (Effects)
+import Html as Html        exposing (..)
+import Html.Events         exposing (onClick)
+import Http as Http        exposing (..)
+import Json.Decode as Json exposing ((:=))
+import Style               exposing (..)
+import Task as Task        exposing (..)
+
 
 -- MODEL
 
@@ -71,8 +72,8 @@ view address productList =
   let products = List.map (viewProduct address) productList.products
   in
     Html.div []
-      [ Html.ul [] products
-      , Html.button [onClick address RequestProducts] [Html.text "Reload products"]
+      [ Html.button [primaryBtn, onClick address RequestProducts] [Html.text "Reload products"]
+      , Html.ul [] products
       ]
 
 viewProduct : Signal.Address Action -> P.Product -> Html

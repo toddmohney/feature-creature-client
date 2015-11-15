@@ -1,9 +1,11 @@
 module App where
 
-import Effects     exposing (Effects)
-import Html        exposing (Html)
-import Html.Events exposing (onClick)
-import Debug       exposing (crash)
+import Debug           exposing (crash)
+import Effects         exposing (Effects)
+import Html            exposing (Html)
+import Html.Attributes exposing (class)
+import Html.Events     exposing (onClick)
+import Style           exposing (..)
 
 import ProductList as ProdL exposing (..)
 import ProductView as ProdV exposing (..)
@@ -77,12 +79,9 @@ renderProductView address productView =
   Html.div
   []
   [
-    ProdV.view (Signal.forwardTo address ProductViewAction) productView
-  , Html.button [ onClick address DeselectProduct ] [ Html.text "Back" ]
+    Html.button [ primaryBtn, onClick address DeselectProduct ] [ Html.text "Back" ]
+  , Html.div [ class "clearfix" ] [ ProdV.view (Signal.forwardTo address ProductViewAction) productView ]
   ]
 
 productListView : Signal.Address Action -> ProdL.ProductList -> Html
 productListView address productList =  ProdL.view (Signal.forwardTo address ProductListAction) productList
-
-
-
