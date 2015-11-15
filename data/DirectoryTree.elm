@@ -1,4 +1,4 @@
-module DirectoryTree where
+module Data.DirectoryTree where
 
 -- MODEL
 

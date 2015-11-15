@@ -1,4 +1,4 @@
-module Feature where
+module Products.Features.Feature where
 
 import Html exposing (..)
 

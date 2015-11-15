@@ -1,12 +1,12 @@
-module ProductList where
+module Products.ProductList where
 
-import Product as P
 
 import Effects exposing (Effects)
 import Html as Html        exposing (..)
 import Html.Events         exposing (onClick)
 import Http as Http        exposing (..)
 import Json.Decode as Json exposing ((:=))
+import Products.Product as P
 import Style               exposing (..)
 import Task as Task        exposing (..)
 

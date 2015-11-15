@@ -1,4 +1,4 @@
-module Product where
+module Products.Product where
 
 import Html exposing (..)
 

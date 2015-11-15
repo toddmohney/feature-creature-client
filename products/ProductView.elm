@@ -1,16 +1,16 @@
-module ProductView where
+module Products.ProductView where
 
 import Debug exposing (crash)
-import DirectoryTree as DT
+import Data.DirectoryTree as DT
 import Effects exposing (Effects)
-import Feature as F exposing (..)
-import FeatureList exposing (..)
+import Products.Features.Feature as F exposing (..)
+import Products.Features.FeatureList exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Http exposing (..)
 import Json.Decode as Json exposing ((:=))
-import Product exposing (..)
+import Products.Product exposing (..)
 import Task exposing (..)
 
 

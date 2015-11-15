@@ -5,10 +5,9 @@ import Effects         exposing (Effects)
 import Html            exposing (Html)
 import Html.Attributes exposing (class)
 import Html.Events     exposing (onClick)
+import Products.ProductList as ProdL exposing (..)
+import Products.ProductView as ProdV exposing (..)
 import Style           exposing (..)
-
-import ProductList as ProdL exposing (..)
-import ProductView as ProdV exposing (..)
 
 -- MODEL
 
