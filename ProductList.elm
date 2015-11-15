@@ -18,14 +18,14 @@ import Effects exposing (Effects)
 
 -- MODEL
 
-type alias Model = 
+type alias ProductList =
   { products: List P.Model
   , url: String
   , selectedProduct: Maybe P.Model
   }
 
-init : String -> (Model, Effects Action)
-init url = 
+init : String -> (ProductList, Effects Action)
+init url =
   ( { products = []
     , url = url
     , selectedProduct = Nothing
@@ -51,27 +51,27 @@ type Action = RequestProducts
             | UpdateProducts (Result Error (List P.Model))
             | SelectProduct P.Model
 
-update : Action -> Model -> (Model, Effects Action)
-update action model =
+update : Action -> ProductList -> (ProductList, Effects Action)
+update action productList =
   case action of
     RequestProducts ->
-      (model, getProductList model.url)
+      (productList, getProductList productList.url)
     UpdateProducts resultProducts ->
       case resultProducts of
         Ok newProducts ->
-          ( { model | products <- newProducts }
+          ( { productList | products <- newProducts }
           , Effects.none
           )
-        Err string -> (model, Effects.none)
+        Err string -> (productList, Effects.none)
     SelectProduct prod ->
-      ( { model | selectedProduct <- Just prod }
+      ( { productList | selectedProduct <- Just prod }
       , Effects.none
       )
 -- VIEW
 
-view : Signal.Address Action -> Model -> Html
-view address model =
-  let products = List.map (viewProduct address) model.products
+view : Signal.Address Action -> ProductList -> Html
+view address productList =
+  let products = List.map (viewProduct address) productList.products
   in
     Html.div []
       [ Html.ul [] products
@@ -79,5 +79,8 @@ view address model =
       ]
 
 viewProduct : Signal.Address Action -> P.Model -> Html
-viewProduct address model = Html.li [ onClick address (SelectProduct model) ] [ P.view model ]
+viewProduct address productList =
+  Html.li
+  [ onClick address (SelectProduct productList) ]
+  [ P.view productList ]
 
