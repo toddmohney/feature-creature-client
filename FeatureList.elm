@@ -1,11 +1,13 @@
 module FeatureList where
 
 import DirectoryTree as DT
-import Effects exposing (Effects)
-import Http as Http        exposing (..)
-import Html as Html        exposing (..)
-import Json.Decode as Json exposing ((:=))
-import Task as Task        exposing (..)
+import Effects                 exposing (Effects)
+import Http as Http            exposing (..)
+import Html as Html            exposing (..)
+import Html.Attributes as Html exposing (..)
+import Html.Events             exposing (onClick)
+import Json.Decode as Json     exposing ((:=))
+import Task as Task            exposing (..)
 
 
 -- MODEL
@@ -14,6 +16,10 @@ type alias FeatureList =
   { features: DT.DirectoryTree
   , url: String
   }
+
+type Action = RequestFeatures
+            | UpdateFeatures (Result Error DT.DirectoryTree)
+            | ShowFeature DT.FileDescription
 
 init : Int -> (FeatureList, Effects Action)
 init id =
@@ -27,16 +33,16 @@ featuresUrl id = "http://localhost:8081/products/" ++ (toString id) ++ "/feature
 
 getFeaturesList : String -> Effects Action
 getFeaturesList url =
-   Http.get jsonToFeatureTree url
+   Http.get parseFeatureTree url
     |> Task.toResult
     |> Task.map UpdateFeatures
     |> Effects.task
 
-jsonToFeatureTree : Json.Decoder DT.DirectoryTree
-jsonToFeatureTree =
+parseFeatureTree : Json.Decoder DT.DirectoryTree
+parseFeatureTree =
   Json.object2 DT.DirectoryTree
   ("fileDescription" := parseFileDescription)
-  ("forest"          := Json.list (lazy (\_ -> jsonToFeatureTree)))
+  ("forest"          := Json.list (lazy (\_ -> parseFeatureTree)))
 
 parseFileDescription : Json.Decoder DT.FileDescription
 parseFileDescription =
@@ -50,9 +56,6 @@ lazy thunk =
   (\js -> Json.decodeValue (thunk ()) js)
 
 -- UPDATE
-
-type Action = RequestFeatures
-            | UpdateFeatures (Result Error DT.DirectoryTree)
 
 update : Action -> FeatureList -> (FeatureList, Effects Action)
 update action featureList =
@@ -73,4 +76,28 @@ update action featureList =
 -- VIEW
 
 view : Signal.Address Action -> FeatureList -> Html
-view address featureList = Html.div [] [ DT.view featureList.features ]
+view address featureList = Html.div [] [ drawFeatureFiles address featureList.features ]
+
+drawFeatureFiles : Signal.Address Action -> DT.DirectoryTree -> Html
+drawFeatureFiles address tree = ul [] [ drawTree address tree ]
+
+drawTree : Signal.Address Action -> DT.DirectoryTree -> Html
+drawTree address tree =
+  case tree of
+    DT.DirectoryTree fileDesc [] ->
+      li [] [ drawFeatureFile address fileDesc ]
+    DT.DirectoryTree fileDesc forest ->
+      li
+        []
+        [
+          drawFeatureDirectory address fileDesc,
+          ul [] (List.map (drawTree address) forest)
+        ]
+
+drawFeatureFile : Signal.Address Action -> DT.FileDescription -> Html
+drawFeatureFile address fileDesc =
+  a [ href "#", onClick address (ShowFeature fileDesc) ] [ text fileDesc.fileName ]
+
+drawFeatureDirectory : Signal.Address Action -> DT.FileDescription -> Html
+drawFeatureDirectory address fileDesc =
+  div [] [ text fileDesc.fileName ]
