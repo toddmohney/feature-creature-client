@@ -1,20 +1,15 @@
-module ProductList where
+module Products.ProductList where
 
-import Product as P
-
-import Json.Decode as Json exposing ((:=))
-import Http as Http        exposing (..)
-import Html as Html        exposing (..)
-import Task as Task        exposing (..)
-import Html.Events         exposing (onClick)
 
 import Effects exposing (Effects)
+import Html as Html        exposing (..)
+import Html.Events         exposing (onClick)
+import Http as Http        exposing (..)
+import Json.Decode as Json exposing ((:=))
+import Products.Product as P
+import Style               exposing (..)
+import Task as Task        exposing (..)
 
--- import Effects exposing (Effects, Never)
--- import Html.Attributes exposing (style)
--- import Html.Events exposing (onClick)
--- import Json.Decode as Json
--- import Task
 
 -- MODEL
 
@@ -24,14 +19,16 @@ type alias ProductList =
   , selectedProduct: Maybe P.Product
   }
 
-init : String -> (ProductList, Effects Action)
-init url =
+init : (ProductList, Effects Action)
+init =
   ( { products = []
-    , url = url
+    , url = productsEndpoint
     , selectedProduct = Nothing
     }
-  , getProductList url
+  , getProductList productsEndpoint
   )
+
+productsEndpoint = "http://localhost:8081/products"
 
 getProductList : String -> Effects Action
 getProductList url =
@@ -67,6 +64,7 @@ update action productList =
       ( { productList | selectedProduct <- Just prod }
       , Effects.none
       )
+
 -- VIEW
 
 view : Signal.Address Action -> ProductList -> Html
@@ -74,8 +72,8 @@ view address productList =
   let products = List.map (viewProduct address) productList.products
   in
     Html.div []
-      [ Html.ul [] products
-      , Html.button [onClick address RequestProducts] [Html.text "Reload products"]
+      [ Html.button [primaryBtn, onClick address RequestProducts] [Html.text "Reload products"]
+      , Html.ul [] products
       ]
 
 viewProduct : Signal.Address Action -> P.Product -> Html
