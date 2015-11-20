@@ -4,7 +4,7 @@ import Debug exposing (crash)
 import Data.DirectoryTree as DT
 import Effects exposing (Effects)
 import Products.Features.Feature as F exposing (..)
-import Products.Features.FeatureList exposing (..)
+import Products.Features.FeatureList as FL exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -22,8 +22,8 @@ type alias ProductView =
 
 type Action = RequestFeatures
             | UpdateFeatures (Result Error DT.DirectoryTree)
-            | ShowFeature DT.FileDescription
             | ShowFeatureDetails (Result Error Feature)
+            | FeatureListAction FL.Action
 
 init : Product -> (ProductView, Effects Action)
 init prod =
@@ -95,8 +95,10 @@ update action productView =
                            , feature = Nothing
                            }
             in (errorModel, Effects.none)
-    ShowFeature fileDescription ->
-      (productView, getFeature (featureUrl productView.product fileDescription.filePath))
+    FeatureListAction featureListAction ->
+      case featureListAction of
+        ShowFeature fileDescription ->
+          (productView, getFeature (featureUrl productView.product fileDescription.filePath))
     ShowFeatureDetails resultFeature ->
       case resultFeature of
         Ok feature ->
@@ -116,40 +118,10 @@ view address productView =
           div
           [ id "product_view" ]
           [
-            renderFeatureList address featureList,
+            FL.render (Signal.forwardTo address FeatureListAction) featureList,
             Html.div [ class "pull-right" ] [ F.view feature ]
           ]
         Nothing ->
           div
           [ id "product_view" ]
-          [ renderFeatureList address featureList ]
-
-renderFeatureList : Signal.Address Action -> FeatureList -> Html
-renderFeatureList address featureList =
-  Html.div
-  [ class "pull-left" ]
-  [ drawFeatureFiles address featureList.features ]
-
-drawFeatureFiles : Signal.Address Action -> DT.DirectoryTree -> Html
-drawFeatureFiles address tree = ul [] [ drawTree address tree ]
-
-drawTree : Signal.Address Action -> DT.DirectoryTree -> Html
-drawTree address tree =
-  case tree of
-    DT.DirectoryTree fileDesc [] ->
-      li [] [ drawFeatureFile address fileDesc ]
-    DT.DirectoryTree fileDesc forest ->
-      li
-        []
-        [
-          drawFeatureDirectory address fileDesc,
-          ul [] (List.map (drawTree address) forest)
-        ]
-
-drawFeatureFile : Signal.Address Action -> DT.FileDescription -> Html
-drawFeatureFile address fileDesc =
-  a [ href "#", onClick address (ShowFeature fileDesc) ] [ text fileDesc.fileName ]
-
-drawFeatureDirectory : Signal.Address Action -> DT.FileDescription -> Html
-drawFeatureDirectory address fileDesc =
-  div [] [ text fileDesc.fileName ]
+          [ FL.render (Signal.forwardTo address FeatureListAction) featureList ]

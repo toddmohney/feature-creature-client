@@ -16,4 +16,3 @@ createNode fileDesc forest = DirectoryTree fileDesc forest
 
 rootNode : DirectoryTree
 rootNode = createNode { fileName = "/", filePath = "/" } []
-
