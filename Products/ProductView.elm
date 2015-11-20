@@ -118,8 +118,12 @@ view address productView =
           div
           [ id "product_view" ]
           [
-            FL.render (Signal.forwardTo address FeatureListAction) featureList,
-            Html.div [ class "pull-right" ] [ F.view feature ]
+            Html.div
+              [ class "pull-left" ]
+              [ FL.render (Signal.forwardTo address FeatureListAction) featureList ]
+          , Html.div
+              [ class "pull-right" ]
+              [ F.view feature ]
           ]
         Nothing ->
           div
