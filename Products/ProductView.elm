@@ -15,10 +15,8 @@ import Products.Product exposing (..)
 import Task exposing (..)
 
 type alias ProductView =
-  { product     : Product
-  , featureList : Maybe FeatureList
-  , feature     : Maybe Feature
-  , domainTerms : List DomainTerm
+  { product         : Product
+  , selectedFeature : Maybe Feature
   }
 
 type Action = RequestFeatures
@@ -29,10 +27,8 @@ type Action = RequestFeatures
 
 init : Product -> (ProductView, Effects Action)
 init prod =
-  let productView = { product     = prod
-                    , featureList = Nothing
-                    , feature     = Nothing
-                    , domainTerms = []
+  let productView = { product         = prod
+                    , selectedFeature = Nothing
                     }
   in (productView , getFeaturesList (featuresUrl prod))
 
@@ -87,8 +83,9 @@ update action productView =
     UpdateFeatures resultFeatureTree ->
       case resultFeatureTree of
         Ok featureTree ->
-          let featureList = { features = featureTree }
-              newProductView = { productView | featureList <- Just featureList }
+          let newFeatureList = Just { features = featureTree }
+              currentProduct = productView.product
+              newProductView = { productView | product <- { currentProduct | featureList <- newFeatureList } }
             in (newProductView, Effects.none)
         Err _ ->
           crash "Error handling ProductView.UpdateFeatures"
@@ -99,7 +96,7 @@ update action productView =
     ShowFeatureDetails resultFeature ->
       case resultFeature of
         Ok feature ->
-          ({ productView | feature <- Just feature }, Effects.none)
+          ({ productView | selectedFeature <- Just feature }, Effects.none)
         Err _ ->
           crash "Error handling ProductView.ShowFeatureDetails"
     ShowDomainTermForm ->
@@ -108,12 +105,12 @@ update action productView =
 -- yikes. this is a mess
 view : Signal.Address Action -> ProductView -> Html
 view address productView =
-  case productView.featureList of
+  case productView.product.featureList of
     Nothing ->
       Html.div [] [ text "missing featureList! (ProductView)" ]
     Just featureList ->
       let featureListAddress = (Signal.forwardTo address FeatureListAction)
-      in case productView.feature of
+      in case productView.selectedFeature of
         Just feature ->
           Html.div
           [ id "product_view" ]

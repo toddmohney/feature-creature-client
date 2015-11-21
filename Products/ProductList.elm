@@ -39,7 +39,7 @@ getProductList url =
 
 jsonToProducts : Json.Decoder (List P.Product)
 jsonToProducts =
-  Json.object3 P.Product ("id" := Json.int) ("name" := Json.string) ("repoUrl" := Json.string)
+  Json.object3 P.init' ("id" := Json.int) ("name" := Json.string) ("repoUrl" := Json.string)
     |> Json.list
 
 -- UPDATE
