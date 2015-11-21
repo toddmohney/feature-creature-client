@@ -14,7 +14,6 @@ import Json.Decode as Json exposing ((:=))
 import Products.Product exposing (..)
 import Task exposing (..)
 
-
 type alias ProductView =
   { product     : Product
   , featureList : Maybe FeatureList
@@ -26,6 +25,7 @@ type Action = RequestFeatures
             | UpdateFeatures (Result Error DT.DirectoryTree)
             | ShowFeatureDetails (Result Error Feature)
             | FeatureListAction FL.Action
+            | ShowDomainTermForm
 
 init : Product -> (ProductView, Effects Action)
 init prod =
@@ -102,31 +102,45 @@ update action productView =
           ({ productView | feature <- Just feature }, Effects.none)
         Err _ ->
           crash "Error handling ProductView.ShowFeatureDetails"
+    ShowDomainTermForm ->
+      crash "ShowDomainTermForm is unimplemented"
 
 -- yikes. this is a mess
 view : Signal.Address Action -> ProductView -> Html
 view address productView =
   case productView.featureList of
     Nothing ->
-      div [] [ text "missing featureList! (ProductView)" ]
+      Html.div [] [ text "missing featureList! (ProductView)" ]
     Just featureList ->
-      case productView.feature of
+      let featureListAddress = (Signal.forwardTo address FeatureListAction)
+      in case productView.feature of
         Just feature ->
-          div
+          Html.div
           [ id "product_view" ]
-          [
-            Html.div
+          [ Html.div
               [ class "pull-left" ]
-              [ FL.render (Signal.forwardTo address FeatureListAction) featureList ]
+              [ FL.render featureListAddress featureList
+              , showDomainTermForm address
+              ]
           , Html.div
               [ class "pull-right" ]
               [ F.view feature ]
           ]
         Nothing ->
-          div
+          Html.div
           [ id "product_view" ]
-          [
-            Html.div
+          [ Html.div
               [ class "pull-left" ]
-              [ FL.render (Signal.forwardTo address FeatureListAction) featureList ]
+              [ FL.render featureListAddress featureList
+              , showDomainTermForm address
+              ]
+          , Html.div
+              [ class "pull-right" ]
+              [ ]
           ]
+
+showDomainTermForm : Signal.Address Action -> Html
+showDomainTermForm address =
+  Html.a
+  [ href "#", onClick address ShowDomainTermForm ]
+  [ text "Create Domain Term" ]
