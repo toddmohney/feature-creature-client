@@ -15,8 +15,9 @@ import Products.Product exposing (..)
 import Task exposing (..)
 
 type alias ProductView =
-  { product         : Product
-  , selectedFeature : Maybe Feature
+  { product               : Product
+  , selectedFeature       : Maybe Feature
+  , domainTermFormVisible : Bool
   }
 
 type Action = RequestFeatures
@@ -27,8 +28,9 @@ type Action = RequestFeatures
 
 init : Product -> (ProductView, Effects Action)
 init prod =
-  let productView = { product         = prod
-                    , selectedFeature = Nothing
+  let productView = { product               = prod
+                    , selectedFeature       = Nothing
+                    , domainTermFormVisible = False
                     }
   in (productView , getFeaturesList (featuresUrl prod))
 
@@ -100,7 +102,7 @@ update action productView =
         Err _ ->
           crash "Error handling ProductView.ShowFeatureDetails"
     ShowDomainTermForm ->
-      crash "ShowDomainTermForm is unimplemented"
+      ({ productView | domainTermFormVisible <- True }, Effects.none)
 
 -- yikes. this is a mess
 view : Signal.Address Action -> ProductView -> Html
@@ -117,7 +119,7 @@ view address productView =
           [ Html.div
               [ class "pull-left" ]
               [ FL.render featureListAddress featureList
-              , showDomainTermForm address
+              , showDomainTermForm address productView
               ]
           , Html.div
               [ class "pull-right" ]
@@ -129,15 +131,21 @@ view address productView =
           [ Html.div
               [ class "pull-left" ]
               [ FL.render featureListAddress featureList
-              , showDomainTermForm address
+              , showDomainTermForm address productView
               ]
           , Html.div
               [ class "pull-right" ]
               [ ]
           ]
 
-showDomainTermForm : Signal.Address Action -> Html
-showDomainTermForm address =
-  Html.a
-  [ href "#", onClick address ShowDomainTermForm ]
-  [ text "Create Domain Term" ]
+showDomainTermForm : Signal.Address Action -> ProductView -> Html
+showDomainTermForm address productView =
+  if productView.domainTermFormVisible
+    then
+      Html.div
+      [ ]
+      [ text "HI!" ]
+    else
+      Html.a
+      [ href "#", onClick address ShowDomainTermForm ]
+      [ text "Create Domain Term" ]
