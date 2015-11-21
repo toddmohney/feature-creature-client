@@ -2,8 +2,6 @@ module Products.Product where
 
 import Html exposing (..)
 
--- MODEL
-
 type alias Product = {
     id : Int
   , name : String
@@ -13,11 +11,8 @@ type alias Product = {
 init : String -> String -> Product
 init = Product 0
 
--- UPDATE (nothing here for now)
-
-type Action = PlaceholderAction
-
--- VIEW
-
 view : Product -> Html
-view product = div [] [ text product.name ]
+view product =
+  Html.div
+    []
+    [ text product.name ]

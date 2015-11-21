@@ -3,6 +3,7 @@ module Products.ProductView where
 import Debug exposing (crash)
 import Data.DirectoryTree as DT
 import Effects exposing (Effects)
+import Products.DomainTerms.DomainTerm exposing (..)
 import Products.Features.Feature as F exposing (..)
 import Products.Features.FeatureList as FL exposing (..)
 import Html exposing (..)
@@ -18,6 +19,7 @@ type alias ProductView =
   { product     : Product
   , featureList : Maybe FeatureList
   , feature     : Maybe Feature
+  , domainTerms : List DomainTerm
   }
 
 type Action = RequestFeatures
@@ -30,6 +32,7 @@ init prod =
   let productView = { product     = prod
                     , featureList = Nothing
                     , feature     = Nothing
+                    , domainTerms = []
                     }
   in (productView , getFeaturesList (featuresUrl prod))
 
@@ -93,6 +96,7 @@ update action productView =
               errorModel = { product = productView.product
                            , featureList = Just featureList
                            , feature = Nothing
+                           , domainTerms = []
                            }
             in (errorModel, Effects.none)
     FeatureListAction featureListAction ->
@@ -128,4 +132,8 @@ view address productView =
         Nothing ->
           div
           [ id "product_view" ]
-          [ FL.render (Signal.forwardTo address FeatureListAction) featureList ]
+          [
+            Html.div
+              [ class "pull-left" ]
+              [ FL.render (Signal.forwardTo address FeatureListAction) featureList ]
+          ]

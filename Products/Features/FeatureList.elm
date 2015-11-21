@@ -6,8 +6,6 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Products.Features.Feature exposing (..)
 
--- MODEL
-
 type alias FeatureList =
   { features: DirectoryTree }
 
