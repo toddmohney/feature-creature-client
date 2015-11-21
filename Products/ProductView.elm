@@ -91,14 +91,7 @@ update action productView =
               newProductView = { productView | featureList <- Just featureList }
             in (newProductView, Effects.none)
         Err _ ->
-          let errorFileDescription = DT.createNode { fileName = "/I-errored", filePath = "/I-errored" } []
-              featureList = { features = errorFileDescription }
-              errorModel = { product = productView.product
-                           , featureList = Just featureList
-                           , feature = Nothing
-                           , domainTerms = []
-                           }
-            in (errorModel, Effects.none)
+          crash "Error handling ProductView.UpdateFeatures"
     FeatureListAction featureListAction ->
       case featureListAction of
         ShowFeature fileDescription ->
@@ -108,9 +101,9 @@ update action productView =
         Ok feature ->
           ({ productView | feature <- Just feature }, Effects.none)
         Err _ ->
-          let errorFeature = { featureID = "uh oh!", description = "Something went wrong!" }
-          in ({ productView | feature <- Just errorFeature }, Effects.none)
+          crash "Error handling ProductView.ShowFeatureDetails"
 
+-- yikes. this is a mess
 view : Signal.Address Action -> ProductView -> Html
 view address productView =
   case productView.featureList of
