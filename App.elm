@@ -51,11 +51,6 @@ update action app = case action of
            )
       Nothing -> (app, Effects.none)
 
-  DeselectProduct ->
-    ( { app | productPage <- Nothing }
-    , Effects.none
-    )
-
 initProductPageView : ProdL.ProductList -> (Maybe ProdP.ProductPage, Effects ProdP.Action)
 initProductPageView prodList =
   case prodList.selectedProduct of
@@ -74,8 +69,7 @@ renderProductPageView : Signal.Address Action -> ProdP.ProductPage -> Html
 renderProductPageView address productPage =
   Html.div
   []
-  [ primaryBtn [(onClick address DeselectProduct)] "Back"
-  , Html.div
+  [ Html.div
       [ class "clearfix" ]
       [ ProdP.view (Signal.forwardTo address ProductPageAction) productPage ]
   ]

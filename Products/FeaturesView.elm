@@ -84,6 +84,7 @@ update action productView =
   case action of
     RequestFeatures ->
       (productView, getFeaturesList (featuresUrl productView.product))
+
     UpdateFeatures resultFeatureTree ->
       case resultFeatureTree of
         Ok featureTree ->
@@ -91,18 +92,20 @@ update action productView =
               currentProduct = productView.product
               newFeaturesView = { productView | product <- { currentProduct | featureList <- newFeatureList } }
             in (newFeaturesView, Effects.none)
-        Err _ ->
-          crash "Error handling FeaturesView.UpdateFeatures"
+        Err _ -> crash "Error handling FeaturesView.UpdateFeatures"
+
     FeatureListAction featureListAction ->
       case featureListAction of
         ShowFeature fileDescription ->
           (productView, getFeature (featureUrl productView.product fileDescription.filePath))
+
     ShowFeatureDetails resultFeature ->
       case resultFeature of
         Ok feature ->
           ({ productView | selectedFeature <- Just feature }, Effects.none)
         Err _ ->
           crash "Error handling FeaturesView.ShowFeatureDetails"
+
     ShowDomainTermForm ->
       ({ productView | domainTermFormVisible <- True }, Effects.none)
 
