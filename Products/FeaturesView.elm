@@ -1,4 +1,4 @@
-module Products.ProductView where
+module Products.FeaturesView where
 
 import Debug exposing (crash)
 import Data.DirectoryTree as DT
@@ -15,7 +15,7 @@ import Products.Product exposing (..)
 import Task exposing (..)
 import UI.App.Components.ListDetailView as UI
 
-type alias ProductView =
+type alias FeaturesView =
   { product               : Product
   , selectedFeature       : Maybe Feature
   , domainTermFormVisible : Bool
@@ -28,7 +28,7 @@ type Action = RequestFeatures
             | ShowDomainTermForm
             | DomainTermAction DomainTerm.Action
 
-init : Product -> (ProductView, Effects Action)
+init : Product -> (FeaturesView, Effects Action)
 init prod =
   let productView = { product               = prod
                     , selectedFeature       = Nothing
@@ -79,7 +79,7 @@ lazy thunk =
   Json.customDecoder Json.value
   (\js -> Json.decodeValue (thunk ()) js)
 
-update : Action -> ProductView -> (ProductView, Effects Action)
+update : Action -> FeaturesView -> (FeaturesView, Effects Action)
 update action productView =
   case action of
     RequestFeatures ->
@@ -89,10 +89,10 @@ update action productView =
         Ok featureTree ->
           let newFeatureList = Just { features = featureTree }
               currentProduct = productView.product
-              newProductView = { productView | product <- { currentProduct | featureList <- newFeatureList } }
-            in (newProductView, Effects.none)
+              newFeaturesView = { productView | product <- { currentProduct | featureList <- newFeatureList } }
+            in (newFeaturesView, Effects.none)
         Err _ ->
-          crash "Error handling ProductView.UpdateFeatures"
+          crash "Error handling FeaturesView.UpdateFeatures"
     FeatureListAction featureListAction ->
       case featureListAction of
         ShowFeature fileDescription ->
@@ -102,16 +102,16 @@ update action productView =
         Ok feature ->
           ({ productView | selectedFeature <- Just feature }, Effects.none)
         Err _ ->
-          crash "Error handling ProductView.ShowFeatureDetails"
+          crash "Error handling FeaturesView.ShowFeatureDetails"
     ShowDomainTermForm ->
       ({ productView | domainTermFormVisible <- True }, Effects.none)
 
 -- yikes. this is a mess
-view : Signal.Address Action -> ProductView -> Html
+view : Signal.Address Action -> FeaturesView -> Html
 view address productView =
   case productView.product.featureList of
     Nothing ->
-      Html.div [] [ text "missing featureList! (ProductView)" ]
+      Html.div [] [ text "missing featureList! (FeaturesView)" ]
     Just featureList ->
       let featureListAddress = (Signal.forwardTo address FeatureListAction)
           featureHtml = case productView.selectedFeature of
@@ -124,7 +124,7 @@ view address productView =
                      ]
       in UI.listDetailView listHtml featureHtml
 
-showDomainTermForm : Signal.Address Action -> ProductView -> Html
+showDomainTermForm : Signal.Address Action -> FeaturesView -> Html
 showDomainTermForm address productView =
   if productView.domainTermFormVisible
     then
