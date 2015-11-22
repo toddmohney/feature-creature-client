@@ -13,6 +13,7 @@ import Http exposing (..)
 import Json.Decode as Json exposing ((:=))
 import Products.Product exposing (..)
 import Task exposing (..)
+import UI.App.Components.ListDetailView as UI
 
 type alias ProductView =
   { product               : Product
@@ -118,18 +119,10 @@ view address productView =
               [ F.view feature ]
             Nothing ->
               []
-      in
-        Html.div
-          [ id "product_view" ]
-          [ Html.div
-              [ class "pull-left" ]
-              [ FL.render featureListAddress featureList
-              , showDomainTermForm address productView
-              ]
-          , Html.div
-              [ class "pull-right" ]
-              featureHtml
-          ]
+          listHtml = [ FL.render featureListAddress featureList
+                     , showDomainTermForm address productView
+                     ]
+      in UI.listDetailView listHtml featureHtml
 
 showDomainTermForm : Signal.Address Action -> ProductView -> Html
 showDomainTermForm address productView =

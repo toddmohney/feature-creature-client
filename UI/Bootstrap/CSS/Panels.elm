@@ -1,14 +1,7 @@
-module Style where
+module UI.Bootstrap.CSS.Panels where
+
 import Html            exposing (Attribute)
 import Html.Attributes exposing (..)
-
-btn : Attribute
-btn = classList [ ("btn", True) ]
-
-primaryBtn : Attribute
-primaryBtn = classList [ ("btn", True)
-                       , ("btn-primary", True)
-                       ]
 
 panelDefault : Attribute
 panelDefault = classList [ ("panel", True)

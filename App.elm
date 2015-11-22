@@ -7,9 +7,7 @@ import Html.Attributes exposing (class)
 import Html.Events     exposing (onClick)
 import Products.ProductList as ProdL exposing (..)
 import Products.ProductView as ProdV exposing (..)
-import Style           exposing (..)
-
--- MODEL
+import UI.App.Primitives.Buttons     exposing (primaryBtn)
 
 type alias App =
   { productList : ProdL.ProductList
@@ -24,8 +22,6 @@ init = let (prodList, fx) = ProdL.init
        in  ( app
            , Effects.map ProductListAction fx
            )
-
--- UPDATE
 
 type Action = ProductListAction ProdL.Action
             | ProductViewAction ProdV.Action
@@ -65,8 +61,6 @@ initProductView prodList =
       in  (Just productView, fx)
     Nothing   -> (Nothing, Effects.none)
 
--- VIEW
-
 view : Signal.Address Action -> App -> Html
 view address app =
   case app.productView of
@@ -77,9 +71,10 @@ renderProductView : Signal.Address Action -> ProdV.ProductView -> Html
 renderProductView address productView =
   Html.div
   []
-  [
-    Html.button [ primaryBtn, onClick address DeselectProduct ] [ Html.text "Back" ]
-  , Html.div [ class "clearfix" ] [ ProdV.view (Signal.forwardTo address ProductViewAction) productView ]
+  [ primaryBtn [(onClick address DeselectProduct)] "Back"
+  , Html.div
+      [ class "clearfix" ]
+      [ ProdV.view (Signal.forwardTo address ProductViewAction) productView ]
   ]
 
 productListView : Signal.Address Action -> ProdL.ProductList -> Html

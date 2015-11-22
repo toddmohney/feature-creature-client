@@ -1,7 +1,5 @@
 module Data.DirectoryTree where
 
--- MODEL
-
 type alias FilePath = String
 
 type DirectoryTree =
