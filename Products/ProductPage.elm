@@ -10,7 +10,7 @@ import Products.Product exposing (Product)
 type alias ProductPage =
   { product         : Product
   , selectedView    : ProductViewOption
-  , featuresView    : Maybe FeaturesView
+  , featuresView    : FeaturesView
   , domainTermsView : Maybe DomainTermsView
   }
 
@@ -19,18 +19,25 @@ type ProductViewOption = FeaturesViewOption
 
 type Action = FeaturesViewAction FV.Action
 
-init : Product -> (ProductPage, Effects FV.Action)
+init : Product -> (ProductPage, Effects Action)
 init prod =
   let (featView, fx) = FV.init prod
       productPage = { product = prod
                     , selectedView = FeaturesViewOption
-                    , featuresView = Just featView
+                    , featuresView = featView
                     , domainTermsView = Nothing
                     }
-  in (productPage, fx)
+  in (productPage, (Effects.map FeaturesViewAction fx))
 
 update : Action -> ProductPage -> (ProductPage, Effects Action)
-update = crash "ProductPage Crash (update)"
+update action productPage =
+  case action of
+    FeaturesViewAction fvAction ->
+      let (featView, fvFx) = FV.update fvAction productPage.featuresView
+      in ( { productPage | featuresView <- featView }
+         , Effects.map FeaturesViewAction fvFx
+         )
+
 
 view : Signal.Address Action -> ProductPage -> Html
 view address productPage =
@@ -40,17 +47,9 @@ view address productPage =
 
 renderFeaturesView : Signal.Address Action -> ProductPage -> Html
 renderFeaturesView address productPage =
-  case productPage.featuresView of
-    Just featuresView ->
-      Html.div
-        []
-        [ Html.text "hi!"
-        , FV.view (Signal.forwardTo address FeaturesViewAction) featuresView
-        ]
-    Nothing ->
-      Html.div
-        []
-        [ Html.text "uh oh, no FeaturesView found!" ]
+  Html.div
+    []
+    [ FV.view (Signal.forwardTo address FeaturesViewAction) productPage.featuresView ]
 
 renderDomainTermsView : Signal.Address Action -> ProductPage -> Html
 renderDomainTermsView address productPage =
