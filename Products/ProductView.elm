@@ -3,7 +3,7 @@ module Products.ProductView where
 import Debug exposing (crash)
 import Data.DirectoryTree as DT
 import Effects exposing (Effects)
-import Products.DomainTerms.DomainTerm exposing (..)
+import Products.DomainTerms.DomainTerm as DomainTerm exposing (..)
 import Products.Features.Feature as F exposing (..)
 import Products.Features.FeatureList as FL exposing (..)
 import Html exposing (..)
@@ -25,6 +25,7 @@ type Action = RequestFeatures
             | ShowFeatureDetails (Result Error Feature)
             | FeatureListAction FL.Action
             | ShowDomainTermForm
+            | DomainTermAction DomainTerm.Action
 
 init : Product -> (ProductView, Effects Action)
 init prod =
@@ -112,21 +113,13 @@ view address productView =
       Html.div [] [ text "missing featureList! (ProductView)" ]
     Just featureList ->
       let featureListAddress = (Signal.forwardTo address FeatureListAction)
-      in case productView.selectedFeature of
-        Just feature ->
-          Html.div
-          [ id "product_view" ]
-          [ Html.div
-              [ class "pull-left" ]
-              [ FL.render featureListAddress featureList
-              , showDomainTermForm address productView
-              ]
-          , Html.div
-              [ class "pull-right" ]
+          featureHtml = case productView.selectedFeature of
+            Just feature ->
               [ F.view feature ]
-          ]
-        Nothing ->
-          Html.div
+            Nothing ->
+              []
+      in
+        Html.div
           [ id "product_view" ]
           [ Html.div
               [ class "pull-left" ]
@@ -135,7 +128,7 @@ view address productView =
               ]
           , Html.div
               [ class "pull-right" ]
-              [ ]
+              featureHtml
           ]
 
 showDomainTermForm : Signal.Address Action -> ProductView -> Html
@@ -144,7 +137,7 @@ showDomainTermForm address productView =
     then
       Html.div
       [ ]
-      [ text "HI!" ]
+      [ DomainTerm.form (Signal.forwardTo address DomainTermAction) ]
     else
       Html.a
       [ href "#", onClick address ShowDomainTermForm ]
