@@ -6,13 +6,12 @@ import Html                                  exposing (Html)
 import Html.Attributes                       exposing (href)
 import Html.Events                           exposing (onClick)
 import Http                                  exposing (Error)
-import Json.Decode as Json                   exposing ((:=))
-import Json.Encode
 import Products.DomainTerms.DomainTerm as DT exposing (DomainTerm)
 import Products.Product                      exposing (Product)
 import Task                                  exposing (Task)
 import UI.App.Components.Panels    as UI exposing (..)
 import UI.App.Primitives.Forms     as UI exposing (..)
+import Utils.Http
 
 type alias DomainTermsView =
   { product               : Product
@@ -88,52 +87,24 @@ view address domainTermsView =
       newDomainTermForm = showDomainTermForm address domainTermsView
   in Html.div [] (newDomainTermForm :: (List.map (renderDomainTerm address) domainTerms))
 
+domainTermsUrl : Product -> String
+domainTermsUrl prod = "http://localhost:8081/products/" ++ (toString prod.id) ++ "/domain-terms"
+
 getDomainTermsList : String -> Effects Action
 getDomainTermsList url =
-  Http.get parseDomainTerms url
+  Http.get DT.parseDomainTerms url
    |> Task.toResult
    |> Task.map UpdateDomainTerms
    |> Effects.task
 
 createDomainTerm : String -> DomainTerm -> Effects Action
 createDomainTerm url domainTerm =
-  let request = jsonPostRequest url (encodeDomainTerm domainTerm)
+  let request = Utils.Http.jsonPostRequest url (DT.encodeDomainTerm domainTerm)
   in Http.send Http.defaultSettings request
-     |> Http.fromJson parseDomainTerm
+     |> Http.fromJson DT.parseDomainTerm
      |> Task.toResult
      |> Task.map AddDomainTerm
      |> Effects.task
-
-jsonPostRequest : String -> String -> Http.Request
-jsonPostRequest url jsonEncodedRequestBody =
-  { verb = "POST"
-  , headers = [ ("Origin", "http://localhost:8000")
-              , ("Access-Control-Request-Method", "POST")
-              , ("Content-Type", "application/json")
-              ]
-  , url = url
-  , body = Http.string jsonEncodedRequestBody
-  }
-
-encodeDomainTerm : DomainTerm -> String
-encodeDomainTerm domainTerm =
-  Json.Encode.encode 0
-    <| Json.Encode.object
-        [ ("title", Json.Encode.string domainTerm.title)
-        , ("description", Json.Encode.string domainTerm.description)
-        ]
-
-parseDomainTerms : Json.Decoder (List DomainTerm)
-parseDomainTerms = parseDomainTerm |> Json.list
-
-parseDomainTerm : Json.Decoder DomainTerm
-parseDomainTerm =
-  Json.object2 DomainTerm
-    ("title"       := Json.string)
-    ("description" := Json.string)
-
-domainTermsUrl : Product -> String
-domainTermsUrl prod = "http://localhost:8081/products/" ++ (toString prod.id) ++ "/domain-terms"
 
 renderDomainTerm : Signal.Address Action -> DomainTerm -> Html
 renderDomainTerm address domainTerm =
