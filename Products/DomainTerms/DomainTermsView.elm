@@ -1,18 +1,19 @@
 module Products.DomainTerms.DomainTermsView where
 
-import Debug                           exposing (crash)
-import Effects                         exposing (Effects)
-import Html                            exposing (Html)
-import Http                            exposing (Error)
-import Json.Decode as Json             exposing ((:=))
-import Products.DomainTerms.DomainTerm exposing (DomainTerm)
-import Products.Product                exposing (Product)
-import Task exposing (Task)
+import Debug                                  exposing (crash)
+import Effects                                exposing (Effects)
+import Html                                   exposing (Html)
+import Http                                   exposing (Error)
+import Json.Decode as Json                    exposing ((:=))
+import Products.DomainTerms.DomainTerm as DT  exposing (DomainTerm)
+import Products.Product                       exposing (Product)
+import Task                                   exposing (Task)
 
 type alias DomainTermsView =
   { product : Product }
 
 type Action = UpdateDomainTerms (Result Error (List DomainTerm))
+            | DomainTermsAction DT.Action
 
 init : Product -> (DomainTermsView, Effects Action)
 init prod =
@@ -32,10 +33,10 @@ update action domainTermsView =
         Err _ -> crash "Something went wrong!"
 
 view : Signal.Address Action -> DomainTermsView -> Html
-view action domainTermsView =
-  Html.div
-    []
-    [ Html.text "oh hi" ]
+view address domainTermsView =
+  let signal = Signal.forwardTo address DomainTermsAction
+      domainTerms = domainTermsView.product.domainTerms
+  in Html.div [] (List.map (DT.view signal) domainTerms)
 
 getDomainTermsList : String -> Effects Action
 getDomainTermsList url =

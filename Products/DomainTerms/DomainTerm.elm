@@ -28,3 +28,7 @@ renderForm address =
     , UI.cancelButton (onClick address HideDomainTermForm)
     , UI.submitButton (onClick address SubmitDomainTermForm)
     ]
+
+view : Signal.Address Action -> DomainTerm -> Html
+view address domainTerm =
+  panelWithHeading (Html.text domainTerm.title) (Html.text domainTerm.description)
