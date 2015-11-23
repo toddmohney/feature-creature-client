@@ -1,34 +1,31 @@
 module Products.DomainTerms.DomainTerm where
 
-import UI.App.Components.Panels    as UI exposing (..)
-import UI.App.Primitives.Forms     as UI exposing (..)
-import Html exposing (..)
-import Html.Events exposing (onClick)
+import Json.Encode
+import Json.Decode as Json                   exposing ((:=))
 
 type alias DomainTerm =
   { title : String
   , description : String
   }
 
-type Action = HideDomainTermForm
-            | SubmitDomainTermForm
+init : DomainTerm
+init = { title = ""
+       , description = ""
+       }
 
-form : Signal.Address Action -> Html
-form address =
-  let headingContent = text "Create A New Domain Term"
-      bodyContent    = renderForm address
-  in UI.panelWithHeading headingContent bodyContent
+encodeDomainTerm : DomainTerm -> String
+encodeDomainTerm domainTerm =
+  Json.Encode.encode 0
+    <| Json.Encode.object
+        [ ("title", Json.Encode.string domainTerm.title)
+        , ("description", Json.Encode.string domainTerm.description)
+        ]
 
-renderForm : Signal.Address Action -> Html
-renderForm address =
-  Html.form
-    []
-    [ UI.input "domainTermTitle" (text "Title")
-    , UI.textarea "domainTermDescription" (text "Description")
-    , UI.cancelButton (onClick address HideDomainTermForm)
-    , UI.submitButton (onClick address SubmitDomainTermForm)
-    ]
+parseDomainTerms : Json.Decoder (List DomainTerm)
+parseDomainTerms = parseDomainTerm |> Json.list
 
-view : Signal.Address Action -> DomainTerm -> Html
-view address domainTerm =
-  panelWithHeading (Html.text domainTerm.title) (Html.text domainTerm.description)
+parseDomainTerm : Json.Decoder DomainTerm
+parseDomainTerm =
+  Json.object2 DomainTerm
+    ("title"       := Json.string)
+    ("description" := Json.string)
