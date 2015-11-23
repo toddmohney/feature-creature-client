@@ -50,7 +50,8 @@ view address domainTermsView =
       domainTerms = domainTermsView.product.domainTerms
   in Html.div
      []
-     ((showDomainTermForm address domainTermsView) :: (List.map (DT.view signal) domainTerms))
+     (List.map (DT.view signal) domainTerms)
+     -- ((showDomainTermForm address domainTermsView) :: (List.map (DT.view signal) domainTerms))
 
 getDomainTermsList : String -> Effects Action
 getDomainTermsList url =
@@ -71,13 +72,13 @@ parseDomainTerm =
 domainTermsUrl : Product -> String
 domainTermsUrl prod = "http://localhost:8081/products/" ++ (toString prod.id) ++ "/domain-terms"
 
-showDomainTermForm : Signal.Address Action -> DomainTermsView -> Html
-showDomainTermForm address domainTermsView =
-  if domainTermsView.domainTermFormVisible
-    then
-      let domainTermFormHtml = DT.form (Signal.forwardTo address DomainTermsAction)
-      in Html.div [] [ domainTermFormHtml ]
-    else
-      Html.a
-      [ href "#", onClick address ShowDomainTermForm ]
-      [ Html.text "Create Domain Term" ]
+-- showDomainTermForm : Signal.Address Action -> DomainTermsView -> Html
+-- showDomainTermForm address domainTermsView =
+  -- if domainTermsView.domainTermFormVisible
+    -- then
+      -- let domainTermFormHtml = DT.form (Signal.forwardTo address DomainTermsAction)
+      -- in Html.div [] [ domainTermFormHtml ]
+    -- else
+      -- Html.a
+      -- [ href "#", onClick address ShowDomainTermForm ]
+      -- [ Html.text "Create Domain Term" ]
