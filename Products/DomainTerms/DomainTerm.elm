@@ -24,7 +24,7 @@ renderForm address =
   Html.form
     []
     [ UI.input "domainTermTitle" (text "Title")
-    , UI.input "domainTermDescription" (text "Description")
+    , UI.textarea "domainTermDescription" (text "Description")
     , UI.cancelButton (onClick address HideDomainTermForm)
     , UI.submitButton (onClick address SubmitDomainTermForm)
     ]

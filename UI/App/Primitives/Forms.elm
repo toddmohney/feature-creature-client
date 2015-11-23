@@ -20,6 +20,22 @@ input inputName labelContent =
         []
     ]
 
+textarea : String -> Html -> Html
+textarea inputName labelContent =
+  Html.div
+    [ class "form-group" ]
+    [
+      Html.label
+        [ for inputName ]
+        [ labelContent ]
+    , Html.textarea
+        [ class "form-control"
+        , id inputName
+        , name inputName
+        ]
+        []
+    ]
+
 cancelButton : Attribute -> Html
 cancelButton cancelAction =
   let cancelBtnAttributes = cancelAction :: [ BS.btn ]

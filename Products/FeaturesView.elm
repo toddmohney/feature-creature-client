@@ -18,21 +18,18 @@ import UI.App.Components.ListDetailView as UI
 type alias FeaturesView =
   { product               : Product
   , selectedFeature       : Maybe Feature
-  , domainTermFormVisible : Bool
   }
 
 type Action = RequestFeatures
             | UpdateFeatures (Result Error DT.DirectoryTree)
             | ShowFeatureDetails (Result Error Feature)
             | FeatureListAction FL.Action
-            | ShowDomainTermForm
             | DomainTermAction DomainTerm.Action
 
 init : Product -> (FeaturesView, Effects Action)
 init prod =
   let productView = { product               = prod
                     , selectedFeature       = Nothing
-                    , domainTermFormVisible = False
                     }
   in (productView , getFeaturesList (featuresUrl prod))
 
@@ -106,10 +103,6 @@ update action productView =
         Err _ ->
           crash "Error handling FeaturesView.ShowFeatureDetails"
 
-    ShowDomainTermForm ->
-      ({ productView | domainTermFormVisible <- True }, Effects.none)
-
--- yikes. this is a mess
 view : Signal.Address Action -> FeaturesView -> Html
 view address productView =
   case productView.product.featureList of
@@ -122,19 +115,6 @@ view address productView =
               [ F.view feature ]
             Nothing ->
               []
-          listHtml = [ FL.render featureListAddress featureList
-                     , showDomainTermForm address productView
-                     ]
+          listHtml = [ FL.render featureListAddress featureList ]
       in UI.listDetailView listHtml featureHtml
 
-showDomainTermForm : Signal.Address Action -> FeaturesView -> Html
-showDomainTermForm address productView =
-  if productView.domainTermFormVisible
-    then
-      Html.div
-      [ ]
-      [ DomainTerm.form (Signal.forwardTo address DomainTermAction) ]
-    else
-      Html.a
-      [ href "#", onClick address ShowDomainTermForm ]
-      [ text "Create Domain Term" ]
