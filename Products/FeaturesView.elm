@@ -1,8 +1,9 @@
-module Products.ProductView where
+module Products.FeaturesView where
 
 import Debug exposing (crash)
 import Data.DirectoryTree as DT
 import Effects exposing (Effects)
+import Products.DomainTerms.DomainTerm as DomainTerm exposing (..)
 import Products.Features.Feature as F exposing (..)
 import Products.Features.FeatureList as FL exposing (..)
 import Html exposing (..)
@@ -12,24 +13,23 @@ import Http exposing (..)
 import Json.Decode as Json exposing ((:=))
 import Products.Product exposing (..)
 import Task exposing (..)
+import UI.App.Components.ListDetailView as UI
 
-
-type alias ProductView =
-  { product     : Product
-  , featureList : Maybe FeatureList
-  , feature     : Maybe Feature
+type alias FeaturesView =
+  { product               : Product
+  , selectedFeature       : Maybe Feature
   }
 
 type Action = RequestFeatures
             | UpdateFeatures (Result Error DT.DirectoryTree)
             | ShowFeatureDetails (Result Error Feature)
             | FeatureListAction FL.Action
+            | DomainTermAction DomainTerm.Action
 
-init : Product -> (ProductView, Effects Action)
+init : Product -> (FeaturesView, Effects Action)
 init prod =
-  let productView = { product     = prod
-                    , featureList = Nothing
-                    , feature     = Nothing
+  let productView = { product               = prod
+                    , selectedFeature       = Nothing
                     }
   in (productView , getFeaturesList (featuresUrl prod))
 
@@ -76,56 +76,45 @@ lazy thunk =
   Json.customDecoder Json.value
   (\js -> Json.decodeValue (thunk ()) js)
 
-update : Action -> ProductView -> (ProductView, Effects Action)
+update : Action -> FeaturesView -> (FeaturesView, Effects Action)
 update action productView =
   case action of
     RequestFeatures ->
       (productView, getFeaturesList (featuresUrl productView.product))
+
     UpdateFeatures resultFeatureTree ->
       case resultFeatureTree of
         Ok featureTree ->
-          let featureList = { features = featureTree }
-              newProductView = { productView | featureList <- Just featureList }
-            in (newProductView, Effects.none)
-        Err _ ->
-          let errorFileDescription = DT.createNode { fileName = "/I-errored", filePath = "/I-errored" } []
-              featureList = { features = errorFileDescription }
-              errorModel = { product = productView.product
-                           , featureList = Just featureList
-                           , feature = Nothing
-                           }
-            in (errorModel, Effects.none)
+          let newFeatureList = Just { features = featureTree }
+              currentProduct = productView.product
+              newFeaturesView = { productView | product <- { currentProduct | featureList <- newFeatureList } }
+            in (newFeaturesView, Effects.none)
+        Err _ -> crash "Error handling FeaturesView.UpdateFeatures"
+
     FeatureListAction featureListAction ->
       case featureListAction of
         ShowFeature fileDescription ->
           (productView, getFeature (featureUrl productView.product fileDescription.filePath))
+
     ShowFeatureDetails resultFeature ->
       case resultFeature of
         Ok feature ->
-          ({ productView | feature <- Just feature }, Effects.none)
+          ({ productView | selectedFeature <- Just feature }, Effects.none)
         Err _ ->
-          let errorFeature = { featureID = "uh oh!", description = "Something went wrong!" }
-          in ({ productView | feature <- Just errorFeature }, Effects.none)
+          crash "Error handling FeaturesView.ShowFeatureDetails"
 
-view : Signal.Address Action -> ProductView -> Html
+view : Signal.Address Action -> FeaturesView -> Html
 view address productView =
-  case productView.featureList of
+  case productView.product.featureList of
     Nothing ->
-      div [] [ text "missing featureList! (ProductView)" ]
+      Html.div [] [ text "missing featureList! (FeaturesView)" ]
     Just featureList ->
-      case productView.feature of
-        Just feature ->
-          div
-          [ id "product_view" ]
-          [
-            Html.div
-              [ class "pull-left" ]
-              [ FL.render (Signal.forwardTo address FeatureListAction) featureList ]
-          , Html.div
-              [ class "pull-right" ]
+      let featureListAddress = (Signal.forwardTo address FeatureListAction)
+          featureHtml = case productView.selectedFeature of
+            Just feature ->
               [ F.view feature ]
-          ]
-        Nothing ->
-          div
-          [ id "product_view" ]
-          [ FL.render (Signal.forwardTo address FeatureListAction) featureList ]
+            Nothing ->
+              []
+          listHtml = [ FL.render featureListAddress featureList ]
+      in UI.listDetailView listHtml featureHtml
+

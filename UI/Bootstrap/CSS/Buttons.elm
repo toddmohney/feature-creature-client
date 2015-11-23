@@ -1,6 +1,10 @@
-module Style where
+module UI.Bootstrap.CSS.Buttons where
+
 import Html            exposing (Attribute)
 import Html.Attributes exposing (..)
+
+btn : Attribute
+btn = class "btn"
 
 primaryBtn : Attribute
 primaryBtn = classList [ ("btn", True)
