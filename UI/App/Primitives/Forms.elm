@@ -2,10 +2,11 @@ module UI.App.Primitives.Forms where
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events
 import UI.Bootstrap.CSS.Buttons as BS
 
-input : String -> Html -> Html
-input inputName labelContent =
+input : Signal.Address a -> String -> Html -> (String -> a) -> Html
+input address inputName labelContent inputParser =
   Html.div
     [ class "form-group" ]
     [
@@ -16,12 +17,13 @@ input inputName labelContent =
         [ class "form-control"
         , id inputName
         , name inputName
+        , onInput address inputParser
         ]
         []
     ]
 
-textarea : String -> Html -> Html
-textarea inputName labelContent =
+textarea : Signal.Address a -> String -> Html -> (String -> a) -> Html
+textarea address inputName labelContent inputParser =
   Html.div
     [ class "form-group" ]
     [
@@ -32,6 +34,7 @@ textarea inputName labelContent =
         [ class "form-control"
         , id inputName
         , name inputName
+        , onInput address inputParser
         ]
         []
     ]
@@ -50,4 +53,9 @@ submitButton submitAction =
        submitBtnAttributes
        [ text "Submit" ]
 
-
+onInput : Signal.Address a -> (String -> a) -> Attribute
+onInput address contentToValue =
+  Html.Events.on
+    "input"
+    Html.Events.targetValue
+    (\str -> Signal.message address (contentToValue str))

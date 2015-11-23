@@ -24,7 +24,6 @@ type Action = RequestFeatures
             | UpdateFeatures (Result Error DT.DirectoryTree)
             | ShowFeatureDetails (Result Error Feature)
             | FeatureListAction FL.Action
-            | DomainTermAction DomainTerm.Action
 
 init : Product -> (FeaturesView, Effects Action)
 init prod =
