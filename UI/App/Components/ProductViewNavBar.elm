@@ -1,4 +1,4 @@
-module UI.App.Components.ProductPageNavBar where
+module UI.App.Components.ProductViewNavBar where
 
 import Effects exposing (Effects)
 import Html exposing (Html)
@@ -7,7 +7,7 @@ import Html.Events exposing (onClick)
 import Products.Product exposing (Product)
 import UI.App.Components.NavBar as NavBar exposing (NavBarItem)
 
-type alias ProductPageNavBar =
+type alias ProductViewNavBar =
   { products        : List Product
   , selectedProduct : Product
   , selectedView    : ProductViewOption
@@ -20,14 +20,14 @@ type Action = SelectFeaturesView
 type ProductViewOption = FeaturesViewOption
                        | DomainTermsViewOption
 
-init : List Product -> Product -> ProductPageNavBar
+init : List Product -> Product -> ProductViewNavBar
 init products selectedProduct =
   { products = products
   , selectedProduct = selectedProduct
   , selectedView = FeaturesViewOption
   }
 
-update : Action -> ProductPageNavBar -> (ProductPageNavBar, Effects Action)
+update : Action -> ProductViewNavBar -> (ProductViewNavBar, Effects Action)
 update action navBar =
   case action of
     SelectFeaturesView ->
@@ -45,7 +45,7 @@ update action navBar =
       , Effects.none
       )
 
-view : Signal.Address Action -> ProductPageNavBar -> Html
+view : Signal.Address Action -> ProductViewNavBar -> Html
 view address navBar =
   NavBar.renderNavBar
     [ renderProductsDropdownItem address navBar
@@ -53,7 +53,7 @@ view address navBar =
     , renderDomainTermsItem address navBar
     ]
 
-renderProductsDropdownItem : Signal.Address Action -> ProductPageNavBar -> NavBarItem
+renderProductsDropdownItem : Signal.Address Action -> ProductViewNavBar -> NavBarItem
 renderProductsDropdownItem address navBar =
   { attributes = [ class "dropdown" ]
   , html =
@@ -73,13 +73,13 @@ renderProductsDropdownItem address navBar =
     ]
   }
 
-renderFeaturesItem : Signal.Address Action -> ProductPageNavBar -> NavBarItem
+renderFeaturesItem : Signal.Address Action -> ProductViewNavBar -> NavBarItem
 renderFeaturesItem address navBar =
   { attributes = [ classList [("active", navBar.selectedView == FeaturesViewOption)] ]
   , html = [ featuresLink address ]
   }
 
-renderDomainTermsItem : Signal.Address Action -> ProductPageNavBar -> NavBarItem
+renderDomainTermsItem : Signal.Address Action -> ProductViewNavBar -> NavBarItem
 renderDomainTermsItem address navBar =
   { attributes = [ classList [("active", navBar.selectedView == DomainTermsViewOption)] ]
   , html = [ domainTermsLink address ]

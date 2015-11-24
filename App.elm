@@ -6,19 +6,19 @@ import Html                       exposing (Html)
 import Http as Http        exposing (..)
 import Json.Decode as Json        exposing ((:=))
 import Products.Product as P      exposing (Product)
-import Products.ProductPage as PP exposing (ProductPage)
+import Products.ProductView as PV exposing (ProductView)
 import Task as Task        exposing (..)
 
 type alias App =
-  { productPage : Maybe ProductPage }
+  { productView : Maybe ProductView }
 
-type Action = ProductPageAction PP.Action
+type Action = ProductViewAction PV.Action
             | UpdateProducts (Result Error (List Product))
 
 productsEndpoint = "http://localhost:8081/products"
 
 init : (App, Effects Action)
-init = ( { productPage = Nothing }
+init = ( { productView = Nothing }
        , getProducts productsEndpoint
        )
 
@@ -26,40 +26,40 @@ update : Action -> App -> (App, Effects Action)
 update action app = case action of
   UpdateProducts resultProducts ->
     case resultProducts of
-      Ok products -> initProductPage products
+      Ok products -> initProductView products
       Err _ -> crash "Error: Failed to load Products"
 
-  ProductPageAction prodPageAction ->
-    case app.productPage of
-      Just productPage ->
-        let (prodPage, fx) = PP.update prodPageAction productPage
-        in ( { app | productPage <- Just prodPage }
-           , Effects.map ProductPageAction fx
+  ProductViewAction prodPageAction ->
+    case app.productView of
+      Just productView ->
+        let (prodPage, fx) = PV.update prodPageAction productView
+        in ( { app | productView <- Just prodPage }
+           , Effects.map ProductViewAction fx
            )
       Nothing -> (app, Effects.none)
 
-initProductPage : List Product -> (App, Effects Action)
-initProductPage products =
+initProductView : List Product -> (App, Effects Action)
+initProductView products =
   let selectedProduct = List.head products
   in case selectedProduct of
     Just product ->
-      let (prodPage, prodPageFx) = (PP.init products product)
-      in ( { productPage = Just prodPage }
-      , Effects.map ProductPageAction prodPageFx
+      let (prodPage, prodPageFx) = (PV.init products product)
+      in ( { productView = Just prodPage }
+      , Effects.map ProductViewAction prodPageFx
       )
     Nothing -> crash "Error: No Products found"
 
 view : Signal.Address Action -> App -> Html
 view address app =
-  case app.productPage of
-    Just productPage -> renderProductPageView address productPage
+  case app.productView of
+    Just productView -> renderProductViewView address productView
     Nothing          -> Html.text "Loading stuff..."
 
-renderProductPageView : Signal.Address Action -> ProductPage -> Html
-renderProductPageView address productPage =
-  let forwardedAddress = (Signal.forwardTo address ProductPageAction)
-      productPageHtml = PP.view forwardedAddress productPage
-  in Html.div [] [ productPageHtml ]
+renderProductViewView : Signal.Address Action -> ProductView -> Html
+renderProductViewView address productView =
+  let forwardedAddress = (Signal.forwardTo address ProductViewAction)
+      productViewHtml = PV.view forwardedAddress productView
+  in Html.div [] [ productViewHtml ]
 
 getProducts : String -> Effects Action
 getProducts url =

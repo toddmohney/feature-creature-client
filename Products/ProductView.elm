@@ -1,4 +1,4 @@
-module Products.ProductPage where
+module Products.ProductView where
 
 import Debug                                       exposing (crash)
 import Effects                                     exposing (Effects)
@@ -8,49 +8,49 @@ import Html.Events                                 exposing (onClick)
 import Products.DomainTerms.DomainTermsView as DTV exposing (DomainTermsView)
 import Products.FeaturesView as FV                 exposing (FeaturesView)
 import Products.Product                            exposing (Product)
-import UI.App.Components.ProductPageNavBar as PPNB exposing (ProductPageNavBar)
+import UI.App.Components.ProductViewNavBar as PVNB exposing (ProductViewNavBar)
 
-type alias ProductPage =
+type alias ProductView =
   { product         : Product
-  , navBar          : ProductPageNavBar
+  , navBar          : ProductViewNavBar
   , featuresView    : FeaturesView
   , domainTermsView : DomainTermsView
   }
 
 type Action = FeaturesViewAction FV.Action
             | DomainTermsViewAction DTV.Action
-            | NavBarAction PPNB.Action
+            | NavBarAction PVNB.Action
 
-init : List Product -> Product -> (ProductPage, Effects Action)
+init : List Product -> Product -> (ProductView, Effects Action)
 init products selectedProduct =
   let (featView, featuresViewFx)       = FV.init selectedProduct
       (domainTermsView, domainTermsFx) = DTV.init selectedProduct
-      productPage = { product         = selectedProduct
-                    , navBar          = PPNB.init products selectedProduct
+      productView = { product         = selectedProduct
+                    , navBar          = PVNB.init products selectedProduct
                     , featuresView    = featView
                     , domainTermsView = domainTermsView
                     }
-  in ( productPage
+  in ( productView
      , Effects.batch [
          Effects.map FeaturesViewAction featuresViewFx
        , Effects.map DomainTermsViewAction domainTermsFx
        ]
      )
 
-update : Action -> ProductPage -> (ProductPage, Effects Action)
-update action productPage =
+update : Action -> ProductView -> (ProductView, Effects Action)
+update action productView =
   case action of
     NavBarAction navBarAction ->
-      let (updatedNavBar, navBarFx) = PPNB.update navBarAction productPage.navBar
+      let (updatedNavBar, navBarFx) = PVNB.update navBarAction productView.navBar
           newSelectedProduct        = updatedNavBar.selectedProduct
-      in case productPage.navBar.selectedProduct == newSelectedProduct of
-           True -> ( { productPage | navBar <- updatedNavBar }
+      in case productView.navBar.selectedProduct == newSelectedProduct of
+           True -> ( { productView | navBar <- updatedNavBar }
                     , Effects.map NavBarAction navBarFx
                     )
            False ->
              let (featView, featuresViewFx)       = FV.init newSelectedProduct
                  (domainTermsView, domainTermsFx) = DTV.init newSelectedProduct
-             in ( { productPage |
+             in ( { productView |
                     product         <- newSelectedProduct
                   , navBar          <- updatedNavBar
                   , featuresView    <- featView
@@ -64,33 +64,33 @@ update action productPage =
                 )
 
     FeaturesViewAction fvAction ->
-      let (featView, fvFx) = FV.update fvAction productPage.featuresView
-      in ( { productPage | featuresView <- featView }
+      let (featView, fvFx) = FV.update fvAction productView.featuresView
+      in ( { productView | featuresView <- featView }
          , Effects.map FeaturesViewAction fvFx
          )
 
     DomainTermsViewAction dtvAction ->
-      let (domainTermsView, dtvFx) = DTV.update dtvAction productPage.domainTermsView
-      in ( { productPage | domainTermsView <- domainTermsView }
+      let (domainTermsView, dtvFx) = DTV.update dtvAction productView.domainTermsView
+      in ( { productView | domainTermsView <- domainTermsView }
          , Effects.map DomainTermsViewAction dtvFx
          )
 
-view : Signal.Address Action -> ProductPage -> Html
-view address productPage =
+view : Signal.Address Action -> ProductView -> Html
+view address productView =
   let forwardedAddress = Signal.forwardTo address NavBarAction
-      navBar = PPNB.view forwardedAddress productPage.navBar
-      mainContent = case productPage.navBar.selectedView of
-                      PPNB.FeaturesViewOption -> renderFeaturesView address productPage
-                      PPNB.DomainTermsViewOption -> renderDomainTermsView address productPage
+      navBar = PVNB.view forwardedAddress productView.navBar
+      mainContent = case productView.navBar.selectedView of
+                      PVNB.FeaturesViewOption -> renderFeaturesView address productView
+                      PVNB.DomainTermsViewOption -> renderDomainTermsView address productView
   in Html.div [] [ navBar, mainContent ]
 
-renderFeaturesView : Signal.Address Action -> ProductPage -> Html
-renderFeaturesView address productPage =
+renderFeaturesView : Signal.Address Action -> ProductView -> Html
+renderFeaturesView address productView =
   let signal = (Signal.forwardTo address FeaturesViewAction)
-  in Html.div [] [ FV.view signal productPage.featuresView ]
+  in Html.div [] [ FV.view signal productView.featuresView ]
 
-renderDomainTermsView : Signal.Address Action -> ProductPage -> Html
-renderDomainTermsView address productPage =
+renderDomainTermsView : Signal.Address Action -> ProductView -> Html
+renderDomainTermsView address productView =
   let signal = (Signal.forwardTo address DomainTermsViewAction)
-  in Html.div [] [ DTV.view signal productPage.domainTermsView ]
+  in Html.div [] [ DTV.view signal productView.domainTermsView ]
 
