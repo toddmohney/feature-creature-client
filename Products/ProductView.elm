@@ -8,6 +8,7 @@ import Html.Events                                 exposing (onClick)
 import Products.DomainTerms.DomainTermsView as DTV exposing (DomainTermsView)
 import Products.FeaturesView as FV                 exposing (FeaturesView)
 import Products.Product                            exposing (Product)
+import Products.Navigation as Nav
 import UI.App.Components.ProductViewNavBar as PVNB exposing (ProductViewNavBar)
 
 type alias ProductView =
@@ -19,7 +20,7 @@ type alias ProductView =
 
 type Action = FeaturesViewAction FV.Action
             | DomainTermsViewAction DTV.Action
-            | NavBarAction PVNB.Action
+            | NavBarAction Nav.Action
 
 init : List Product -> Product -> (ProductView, Effects Action)
 init products selectedProduct =
@@ -41,27 +42,7 @@ update : Action -> ProductView -> (ProductView, Effects Action)
 update action productView =
   case action of
     NavBarAction navBarAction ->
-      let (updatedNavBar, navBarFx) = PVNB.update navBarAction productView.navBar
-          newSelectedProduct        = updatedNavBar.selectedProduct
-      in case productView.navBar.selectedProduct == newSelectedProduct of
-           True -> ( { productView | navBar <- updatedNavBar }
-                    , Effects.map NavBarAction navBarFx
-                    )
-           False ->
-             let (featView, featuresViewFx)       = FV.init newSelectedProduct
-                 (domainTermsView, domainTermsFx) = DTV.init newSelectedProduct
-             in ( { productView |
-                    product         <- newSelectedProduct
-                  , navBar          <- updatedNavBar
-                  , featuresView    <- featView
-                  , domainTermsView <- domainTermsView
-                  }
-                , Effects.batch [
-                    Effects.map NavBarAction navBarFx
-                  , Effects.map FeaturesViewAction featuresViewFx
-                  , Effects.map DomainTermsViewAction domainTermsFx
-                  ]
-                )
+      handleNavigation navBarAction productView
 
     FeaturesViewAction fvAction ->
       let (featView, fvFx) = FV.update fvAction productView.featuresView
@@ -74,6 +55,30 @@ update action productView =
       in ( { productView | domainTermsView <- domainTermsView }
          , Effects.map DomainTermsViewAction dtvFx
          )
+
+handleNavigation : Nav.Action -> ProductView -> (ProductView, Effects Action)
+handleNavigation navBarAction productView =
+  let (updatedNavBar, navBarFx) = PVNB.update navBarAction productView.navBar
+      newSelectedProduct        = updatedNavBar.selectedProduct
+  in case productView.navBar.selectedProduct == newSelectedProduct of
+       True -> ( { productView | navBar <- updatedNavBar }
+                , Effects.map NavBarAction navBarFx
+                )
+       False ->
+         let (featView, featuresViewFx)       = FV.init newSelectedProduct
+             (domainTermsView, domainTermsFx) = DTV.init newSelectedProduct
+         in ( { productView |
+                product         <- newSelectedProduct
+              , navBar          <- updatedNavBar
+              , featuresView    <- featView
+              , domainTermsView <- domainTermsView
+              }
+            , Effects.batch [
+                Effects.map NavBarAction navBarFx
+              , Effects.map FeaturesViewAction featuresViewFx
+              , Effects.map DomainTermsViewAction domainTermsFx
+              ]
+            )
 
 view : Signal.Address Action -> ProductView -> Html
 view address productView =
@@ -93,4 +98,3 @@ renderDomainTermsView : Signal.Address Action -> ProductView -> Html
 renderDomainTermsView address productView =
   let signal = (Signal.forwardTo address DomainTermsViewAction)
   in Html.div [] [ DTV.view signal productView.domainTermsView ]
-

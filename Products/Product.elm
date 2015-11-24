@@ -1,5 +1,7 @@
 module Products.Product where
 
+import Json.Encode
+import Json.Decode as Json               exposing ((:=))
 import Products.DomainTerms.DomainTerm exposing (..)
 import Products.Features.FeatureList   exposing (..)
 import Html exposing (..)
@@ -12,14 +14,11 @@ type alias Product =
   , domainTerms : List DomainTerm
   }
 
+newProduct : Product
+newProduct = init "" ""
+
 init : String -> String -> Product
-init prodName prodRepoUrl =
-  { id          = 0
-  , name        = prodName
-  , repoUrl     = prodRepoUrl
-  , featureList = Nothing
-  , domainTerms = []
-  }
+init prodName prodRepoUrl = init' 0 prodName prodRepoUrl
 
 init' : Int -> String -> String -> Product
 init' prodID prodName prodRepoUrl =
@@ -33,3 +32,22 @@ init' prodID prodName prodRepoUrl =
 view : Product -> Html
 view product =
   Html.div [] [ text product.name ]
+
+parseProducts : Json.Decoder (List Product)
+parseProducts = parseProduct |> Json.list
+
+parseProduct : Json.Decoder Product
+parseProduct =
+  Json.object3
+    init'
+    ("id"      := Json.int)
+    ("name"    := Json.string)
+    ("repoUrl" := Json.string)
+
+encodeProduct : Product -> String
+encodeProduct product =
+  Json.Encode.encode 0
+    <| Json.Encode.object
+        [ ("name",    Json.Encode.string product.name)
+        , ("repoUrl", Json.Encode.string product.repoUrl)
+        ]
