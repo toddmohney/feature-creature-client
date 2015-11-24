@@ -1,78 +1,80 @@
 module App where
 
-import Debug           exposing (crash)
-import Effects         exposing (Effects)
-import Html            exposing (Html)
-import Html.Attributes exposing (class)
-import Html.Events     exposing (onClick)
-import Products.ProductList as ProdL exposing (..)
-import Products.ProductPage as ProdP exposing (ProductPage)
-import Products.FeaturesView as ProdV exposing (..)
-import UI.App.Primitives.Buttons     exposing (primaryBtn)
+import Debug                      exposing (crash)
+import Effects                    exposing (Effects)
+import Html                       exposing (Html)
+import Http as Http        exposing (..)
+import Json.Decode as Json        exposing ((:=))
+import Products.Product as P      exposing (Product)
+import Products.ProductPage as PP exposing (ProductPage)
+import Task as Task        exposing (..)
 
 type alias App =
-  { productList : ProductList
-  , productPage : Maybe ProductPage
-  }
+  { productPage : Maybe ProductPage }
+
+type Action = ProductPageAction PP.Action
+            | UpdateProducts (Result Error (List Product))
+
+productsEndpoint = "http://localhost:8081/products"
 
 init : (App, Effects Action)
-init = let (prodList, fx) = ProdL.init
-           app = { productList = prodList
-                 , productPage = Nothing
-                 }
-       in  ( app
-           , Effects.map ProductListAction fx
-           )
-
-type Action = ProductListAction ProdL.Action
-            | ProductPageAction ProdP.Action
-            | DeselectProduct
+init = ( { productPage = Nothing }
+       , getProducts productsEndpoint
+       )
 
 update : Action -> App -> (App, Effects Action)
 update action app = case action of
-  ProductListAction prodLAction ->
-    let (prodList, prodListFx) = ProdL.update prodLAction app.productList
-        (productPage, prodPageFx) = initProductPageView prodList
-    in  ( { productList = prodList
-          , productPage = productPage
-          }
-        , Effects.batch [
-            Effects.map ProductListAction prodListFx
-          , Effects.map ProductPageAction prodPageFx
-          ]
-        )
+  UpdateProducts resultProducts ->
+    case resultProducts of
+      Ok products -> initProductPage products
+      Err _ -> crash "Error: Failed to load Products"
 
-  ProductPageAction prodPAction ->
+  ProductPageAction prodPageAction ->
     case app.productPage of
       Just productPage ->
-        let (prodPage, fx) = ProdP.update prodPAction productPage
+        let (prodPage, fx) = PP.update prodPageAction productPage
         in ( { app | productPage <- Just prodPage }
            , Effects.map ProductPageAction fx
            )
       Nothing -> (app, Effects.none)
 
-initProductPageView : ProdL.ProductList -> (Maybe ProdP.ProductPage, Effects ProdP.Action)
-initProductPageView prodList =
-  case prodList.selectedProduct of
-    Just prod ->
-      let (productPage, fx) = ProdP.init prod
-      in (Just productPage, fx)
-    Nothing   -> (Nothing, Effects.none)
+initProductPage : List Product -> (App, Effects Action)
+initProductPage products =
+  let selectedProduct = List.head products
+  in case selectedProduct of
+    Just product ->
+      let (prodPage, prodPageFx) = (PP.init products product)
+      in ( { productPage = Just prodPage }
+      , Effects.map ProductPageAction prodPageFx
+      )
+    Nothing -> crash "Error: No Products found"
 
 view : Signal.Address Action -> App -> Html
 view address app =
   case app.productPage of
     Just productPage -> renderProductPageView address productPage
-    Nothing          -> productListView address app.productList
+    Nothing          -> Html.text "Loading stuff..."
 
-renderProductPageView : Signal.Address Action -> ProdP.ProductPage -> Html
+renderProductPageView : Signal.Address Action -> ProductPage -> Html
 renderProductPageView address productPage =
-  Html.div
-  []
-  [ Html.div
-      [ class "clearfix" ]
-      [ ProdP.view (Signal.forwardTo address ProductPageAction) productPage ]
-  ]
+  let forwardedAddress = (Signal.forwardTo address ProductPageAction)
+      productPageHtml = PP.view forwardedAddress productPage
+  in Html.div [] [ productPageHtml ]
 
-productListView : Signal.Address Action -> ProdL.ProductList -> Html
-productListView address productList =  ProdL.view (Signal.forwardTo address ProductListAction) productList
+getProducts : String -> Effects Action
+getProducts url =
+   Http.get parseProducts url
+    |> Task.toResult
+    |> Task.map UpdateProducts
+    |> Effects.task
+
+parseProducts : Json.Decoder (List Product)
+parseProducts = parseProduct |> Json.list
+
+parseProduct : Json.Decoder Product
+parseProduct =
+  Json.object3
+    P.init'
+    ("id" := Json.int)
+    ("name" := Json.string)
+    ("repoUrl" := Json.string)
