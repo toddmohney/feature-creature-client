@@ -1,9 +1,11 @@
 module Products.ProductPage where
 
+import CoreExtensions.Maybe              exposing (..)
 import Debug                             exposing (crash)
 import Effects                           exposing (Effects)
 import Html                              exposing (Html)
 import Http as Http                      exposing (..)
+import List                              exposing (head, length)
 import Products.Product as P             exposing (Product)
 import Products.CreateProductForm as CPF exposing (CreateProductForm)
 import Products.ProductView as PV        exposing (ProductView)
@@ -37,8 +39,12 @@ update : Action -> ProductPage -> (ProductPage, Effects Action)
 update action productPage = case action of
   UpdateProducts resultProducts ->
     case resultProducts of
-      Ok products -> initProductView productPage products
-      Err _ -> crash "Error: Failed to load Products"
+      Ok products ->
+        case initialView products of
+          ProductViewOption -> showProductView productPage products (fromJust << head <| products)
+          CreateProductsFormOption -> showCreateProductForm productPage
+      Err _ ->
+        crash "Error: Failed to load Products"
 
   ProductViewAction prodViewAction ->
     case showingProductCreationForm prodViewAction of
@@ -55,35 +61,27 @@ update action productPage = case action of
        , Effects.map CreateProductFormAction createProdFormFx
        )
 
-initProductView : ProductPage -> List Product -> (ProductPage, Effects Action)
-initProductView productPage products =
-  case defaultSelectedView products of
-    ProductViewOption ->
-      let selectedProduct = unsafeDefaultSelectedProduct products
-          (prodView, prodViewFx) = (PV.init products selectedProduct)
-      in ( { productPage |
-             productView <- Just prodView
-           , selectedView <- ProductViewOption
-           }
-         , Effects.map ProductViewAction prodViewFx
-         )
-    CreateProductsFormOption ->
-      ( { productPage | selectedView <- CreateProductsFormOption }
-      , Effects.none
-      )
-
-defaultSelectedView : List Product -> ViewOptions
-defaultSelectedView products =
-  case (List.length products) > 0 of
-    True -> ProductViewOption
+initialView : List Product -> ViewOptions
+initialView products =
+  case length products > 0 of
+    True  -> ProductViewOption
     False -> CreateProductsFormOption
 
-unsafeDefaultSelectedProduct : List Product -> Product
-unsafeDefaultSelectedProduct products =
-  let selectedProduct = List.head products
-  in case selectedProduct of
-    Just product -> product
-    Nothing -> crash "Empty product list!"
+showProductView : ProductPage -> List Product -> Product -> (ProductPage, Effects Action)
+showProductView productPage products selectedProduct =
+  let (prodView, prodViewFx) = (PV.init products selectedProduct)
+  in ( { productPage |
+         productView <- Just prodView
+       , selectedView <- ProductViewOption
+       }
+     , Effects.map ProductViewAction prodViewFx
+     )
+
+showCreateProductForm : ProductPage -> (ProductPage, Effects Action)
+showCreateProductForm productPage =
+  ( { productPage | selectedView <- CreateProductsFormOption }
+  , Effects.none
+  )
 
 updateProductView : ProductPage -> PV.Action -> (ProductPage, Effects Action)
 updateProductView productPage prodViewAction =
