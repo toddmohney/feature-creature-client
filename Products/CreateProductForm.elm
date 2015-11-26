@@ -16,11 +16,10 @@ type alias CreateProductForm =
 type Action = SubmitForm
             | SetName String
             | SetRepositoryUrl String
-            | HandleResponse (Result Error Product)
-            | AddProduct Product
+            | AddNewProduct (Result Error Product)
 
 init : CreateProductForm
-init = { newProduct = P.newProduct }
+init   = { newProduct = P.newProduct }
 
 update : Action -> CreateProductForm -> (CreateProductForm, Effects Action)
 update action form =
@@ -44,17 +43,13 @@ update action form =
       , createProduct form.newProduct
       )
 
-    HandleResponse createProductResult ->
+    AddNewProduct createProductResult ->
       case createProductResult of
         Ok product ->
-          ( { form | newProduct <- P.newProduct }
-          , Effects.none -- Effects.task AddProduct product
+          ( { form | newProduct <- product }
+          , Effects.none
           )
         Err _ -> crash "Failed to create product"
-
-    AddProduct product ->
-      -- noop, we want someone higher up the chain to handle this effect
-      ( form, Effects.none )
 
 view : Signal.Address Action -> Html
 view address =
@@ -71,7 +66,7 @@ createProduct newProduct =
   in Http.send Http.defaultSettings request
      |> Http.fromJson P.parseProduct
      |> Task.toResult
-     |> Task.map HandleResponse
+     |> Task.map AddNewProduct
      |> Effects.task
 
 createProductUrl : String
