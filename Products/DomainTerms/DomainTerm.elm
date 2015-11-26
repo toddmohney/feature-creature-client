@@ -17,7 +17,7 @@ encodeDomainTerm : DomainTerm -> String
 encodeDomainTerm domainTerm =
   Json.Encode.encode 0
     <| Json.Encode.object
-        [ ("title", Json.Encode.string domainTerm.title)
+        [ ("title",       Json.Encode.string domainTerm.title)
         , ("description", Json.Encode.string domainTerm.description)
         ]
 
