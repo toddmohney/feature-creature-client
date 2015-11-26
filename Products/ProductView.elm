@@ -46,13 +46,13 @@ update action productView =
 
     FeaturesViewAction fvAction ->
       let (featView, fvFx) = FV.update fvAction productView.featuresView
-      in ( { productView | featuresView <- featView }
+      in ( { productView | featuresView = featView }
          , Effects.map FeaturesViewAction fvFx
          )
 
     DomainTermsViewAction dtvAction ->
       let (domainTermsView, dtvFx) = DTV.update dtvAction productView.domainTermsView
-      in ( { productView | domainTermsView <- domainTermsView }
+      in ( { productView | domainTermsView = domainTermsView }
          , Effects.map DomainTermsViewAction dtvFx
          )
 
@@ -61,17 +61,17 @@ handleNavigation navBarAction productView =
   let (updatedNavBar, navBarFx) = PVNB.update navBarAction productView.navBar
       newSelectedProduct        = updatedNavBar.selectedProduct
   in case productView.navBar.selectedProduct == newSelectedProduct of
-       True -> ( { productView | navBar <- updatedNavBar }
+       True -> ( { productView | navBar = updatedNavBar }
                 , Effects.map NavBarAction navBarFx
                 )
        False ->
          let (featView, featuresViewFx)       = FV.init newSelectedProduct
              (domainTermsView, domainTermsFx) = DTV.init newSelectedProduct
          in ( { productView |
-                product         <- newSelectedProduct
-              , navBar          <- updatedNavBar
-              , featuresView    <- featView
-              , domainTermsView <- domainTermsView
+                product         = newSelectedProduct
+              , navBar          = updatedNavBar
+              , featuresView    = featView
+              , domainTermsView = domainTermsView
               }
             , Effects.batch [
                 Effects.map NavBarAction navBarFx

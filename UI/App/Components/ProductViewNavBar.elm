@@ -28,17 +28,17 @@ update : Nav.Action -> ProductViewNavBar -> (ProductViewNavBar, Effects Nav.Acti
 update action navBar =
   case action of
     Nav.SelectFeaturesView ->
-      ( { navBar | selectedView <- FeaturesViewOption }
+      ( { navBar | selectedView = FeaturesViewOption }
       , Effects.none
       )
 
     Nav.SelectDomainTermsView ->
-      ( { navBar | selectedView <- DomainTermsViewOption }
+      ( { navBar | selectedView = DomainTermsViewOption }
       , Effects.none
       )
 
     Nav.SetSelectedProduct product ->
-      ( { navBar | selectedProduct <- product }
+      ( { navBar | selectedProduct = product }
       , Effects.none
       )
 

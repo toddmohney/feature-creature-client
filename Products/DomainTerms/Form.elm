@@ -41,26 +41,26 @@ update action domainTermForm =
         Ok domainTerm ->
           let prod = domainTermForm.product
               newDomainTermsList = domainTerm :: prod.domainTerms
-              updatedProduct = { prod | domainTerms <- newDomainTermsList }
-              newView = { domainTermForm | product <- updatedProduct }
+              updatedProduct = { prod | domainTerms = newDomainTermsList }
+              newView = { domainTermForm | product = updatedProduct }
           in (newView, Effects.none)
         Err _ -> crash "Something went wrong!"
 
     ShowDomainTermForm ->
-      ({ domainTermForm | domainTermFormVisible <- True }, Effects.none)
+      ({ domainTermForm | domainTermFormVisible = True }, Effects.none)
 
     HideDomainTermForm ->
-      ({ domainTermForm | domainTermFormVisible <- False }, Effects.none)
+      ({ domainTermForm | domainTermFormVisible = False }, Effects.none)
 
     SetDomainTermTitle newTitle ->
       let newDomainTerm = domainTermForm.newDomainTerm
-          updatedDomainTerm = { newDomainTerm | title <- newTitle }
-      in ({ domainTermForm | newDomainTerm <- updatedDomainTerm }, Effects.none)
+          updatedDomainTerm = { newDomainTerm | title = newTitle }
+      in ({ domainTermForm | newDomainTerm = updatedDomainTerm }, Effects.none)
 
     SetDomainTermDescription newDescription ->
       let newDomainTerm = domainTermForm.newDomainTerm
-          updatedDomainTerm = { newDomainTerm | description <- newDescription }
-      in ({ domainTermForm | newDomainTerm <- updatedDomainTerm }, Effects.none)
+          updatedDomainTerm = { newDomainTerm | description = newDescription }
+      in ({ domainTermForm | newDomainTerm = updatedDomainTerm }, Effects.none)
 
     SubmitDomainTermForm ->
       ( domainTermForm

@@ -23,7 +23,7 @@ update action app =
   case action of
     ProductPageAction ppAction ->
       let (updatedProductPage, fx) = PP.update ppAction app.productPage
-      in ( { app | productPage <- updatedProductPage }
+      in ( { app | productPage = updatedProductPage }
          , Effects.map ProductPageAction fx
          )
 

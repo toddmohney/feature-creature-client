@@ -86,7 +86,7 @@ update action productView =
         Ok featureTree ->
           let newFeatureList = Just { features = featureTree }
               currentProduct = productView.product
-              newFeaturesView = { productView | product <- { currentProduct | featureList <- newFeatureList } }
+              newFeaturesView = { productView | product = { currentProduct | featureList = newFeatureList } }
             in (newFeaturesView, Effects.none)
         Err _ -> crash "Error handling FeaturesView.UpdateFeatures"
 
@@ -98,7 +98,7 @@ update action productView =
     ShowFeatureDetails resultFeature ->
       case resultFeature of
         Ok feature ->
-          ({ productView | selectedFeature <- Just feature }, Effects.none)
+          ({ productView | selectedFeature = Just feature }, Effects.none)
         Err _ ->
           crash "Error handling FeaturesView.ShowFeatureDetails"
 
