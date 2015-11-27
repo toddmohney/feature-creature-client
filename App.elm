@@ -1,10 +1,8 @@
 module App where
 
-import Debug                      exposing (crash)
 import Effects                    exposing (Effects)
 import Html                       exposing (Html)
 import Products.ProductPage as PP exposing (ProductPage)
-import Task as Task        exposing (..)
 
 type alias App =
   { productPage : ProductPage }
