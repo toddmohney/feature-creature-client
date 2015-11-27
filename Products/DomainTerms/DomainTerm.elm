@@ -1,7 +1,7 @@
 module Products.DomainTerms.DomainTerm where
 
 import Json.Encode
-import Json.Decode as Json                   exposing ((:=))
+import Json.Decode as Json exposing ((:=))
 
 type alias DomainTerm =
   { title : String

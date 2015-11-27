@@ -3,12 +3,9 @@ module Products.FeaturesView where
 import Debug exposing (crash)
 import Data.DirectoryTree as DT
 import Effects exposing (Effects)
-import Products.DomainTerms.DomainTerm as DomainTerm exposing (..)
 import Products.Features.Feature as F exposing (..)
 import Products.Features.FeatureList as FL exposing (..)
 import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
 import Http exposing (..)
 import Json.Decode as Json exposing ((:=))
 import Products.Product exposing (..)

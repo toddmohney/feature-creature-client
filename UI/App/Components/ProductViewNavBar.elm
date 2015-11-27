@@ -16,6 +16,7 @@ type alias ProductViewNavBar =
 
 type ProductViewOption = FeaturesViewOption
                        | DomainTermsViewOption
+                       | UserRolesViewOption
 
 init : List Product -> Product -> ProductViewNavBar
 init products selectedProduct =
@@ -37,6 +38,11 @@ update action navBar =
       , Effects.none
       )
 
+    Nav.SelectUserRolesView ->
+      ( { navBar | selectedView = UserRolesViewOption }
+      , Effects.none
+      )
+
     Nav.SetSelectedProduct product ->
       ( { navBar | selectedProduct = product }
       , Effects.none
@@ -52,6 +58,7 @@ view address navBar =
     [ renderProductsDropdownItem address navBar
     , renderFeaturesItem address navBar
     , renderDomainTermsItem address navBar
+    , renderUserRolesItem address navBar
     ]
 
 renderProductsDropdownItem : Signal.Address Nav.Action -> ProductViewNavBar -> NavBarItem
@@ -86,6 +93,12 @@ renderDomainTermsItem address navBar =
   , html = [ domainTermsLink address ]
   }
 
+renderUserRolesItem : Signal.Address Nav.Action -> ProductViewNavBar -> NavBarItem
+renderUserRolesItem address navBar =
+  { attributes = [ classList [("active", navBar.selectedView == UserRolesViewOption)] ]
+  , html = [ userRolesLink address ]
+  }
+
 renderProductItem : Signal.Address Nav.Action -> Product -> Html
 renderProductItem address product =
   Html.li [] [ Html.a [ onClick address (Nav.SetSelectedProduct product) ] [ Html.text product.name ] ]
@@ -95,3 +108,6 @@ featuresLink address = Html.a [ onClick address Nav.SelectFeaturesView ] [ Html.
 
 domainTermsLink : Signal.Address Nav.Action -> Html
 domainTermsLink address = Html.a [ onClick address Nav.SelectDomainTermsView ] [ Html.text "DomainTerms" ]
+
+userRolesLink : Signal.Address Nav.Action -> Html
+userRolesLink address = Html.a [ onClick address Nav.SelectUserRolesView ] [ Html.text "UserRoles" ]

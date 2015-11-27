@@ -36,6 +36,7 @@ type alias CreateProductFormWriter =
 type ViewOptions = CreateProductsFormOption
                  | ProductViewOption
 
+productsEndpoint : String
 productsEndpoint = "http://localhost:8081/products"
 
 init : ProductPageResult
