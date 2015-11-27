@@ -26,15 +26,15 @@ update action form =
   case action of
     SetName name ->
       let product = form.newProduct
-          updatedProduct = { product | name <- name }
-      in ( { form | newProduct <- updatedProduct }
+          updatedProduct = { product | name = name }
+      in ( { form | newProduct = updatedProduct }
          , Effects.none
          )
 
     SetRepositoryUrl url ->
       let product = form.newProduct
-          updatedProduct = { product | repoUrl <- url }
-      in ( { form | newProduct <- updatedProduct }
+          updatedProduct = { product | repoUrl = url }
+      in ( { form | newProduct = updatedProduct }
          , Effects.none
          )
 
@@ -46,7 +46,7 @@ update action form =
     AddNewProduct createProductResult ->
       case createProductResult of
         Ok product ->
-          ( { form | newProduct <- product }
+          ( { form | newProduct = product }
           , Effects.none
           )
         Err _ -> crash "Failed to create product"

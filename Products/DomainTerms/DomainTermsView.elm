@@ -37,12 +37,12 @@ update action domainTermsView =
       case domainTermsResult of
         Ok domainTermList ->
           let prod = domainTermsView.product
-              updatedProduct = { prod | domainTerms <- domainTermList }
+              updatedProduct = { prod | domainTerms = domainTermList }
               domainTermForm = domainTermsView.domainTermForm
-              newDomainTermForm = { domainTermForm | product <- updatedProduct }
+              newDomainTermForm = { domainTermForm | product = updatedProduct }
               newView = { domainTermsView |
-                          product <- updatedProduct
-                        , domainTermForm <- newDomainTermForm
+                          product = updatedProduct
+                        , domainTermForm = newDomainTermForm
                         }
           in (newView, Effects.none)
         Err _ -> crash "Something went wrong!"
@@ -53,10 +53,10 @@ update action domainTermsView =
     DomainTermFormAction dtFormAction ->
       let (dtForm, dtFormFx) = DTF.update dtFormAction domainTermsView.domainTermForm
           prod = domainTermsView.product
-          updatedProduct = { prod | domainTerms <- dtForm.product.domainTerms }
+          updatedProduct = { prod | domainTerms = dtForm.product.domainTerms }
           updatedDomainTermsView = { domainTermsView |
-                                     domainTermForm <- dtForm
-                                   , product <- updatedProduct
+                                     domainTermForm = dtForm
+                                   , product = updatedProduct
                                    }
       in ( updatedDomainTermsView
          , Effects.map DomainTermFormAction dtFormFx

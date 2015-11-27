@@ -3,12 +3,9 @@ module Products.FeaturesView where
 import Debug exposing (crash)
 import Data.DirectoryTree as DT
 import Effects exposing (Effects)
-import Products.DomainTerms.DomainTerm as DomainTerm exposing (..)
 import Products.Features.Feature as F exposing (..)
 import Products.Features.FeatureList as FL exposing (..)
 import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
 import Http exposing (..)
 import Json.Decode as Json exposing ((:=))
 import Products.Product exposing (..)
@@ -86,7 +83,7 @@ update action productView =
         Ok featureTree ->
           let newFeatureList = Just { features = featureTree }
               currentProduct = productView.product
-              newFeaturesView = { productView | product <- { currentProduct | featureList <- newFeatureList } }
+              newFeaturesView = { productView | product = { currentProduct | featureList = newFeatureList } }
             in (newFeaturesView, Effects.none)
         Err _ -> crash "Error handling FeaturesView.UpdateFeatures"
 
@@ -98,7 +95,7 @@ update action productView =
     ShowFeatureDetails resultFeature ->
       case resultFeature of
         Ok feature ->
-          ({ productView | selectedFeature <- Just feature }, Effects.none)
+          ({ productView | selectedFeature = Just feature }, Effects.none)
         Err _ ->
           crash "Error handling FeaturesView.ShowFeatureDetails"
 

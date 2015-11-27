@@ -36,6 +36,7 @@ type alias CreateProductFormWriter =
 type ViewOptions = CreateProductsFormOption
                  | ProductViewOption
 
+productsEndpoint : String
 productsEndpoint = "http://localhost:8081/products"
 
 init : ProductPageResult
@@ -63,8 +64,8 @@ update action productPage = case action of
     case showingProductCreationForm prodViewAction of
       True ->
         ( { productPage |
-            selectedView <- CreateProductsFormOption
-          , createProductForm <- CPF.init
+            selectedView = CreateProductsFormOption
+          , createProductForm = CPF.init
           }
         , Effects.none
         )
@@ -79,7 +80,7 @@ updateCreateProductForm : (ProductPage, CPF.Action) -> CreateProductFormWriter
 updateCreateProductForm (productPage, createProductFormAction) =
   let createProductForm                  = productPage.createProductForm
       (createProdForm, createProdFormFx) = CPF.update createProductFormAction createProductForm
-      updatedProductPage                 = { productPage | createProductForm <- createProdForm }
+      updatedProductPage                 = { productPage | createProductForm = createProdForm }
       effects = if createProdFormFx == Effects.none
                then []
                else [ Effects.map CreateProductFormAction createProdFormFx ]
@@ -99,7 +100,7 @@ addNewProduct (productPage, createProductFormAction) =
         Ok newProduct ->
           let updatedProducts = (getProductList productPage) ++ [newProduct]
               (updatedProductPage, effect) = initProductView productPage updatedProducts newProduct
-              createProductFormResult = ( { updatedProductPage | selectedView <- ProductViewOption }
+              createProductFormResult = ( { updatedProductPage | selectedView = ProductViewOption }
                                         , createProductFormAction
                                         )
               effects = if effect == Effects.none
@@ -141,8 +142,8 @@ initProductView : ProductPage -> List Product -> Product -> ProductPageResult
 initProductView productPage products selectedProduct =
   let (prodView, prodViewFx) = (PV.init products selectedProduct)
   in ( { productPage |
-         productView <- Just prodView
-       , selectedView <- ProductViewOption
+         productView = Just prodView
+       , selectedView = ProductViewOption
        }
      , Effects.map ProductViewAction prodViewFx
      )
@@ -152,7 +153,7 @@ updateProductView productPage prodViewAction =
   case productPage.productView of
     Just productView ->
       let (prodView, fx) = PV.update prodViewAction productView
-      in ( { productPage | productView <- Just prodView }
+      in ( { productPage | productView = Just prodView }
          , Effects.map ProductViewAction fx
          )
     Nothing -> (productPage, Effects.none)
@@ -174,7 +175,7 @@ showingProductCreationForm prodViewAction =
 
 showCreateProductForm : ProductPage -> ProductPageResult
 showCreateProductForm productPage =
-  ( { productPage | selectedView <- CreateProductsFormOption }
+  ( { productPage | selectedView = CreateProductsFormOption }
   , Effects.none
   )
 

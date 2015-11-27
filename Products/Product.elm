@@ -1,10 +1,11 @@
 module Products.Product where
 
 import Json.Encode
-import Json.Decode as Json               exposing ((:=))
+import Json.Decode as Json             exposing ((:=))
 import Products.DomainTerms.DomainTerm exposing (..)
 import Products.Features.FeatureList   exposing (..)
-import Html exposing (..)
+import Products.UserRoles.UserRole     exposing (..)
+import Html                            exposing (..)
 
 type alias Product =
   { id          : Int
@@ -12,6 +13,7 @@ type alias Product =
   , repoUrl     : String
   , featureList : Maybe FeatureList
   , domainTerms : List DomainTerm
+  , userRoles   : List UserRole
   }
 
 newProduct : Product
@@ -27,6 +29,7 @@ init' prodID prodName prodRepoUrl =
   , repoUrl     = prodRepoUrl
   , featureList = Nothing
   , domainTerms = []
+  , userRoles   = []
   }
 
 view : Product -> Html
