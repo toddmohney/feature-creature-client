@@ -1,4 +1,4 @@
-module Interop where
+module UI.SyntaxHighlighting where
 
 type alias HighlightSyntaxMailbox =
   { address : Signal.Address (Maybe ())
@@ -9,3 +9,4 @@ type Action = HighlightSyntax
 
 highlightSyntaxMailbox : HighlightSyntaxMailbox
 highlightSyntaxMailbox = Signal.mailbox Nothing
+

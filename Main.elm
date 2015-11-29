@@ -1,11 +1,11 @@
 module Main where
 
-import App      as App exposing (update, init, view)
-import Effects         exposing (Never)
-import Html            exposing (Html)
-import Interop         exposing (highlightSyntaxMailbox)
-import StartApp as SA  exposing (start)
-import Task            exposing (Task)
+import App      as App    exposing (update, init, view)
+import Effects            exposing (Never)
+import Html               exposing (Html)
+import UI.SyntaxHighlighting exposing (highlightSyntaxMailbox)
+import StartApp as SA     exposing (start)
+import Task               exposing (Task)
 
 
 app : SA.App App.App

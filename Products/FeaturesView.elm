@@ -7,7 +7,7 @@ import Products.Features.Feature as F         exposing (..)
 import Products.Features.FeatureList as FL    exposing (..)
 import Html                                   exposing (..)
 import Http                                   exposing (..)
-import Interop                                exposing (highlightSyntaxMailbox)
+import UI.SyntaxHighlighting as Highlight     exposing (highlightSyntaxMailbox)
 import Json.Decode as Json                    exposing ((:=))
 import Products.Product                       exposing (..)
 import Task                                   exposing (..)
@@ -22,7 +22,7 @@ type Action = RequestFeatures
             | UpdateFeatures (Result Error DT.DirectoryTree)
             | ShowFeatureDetails (Result Error Feature)
             | FeatureListAction FL.Action
-            | InteropAction Interop.Action
+            | SyntaxHighlightingAction Highlight.Action
             | Noop
 
 init : Product -> (FeaturesView, Effects Action)
@@ -101,12 +101,12 @@ update action productView =
           ({ productView | selectedFeature = Just feature }
           , Effects.task
               <| Task.succeed
-              <| InteropAction Interop.HighlightSyntax
+              <| SyntaxHighlightingAction Highlight.HighlightSyntax
           )
         Err _ ->
           crash "Error handling FeaturesView.ShowFeatureDetails"
 
-    InteropAction _ ->
+    SyntaxHighlightingAction _ ->
       let highlightSyntax = Signal.send highlightSyntaxMailbox.address Nothing
       in ( productView
          , Effects.task <| highlightSyntax `andThen` (\_ -> (Task.succeed Noop))
