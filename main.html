@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <title>Feature Creature</title>
     <script type="text/javascript" src="elm.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/app/style.css">
+
+    <!-- Prism -->
+    <link rel="stylesheet" href="css/vendor/prism.css">
+    <script src="js/vendor/prism.js"></script>
 
     <!-- Bootstrap -->
     <!-- Latest compiled and minified CSS -->
@@ -23,7 +27,11 @@
   </body>
 
   <script type="text/javascript">
-    var appContainer = document.getElementById('app');
-    Elm.embed(Elm.Main, appContainer);
+    function highlightSyntax(val) {
+      Prism.highlightAll();
+    }
+
+    var app = Elm.fullscreen(Elm.Main);
+    app.ports.highlightSyntaxPort.subscribe(highlightSyntax);
   </script>
 </html>

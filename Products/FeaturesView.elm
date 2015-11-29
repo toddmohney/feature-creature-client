@@ -1,15 +1,16 @@
 module Products.FeaturesView where
 
-import Debug exposing (crash)
+import Debug                                  exposing (crash)
 import Data.DirectoryTree as DT
-import Effects exposing (Effects)
-import Products.Features.Feature as F exposing (..)
-import Products.Features.FeatureList as FL exposing (..)
-import Html exposing (..)
-import Http exposing (..)
-import Json.Decode as Json exposing ((:=))
-import Products.Product exposing (..)
-import Task exposing (..)
+import Effects                                exposing (Effects)
+import Products.Features.Feature as F         exposing (..)
+import Products.Features.FeatureList as FL    exposing (..)
+import Html                                   exposing (..)
+import Http                                   exposing (..)
+import UI.SyntaxHighlighting as Highlight     exposing (highlightSyntaxMailbox)
+import Json.Decode as Json                    exposing ((:=))
+import Products.Product                       exposing (..)
+import Task                                   exposing (..)
 import UI.App.Components.ListDetailView as UI
 
 type alias FeaturesView =
@@ -21,6 +22,8 @@ type Action = RequestFeatures
             | UpdateFeatures (Result Error DT.DirectoryTree)
             | ShowFeatureDetails (Result Error Feature)
             | FeatureListAction FL.Action
+            | SyntaxHighlightingAction Highlight.Action
+            | Noop
 
 init : Product -> (FeaturesView, Effects Action)
 init prod =
@@ -95,9 +98,22 @@ update action productView =
     ShowFeatureDetails resultFeature ->
       case resultFeature of
         Ok feature ->
-          ({ productView | selectedFeature = Just feature }, Effects.none)
+          ({ productView | selectedFeature = Just feature }
+          , Effects.task
+              <| Task.succeed
+              <| SyntaxHighlightingAction Highlight.HighlightSyntax
+          )
         Err _ ->
           crash "Error handling FeaturesView.ShowFeatureDetails"
+
+    SyntaxHighlightingAction _ ->
+      let highlightSyntax = Signal.send highlightSyntaxMailbox.address Nothing
+      in ( productView
+         , Effects.task <| highlightSyntax `andThen` (\_ -> (Task.succeed Noop))
+         )
+
+    Noop ->
+      ( productView, Effects.none )
 
 view : Signal.Address Action -> FeaturesView -> Html
 view address productView =
