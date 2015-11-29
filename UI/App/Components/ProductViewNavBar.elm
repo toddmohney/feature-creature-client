@@ -1,10 +1,10 @@
 module UI.App.Components.ProductViewNavBar where
 
-import Effects exposing (Effects)
-import Html exposing (Html)
-import Html.Attributes exposing (attribute, class, classList, href, id)
-import Html.Events exposing (onClick)
-import Products.Product exposing (Product)
+import Effects                            exposing (Effects)
+import Html                               exposing (Html)
+import Html.Attributes                    exposing (attribute, class, classList, href, id)
+import Html.Events                        exposing (onClick)
+import Products.Product                   exposing (Product)
 import Products.Navigation as Nav
 import UI.App.Components.NavBar as NavBar exposing (NavBarItem)
 

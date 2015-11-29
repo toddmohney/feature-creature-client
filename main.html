@@ -6,6 +6,10 @@
     <script type="text/javascript" src="elm.js"></script>
     <link rel="stylesheet" href="style.css">
 
+    <!-- Prism -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/0.0.1/prism.min.css" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/0.0.1/prism.min.js" crossorigin="anonymous"></script>
+
     <!-- Bootstrap -->
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
@@ -23,7 +27,11 @@
   </body>
 
   <script type="text/javascript">
-    var appContainer = document.getElementById('app');
-    Elm.embed(Elm.Main, appContainer);
+    function highlightSyntax(val) {
+      Prism.highlightAll();
+    }
+
+    var app = Elm.fullscreen(Elm.Main);
+    app.ports.highlightSyntaxPort.subscribe(highlightSyntax);
   </script>
 </html>

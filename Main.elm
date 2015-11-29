@@ -3,6 +3,7 @@ module Main where
 import App      as App exposing (update, init, view)
 import Effects         exposing (Never)
 import Html            exposing (Html)
+import Interop         exposing (highlightSyntaxMailbox)
 import StartApp as SA  exposing (start)
 import Task            exposing (Task)
 
@@ -20,3 +21,6 @@ main = app.html
 
 port tasks : Signal (Task.Task Never ())
 port tasks = app.tasks
+
+port highlightSyntaxPort : Signal (Maybe ())
+port highlightSyntaxPort = highlightSyntaxMailbox.signal
