@@ -8,7 +8,7 @@ Elm client for feature-creature cucumber visualization tool
 2. Download and install Elm: http://elm-lang.org/install
 3. To install all dependencies, run `elm-package install`. (on linux? see below)
 4. Install the `feature-creature` project and follow the instructions to build it and run the web server: https://github.com/gust/feature-creature
-5. In order to compile the main Elm file into Javascript, use the command: `elm-make Main.elm`. This will compile to `elm.js` by default.
+5. In order to compile the main Elm file into Javascript, use the command: `elm make Main.elm --warn --output elm.js`. This will compile to `elm.js` by default.
 6. To run the application locally, view `main.html` directly in your browser. Or for a hot-swapping version, run `elm-reactor` and visit `localhost:8000`.
 
 _Note: The elm-reactor debugger is currently not compatible with ports, which are used in the application. Nothing we can do about that, unfortunately. We'll look into alternatives._
