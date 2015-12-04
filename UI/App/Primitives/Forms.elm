@@ -5,6 +5,68 @@ import Html.Attributes exposing (..)
 import Html.Events
 import UI.Bootstrap.CSS.Buttons as BS
 
+type alias InputData a =
+  { address      : Signal.Address a
+  , inputName    : String
+  , labelContent : Html
+  , inputParser  : (String -> a)
+  , hasError     : Bool
+  }
+
+input' : InputData a -> Html
+input' { address, inputName, labelContent, inputParser, hasError } =
+  Html.div
+    [ classList [ ("form-group", True)
+                , ("has-error", hasError)
+                , ("has-feedback", hasError)
+                ]
+    ]
+    [ Html.label
+        [ for inputName ]
+        [ labelContent ]
+    , Html.input
+        [ class "form-control"
+        , id inputName
+        , name inputName
+        , onInput address inputParser
+        ]
+        []
+    , Html.span
+        [ classList [ ("glyphicon", hasError)
+                    , ("glyphicon-remove", hasError)
+                    , ("form-control-feedback", hasError)
+                    ]
+        ]
+        []
+    ]
+
+textarea' : InputData a -> Html
+textarea' { address, inputName, labelContent, inputParser, hasError } =
+  Html.div
+    [ classList [ ("form-group", True)
+                , ("has-error", hasError)
+                , ("has-feedback", hasError)
+                ]
+    ]
+    [ Html.label
+        [ for inputName ]
+        [ labelContent ]
+    , Html.textarea
+        [ class "form-control"
+        , id inputName
+        , name inputName
+        , onInput address inputParser
+        ]
+        []
+    , Html.span
+        [ classList [ ("glyphicon", hasError)
+                    , ("glyphicon-remove", hasError)
+                    , ("form-control-feedback", hasError)
+                    ]
+        ]
+        []
+    ]
+
 input : Signal.Address a -> String -> Html -> (String -> a) -> Html
 input address inputName labelContent inputParser =
   Html.div

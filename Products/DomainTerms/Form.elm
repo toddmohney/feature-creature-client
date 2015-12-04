@@ -1,5 +1,6 @@
 module Products.DomainTerms.Form where
 
+import CoreExtensions.Either                 exposing (..)
 import Debug                                 exposing (crash)
 import Effects                               exposing (Effects)
 import Html                                  exposing (Html)
@@ -8,6 +9,7 @@ import Html.Events                           exposing (onClick)
 import Http                                  exposing (Error)
 import Products.DomainTerms.DomainTerm as DT exposing (DomainTerm)
 import Products.Product                      exposing (Product)
+import String                                exposing (isEmpty)
 import Task                                  exposing (Task)
 import UI.App.Components.Panels    as UI exposing (..)
 import UI.App.Primitives.Forms     as UI exposing (..)
@@ -17,6 +19,7 @@ type alias DomainTermForm =
   { product : Product
   , domainTermFormVisible : Bool
   , newDomainTerm         : DomainTerm
+  , formState             : FormState
   }
 
 type Action = AddDomainTerm (Result Error DomainTerm)
@@ -26,11 +29,16 @@ type Action = AddDomainTerm (Result Error DomainTerm)
             | SetDomainTermTitle String
             | SetDomainTermDescription String
 
+type FormState = InitialState
+               | HasError
+               | Valid
+
 init : Product -> DomainTermForm
 init prod =
   { product = prod
   , domainTermFormVisible = False
   , newDomainTerm = DT.init
+  , formState = InitialState
   }
 
 update : Action -> DomainTermForm -> (DomainTermForm, Effects Action)
@@ -63,36 +71,73 @@ update action domainTermForm =
       in ({ domainTermForm | newDomainTerm = updatedDomainTerm }, Effects.none)
 
     SubmitDomainTermForm ->
-      ( domainTermForm
-      , createDomainTerm (domainTermsUrl domainTermForm.product) domainTermForm.newDomainTerm
-      )
+      case validate domainTermForm.newDomainTerm of
+        Left errorModel ->
+          ( { domainTermForm | formState = HasError }
+          , Effects.none
+          )
+        Right domainTerm ->
+          ( { domainTermForm | formState = Valid }
+          , createDomainTerm (domainTermsUrl domainTermForm.product) domainTerm
+          )
+
+validate : DomainTerm -> Either DomainTerm DomainTerm
+validate domainTerm =
+  case (isTitleFieldValid domainTerm)
+    || (isDescriptionFieldValid domainTerm) of
+    True  -> Left domainTerm
+    False -> Right domainTerm
+
+isTitleFieldValid : DomainTerm -> Bool
+isTitleFieldValid domainTerm =
+  isEmpty domainTerm.title
+
+isDescriptionFieldValid : DomainTerm -> Bool
+isDescriptionFieldValid domainTerm =
+  isEmpty domainTerm.description
 
 view : Signal.Address Action -> DomainTermForm -> Html
 view address domainTermForm =
   if domainTermForm.domainTermFormVisible
     then
-      let domainTermFormHtml = renderDomainTermForm address
+      let domainTermFormHtml = renderDomainTermForm address domainTermForm
       in Html.div [] [ domainTermFormHtml ]
     else
       Html.a
       [ href "#", onClick address ShowDomainTermForm ]
       [ Html.text "Create Domain Term" ]
 
-renderDomainTermForm : Signal.Address Action -> Html
-renderDomainTermForm address =
+renderDomainTermForm : Signal.Address Action -> DomainTermForm -> Html
+renderDomainTermForm address domainTermForm =
   let headingContent = Html.text "Create A New Domain Term"
-      bodyContent    = renderForm address
+      bodyContent    = renderForm address domainTermForm
   in UI.panelWithHeading headingContent bodyContent
 
-renderForm : Signal.Address Action -> Html
-renderForm address =
-  Html.div
-    []
-    [ UI.input address "domainTermTitle" (Html.text "Title") SetDomainTermTitle
-    , UI.textarea address "domainTermDescription" (Html.text "Description") SetDomainTermDescription
-    , UI.cancelButton (onClick address HideDomainTermForm)
-    , UI.submitButton (onClick address SubmitDomainTermForm)
-    ]
+renderForm : Signal.Address Action -> DomainTermForm -> Html
+renderForm address domainTermForm =
+  let domainTerm = domainTermForm.newDomainTerm
+      domainTermTitleInputData =
+        { address = address
+        , inputName = "domainTermTitle"
+        , labelContent = Html.text "Title"
+        , inputParser = SetDomainTermTitle
+        , hasError = isTitleFieldValid domainTerm
+        }
+      domainTermDescriptionInputData =
+        { address = address
+        , inputName = "domainTermDescription"
+        , labelContent = Html.text "Description"
+        , inputParser = SetDomainTermDescription
+        , hasError = isDescriptionFieldValid domainTerm
+        }
+  in
+    Html.div
+      []
+      [ UI.input' domainTermTitleInputData
+      , UI.textarea' domainTermDescriptionInputData
+      , UI.cancelButton (onClick address HideDomainTermForm)
+      , UI.submitButton (onClick address SubmitDomainTermForm)
+      ]
 
 domainTermsUrl : Product -> String
 domainTermsUrl prod = "http://localhost:8081/products/" ++ (toString prod.id) ++ "/domain-terms"
