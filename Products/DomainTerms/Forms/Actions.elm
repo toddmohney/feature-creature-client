@@ -1,4 +1,5 @@
-module Products.DomainTerms.Forms.Actions where
+module Products.DomainTerms.Forms.Actions
+  ( Action(..) ) where
 
 import Http                                  exposing (Error)
 import Products.DomainTerms.DomainTerm       exposing (DomainTerm)

@@ -1,4 +1,7 @@
-module Products.DomainTerms.Forms.Validation where
+module Products.DomainTerms.Forms.Validation
+  ( validateForm
+  , hasErrors
+  ) where
 
 import Products.DomainTerms.Forms.Model      exposing (..)
 import UI.App.Primitives.Forms     as UI     exposing (..)

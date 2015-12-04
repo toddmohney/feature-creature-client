@@ -1,12 +1,13 @@
-module Products.DomainTerms.Forms.View where
+module Products.DomainTerms.Forms.View
+  ( view ) where
 
 import Html                                  exposing (Html)
 import Html.Attributes                       exposing (href)
 import Html.Events                           exposing (onClick)
 import Products.DomainTerms.Forms.Actions    exposing (..)
 import Products.DomainTerms.Forms.Model      exposing (DomainTermForm)
-import UI.App.Components.Panels    as UI     exposing (..)
-import UI.App.Primitives.Forms     as UI     exposing (..)
+import UI.App.Components.Panels    as UI
+import UI.App.Primitives.Forms     as UI
 
 view : Signal.Address Action -> DomainTermForm -> Html
 view address domainTermForm =

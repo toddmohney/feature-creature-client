@@ -1,10 +1,13 @@
-module Products.DomainTerms.Forms.Model where
+module Products.DomainTerms.Forms.Model
+  ( DomainTermForm
+  , init
+  ) where
 
 import Html                                  exposing (Html)
 import Products.DomainTerms.DomainTerm as DT exposing (DomainTerm)
 import Products.DomainTerms.Forms.Actions    exposing (..)
 import Products.Product                      exposing (Product)
-import UI.App.Primitives.Forms     as UI     exposing (..)
+import UI.App.Primitives.Forms               exposing (InputField)
 
 type alias DomainTermForm =
   { product : Product
