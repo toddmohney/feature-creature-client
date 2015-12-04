@@ -5,7 +5,10 @@ import Effects                               exposing (Effects)
 import Html                                  exposing (Html)
 import Http                                  exposing (Error)
 import Products.UserRoles.UserRole as UR exposing (UserRole)
-import Products.UserRoles.Form as URF
+import Products.UserRoles.Forms.Actions as URF
+import Products.UserRoles.Forms.Model as URF
+import Products.UserRoles.Forms.Update as URF
+import Products.UserRoles.Forms.View as URF
 import Products.Product                      exposing (Product)
 import Task                                  exposing (Task)
 import UI.App.Components.Panels as UI
