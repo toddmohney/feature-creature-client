@@ -1,37 +1,16 @@
-module Products.DomainTerms.Form where
+module Products.DomainTerms.Forms.Update
+  ( update ) where
 
 import Debug                                 exposing (crash)
 import Effects                               exposing (Effects)
-import Html                                  exposing (Html)
-import Html.Attributes                       exposing (href)
-import Html.Events                           exposing (onClick)
 import Http                                  exposing (Error)
-import Products.DomainTerms.DomainTerm as DT exposing (DomainTerm)
 import Products.Product                      exposing (Product)
+import Products.DomainTerms.DomainTerm as DT exposing (DomainTerm)
+import Products.DomainTerms.Forms.Actions    exposing (..)
+import Products.DomainTerms.Forms.Model      exposing (DomainTermForm)
+import Products.DomainTerms.Forms.Validation exposing (validateForm, hasErrors)
 import Task                                  exposing (Task)
-import UI.App.Components.Panels    as UI exposing (..)
-import UI.App.Primitives.Forms     as UI exposing (..)
 import Utils.Http
-
-type alias DomainTermForm =
-  { product : Product
-  , domainTermFormVisible : Bool
-  , newDomainTerm         : DomainTerm
-  }
-
-type Action = AddDomainTerm (Result Error DomainTerm)
-            | ShowDomainTermForm
-            | HideDomainTermForm
-            | SubmitDomainTermForm
-            | SetDomainTermTitle String
-            | SetDomainTermDescription String
-
-init : Product -> DomainTermForm
-init prod =
-  { product = prod
-  , domainTermFormVisible = False
-  , newDomainTerm = DT.init
-  }
 
 update : Action -> DomainTermForm -> (DomainTermForm, Effects Action)
 update action domainTermForm =
@@ -63,36 +42,17 @@ update action domainTermForm =
       in ({ domainTermForm | newDomainTerm = updatedDomainTerm }, Effects.none)
 
     SubmitDomainTermForm ->
-      ( domainTermForm
-      , createDomainTerm (domainTermsUrl domainTermForm.product) domainTermForm.newDomainTerm
-      )
-
-view : Signal.Address Action -> DomainTermForm -> Html
-view address domainTermForm =
-  if domainTermForm.domainTermFormVisible
-    then
-      let domainTermFormHtml = renderDomainTermForm address
-      in Html.div [] [ domainTermFormHtml ]
-    else
-      Html.a
-      [ href "#", onClick address ShowDomainTermForm ]
-      [ Html.text "Create Domain Term" ]
-
-renderDomainTermForm : Signal.Address Action -> Html
-renderDomainTermForm address =
-  let headingContent = Html.text "Create A New Domain Term"
-      bodyContent    = renderForm address
-  in UI.panelWithHeading headingContent bodyContent
-
-renderForm : Signal.Address Action -> Html
-renderForm address =
-  Html.div
-    []
-    [ UI.input address "domainTermTitle" (Html.text "Title") SetDomainTermTitle
-    , UI.textarea address "domainTermDescription" (Html.text "Description") SetDomainTermDescription
-    , UI.cancelButton (onClick address HideDomainTermForm)
-    , UI.submitButton (onClick address SubmitDomainTermForm)
-    ]
+      let newDomainTermForm = validateForm domainTermForm
+      in
+         case hasErrors newDomainTermForm of
+           True ->
+             ( newDomainTermForm
+             , Effects.none
+             )
+           False ->
+             ( newDomainTermForm
+             , createDomainTerm (domainTermsUrl newDomainTermForm.product) newDomainTermForm.newDomainTerm
+             )
 
 domainTermsUrl : Product -> String
 domainTermsUrl prod = "http://localhost:8081/products/" ++ (toString prod.id) ++ "/domain-terms"

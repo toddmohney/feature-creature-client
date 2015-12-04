@@ -9,7 +9,10 @@ import Html                              exposing (Html)
 import Http as Http                      exposing (..)
 import List                              exposing (head, length)
 import Products.Product as P             exposing (Product)
-import Products.CreateProductForm as CPF exposing (CreateProductForm)
+import Products.Forms.View as CPF
+import Products.Forms.Actions as CPF
+import Products.Forms.Model as CPF       exposing (CreateProductForm)
+import Products.Forms.Update as CPF
 import Products.ProductView as PV        exposing (ProductView)
 import Products.Navigation as Nav
 import Task as Task                      exposing (..)
@@ -131,7 +134,7 @@ view address productPage =
   case productPage.selectedView of
     CreateProductsFormOption ->
       let forwardedAddress = (Signal.forwardTo address CreateProductFormAction)
-          productFormHtml = CPF.view forwardedAddress
+          productFormHtml = CPF.view forwardedAddress productPage.createProductForm
       in Html.div [] [ productFormHtml ]
     ProductViewOption ->
       case productPage.productView of

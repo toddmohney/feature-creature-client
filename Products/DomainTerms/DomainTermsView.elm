@@ -1,14 +1,17 @@
 module Products.DomainTerms.DomainTermsView where
 
-import Debug                                 exposing (crash)
-import Effects                               exposing (Effects)
-import Html                                  exposing (Html)
-import Http                                  exposing (Error)
-import Products.DomainTerms.DomainTerm as DT exposing (DomainTerm)
-import Products.DomainTerms.Form as DTF
-import Products.Product                      exposing (Product)
-import Task                                  exposing (Task)
-import UI.App.Components.Panels as UI
+import Debug                                     exposing (crash)
+import Effects                                   exposing (Effects)
+import Html                                      exposing (Html)
+import Http                                      exposing (Error)
+import Products.DomainTerms.DomainTerm    as DT  exposing (DomainTerm)
+import Products.DomainTerms.Forms.Model   as DTF
+import Products.DomainTerms.Forms.Update  as DTF
+import Products.DomainTerms.Forms.Actions as DTF
+import Products.DomainTerms.Forms.View    as DTF
+import Products.Product                          exposing (Product)
+import Task                                      exposing (Task)
+import UI.App.Components.Panels           as UI
 
 type alias DomainTermsView =
   { product        : Product

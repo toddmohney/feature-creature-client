@@ -1,25 +1,15 @@
-module Products.CreateProductForm where
+module Products.Forms.Update
+  ( update ) where
 
-import Debug                 exposing (crash)
-import Effects               exposing (Effects)
-import Html                  exposing (Html)
-import Html.Events           exposing (onClick)
-import Http as Http          exposing (..)
-import Products.Product as P exposing (Product)
-import Task as Task          exposing (..)
-import UI.App.Primitives.Forms     as UI exposing (..)
+import Debug                   exposing (crash)
+import Effects                 exposing (Effects)
+import Http as Http            exposing (..)
+import Products.Product as P   exposing (Product)
+import Products.Forms.Actions  exposing (..)
+import Products.Forms.Model    exposing (CreateProductForm)
+import Products.Forms.Validation    exposing (hasErrors, validateForm)
+import Task as Task            exposing (..)
 import Utils.Http
-
-type alias CreateProductForm =
-  { newProduct : Product }
-
-type Action = SubmitForm
-            | SetName String
-            | SetRepositoryUrl String
-            | AddNewProduct (Result Error Product)
-
-init : CreateProductForm
-init   = { newProduct = P.newProduct }
 
 update : Action -> CreateProductForm -> (CreateProductForm, Effects Action)
 update action form =
@@ -39,9 +29,17 @@ update action form =
          )
 
     SubmitForm ->
-      ( form
-      , createProduct form.newProduct
-      )
+      let newProductForm = validateForm form
+      in
+         case hasErrors newProductForm of
+           True ->
+             ( newProductForm
+             , Effects.none
+             )
+           False ->
+             ( newProductForm
+             , createProduct newProductForm.newProduct
+             )
 
     AddNewProduct createProductResult ->
       case createProductResult of
@@ -50,15 +48,6 @@ update action form =
           , Effects.none
           )
         Err _ -> crash "Failed to create product"
-
-view : Signal.Address Action -> Html
-view address =
-  Html.div
-    []
-    [ UI.input address "name" (Html.text "Name") SetName
-    , UI.textarea address "repoUrl" (Html.text "Git Repository Url") SetRepositoryUrl
-    , UI.submitButton (onClick address SubmitForm)
-    ]
 
 createProduct : Product -> Effects Action
 createProduct newProduct =
