@@ -1,7 +1,10 @@
-module Products.UserRoles.Forms.Validation where
+module Products.UserRoles.Forms.Validation
+  ( validateForm
+  , hasErrors
+  ) where
 
 import Products.UserRoles.Forms.Model    exposing (..)
-import UI.App.Primitives.Forms     as UI exposing (..)
+import UI.App.Primitives.Forms     as UI exposing (requiredStringFieldValidation)
 
 validateForm : UserRoleForm -> UserRoleForm
 validateForm form =

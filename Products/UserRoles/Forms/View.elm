@@ -1,12 +1,13 @@
-module Products.UserRoles.Forms.View where
+module Products.UserRoles.Forms.View
+  ( view ) where
 
 import Html                              exposing (Html)
 import Html.Attributes                   exposing (href)
 import Html.Events                       exposing (onClick)
 import Products.UserRoles.Forms.Actions  exposing (..)
-import Products.UserRoles.Forms.Model    exposing (..)
-import UI.App.Components.Panels    as UI exposing (..)
-import UI.App.Primitives.Forms     as UI exposing (..)
+import Products.UserRoles.Forms.Model    exposing (UserRoleForm)
+import UI.App.Components.Panels    as UI
+import UI.App.Primitives.Forms     as UI
 
 view : Signal.Address Action -> UserRoleForm -> Html
 view address userRoleForm =

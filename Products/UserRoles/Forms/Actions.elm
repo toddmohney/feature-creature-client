@@ -1,4 +1,5 @@
-module Products.UserRoles.Forms.Actions where
+module Products.UserRoles.Forms.Actions
+  ( Action(..) ) where
 
 import Http exposing (Error)
 import Products.UserRoles.UserRole as UR exposing (UserRole)
