@@ -97,10 +97,10 @@ update action userRoleForm =
 
 validateForm : UserRoleForm -> UserRoleForm
 validateForm form =
-  let userRole = form.newUserRole
-      titleField = form.titleField
-      descriptionField = form.descriptionField
-      newTitleField = { titleField | validationErrors = validateTitle userRole.title }
+  let userRole            = form.newUserRole
+      titleField          = form.titleField
+      descriptionField    = form.descriptionField
+      newTitleField       = { titleField | validationErrors       = validateTitle userRole.title }
       newDescriptionField = { descriptionField | validationErrors = validateDescription userRole.description }
   in
      { form | titleField = newTitleField

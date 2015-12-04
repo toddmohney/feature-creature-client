@@ -97,10 +97,10 @@ update action domainTermForm =
 
 validateForm : DomainTermForm -> DomainTermForm
 validateForm form =
-  let domainTerm = form.newDomainTerm
-      titleField = form.titleField
-      descriptionField = form.descriptionField
-      newTitleField = { titleField | validationErrors = validateTitle domainTerm.title }
+  let domainTerm          = form.newDomainTerm
+      titleField          = form.titleField
+      descriptionField    = form.descriptionField
+      newTitleField       = { titleField | validationErrors       = validateTitle domainTerm.title }
       newDescriptionField = { descriptionField | validationErrors = validateDescription domainTerm.description }
   in
      { form | titleField = newTitleField

@@ -11,7 +11,10 @@ import UI.App.Primitives.Forms     as UI exposing (..)
 import Utils.Http
 
 type alias CreateProductForm =
-  { newProduct : Product }
+  { newProduct   : Product
+  , nameField    : InputField Action
+  , repoUrlField : InputField Action
+  }
 
 type Action = SubmitForm
             | SetName String
@@ -19,7 +22,26 @@ type Action = SubmitForm
             | AddNewProduct (Result Error Product)
 
 init : CreateProductForm
-init   = { newProduct = P.newProduct }
+init = { newProduct   = P.newProduct
+       , nameField    = defaultNameField
+       , repoUrlField = defaultRepoUrlField
+       }
+
+defaultNameField : InputField Action
+defaultNameField =
+  { inputName = "name"
+  , labelContent = (Html.text "Name")
+  , inputParser = SetName
+  , validationErrors = []
+  }
+
+defaultRepoUrlField : InputField Action
+defaultRepoUrlField =
+  { inputName = "repoUrl"
+  , labelContent = (Html.text "Git Repository Url")
+  , inputParser = SetRepositoryUrl
+  , validationErrors = []
+  }
 
 update : Action -> CreateProductForm -> (CreateProductForm, Effects Action)
 update action form =
@@ -39,9 +61,17 @@ update action form =
          )
 
     SubmitForm ->
-      ( form
-      , createProduct form.newProduct
-      )
+      let newProductForm = validateForm form
+      in
+         case hasErrors newProductForm of
+           True ->
+             ( newProductForm
+             , Effects.none
+             )
+           False ->
+             ( newProductForm
+             , createProduct newProductForm.newProduct
+             )
 
     AddNewProduct createProductResult ->
       case createProductResult of
@@ -51,12 +81,41 @@ update action form =
           )
         Err _ -> crash "Failed to create product"
 
-view : Signal.Address Action -> Html
-view address =
+validateForm : CreateProductForm -> CreateProductForm
+validateForm createProductForm =
+  let product         = createProductForm.newProduct
+      nameField       = createProductForm.nameField
+      repoUrlField    = createProductForm.repoUrlField
+      newNameField    = { nameField | validationErrors    = validateName product.name }
+      newRepoUrlField = { repoUrlField | validationErrors = validateRepoUrl product.repoUrl }
+  in
+     { createProductForm | nameField = newNameField
+                         , repoUrlField = newRepoUrlField
+     }
+
+validateName : String -> (List String)
+validateName = requiredStringFieldValidation
+
+validateRepoUrl : String -> (List String)
+validateRepoUrl = requiredStringFieldValidation
+
+hasErrors : CreateProductForm -> Bool
+hasErrors = not << isSubmittable
+
+isSubmittable : CreateProductForm -> Bool
+isSubmittable createProductForm =
+  let nameField    = createProductForm.nameField
+      repoUrlField = createProductForm.repoUrlField
+  in
+     (List.isEmpty nameField.validationErrors)
+     && (List.isEmpty repoUrlField.validationErrors)
+
+view : Signal.Address Action -> CreateProductForm -> Html
+view address createProductForm =
   Html.div
     []
-    [ UI.input address "name" (Html.text "Name") SetName
-    , UI.textarea address "repoUrl" (Html.text "Git Repository Url") SetRepositoryUrl
+    [ UI.input' address createProductForm.nameField
+    , UI.textarea' address createProductForm.repoUrlField
     , UI.submitButton (onClick address SubmitForm)
     ]
 

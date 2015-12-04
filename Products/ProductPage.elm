@@ -131,7 +131,7 @@ view address productPage =
   case productPage.selectedView of
     CreateProductsFormOption ->
       let forwardedAddress = (Signal.forwardTo address CreateProductFormAction)
-          productFormHtml = CPF.view forwardedAddress
+          productFormHtml = CPF.view forwardedAddress productPage.createProductForm
       in Html.div [] [ productFormHtml ]
     ProductViewOption ->
       case productPage.productView of
