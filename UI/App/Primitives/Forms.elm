@@ -3,69 +3,97 @@ module UI.App.Primitives.Forms where
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events
+import String
 import UI.Bootstrap.CSS.Buttons as BS
 
-type alias InputData a =
-  { address      : Signal.Address a
-  , inputName    : String
-  , labelContent : Html
-  , inputParser  : (String -> a)
-  , hasError     : Bool
+type alias InputField a =
+  { inputName        : String
+  , labelContent     : Html
+  , inputParser      : (String -> a)
+  , validationErrors : (List String)
   }
 
-input' : InputData a -> Html
-input' { address, inputName, labelContent, inputParser, hasError } =
-  Html.div
-    [ classList [ ("form-group", True)
-                , ("has-error", hasError)
-                , ("has-feedback", hasError)
-                ]
-    ]
-    [ Html.label
-        [ for inputName ]
-        [ labelContent ]
-    , Html.input
-        [ class "form-control"
-        , id inputName
-        , name inputName
-        , onInput address inputParser
-        ]
-        []
-    , Html.span
-        [ classList [ ("glyphicon", hasError)
-                    , ("glyphicon-remove", hasError)
-                    , ("form-control-feedback", hasError)
-                    ]
-        ]
-        []
-    ]
+requiredStringFieldValidation : String -> (List String)
+requiredStringFieldValidation str =
+  case String.isEmpty str of
+    True  -> [ "This field cannot be blank." ]
+    False -> []
 
-textarea' : InputData a -> Html
-textarea' { address, inputName, labelContent, inputParser, hasError } =
-  Html.div
-    [ classList [ ("form-group", True)
-                , ("has-error", hasError)
-                , ("has-feedback", hasError)
-                ]
-    ]
-    [ Html.label
-        [ for inputName ]
-        [ labelContent ]
-    , Html.textarea
-        [ class "form-control"
-        , id inputName
-        , name inputName
-        , onInput address inputParser
-        ]
-        []
-    , Html.span
-        [ classList [ ("glyphicon", hasError)
-                    , ("glyphicon-remove", hasError)
-                    , ("form-control-feedback", hasError)
-                    ]
-        ]
-        []
-    ]
+input' : Signal.Address a -> InputField a -> Html
+input' address { inputName, labelContent, inputParser, validationErrors } =
+  let hasErrors = not <| List.isEmpty validationErrors
+      errorMsgs = List.map Html.text validationErrors
+      errorHelpText =
+        Html.span
+          [ classList [("help-block", True)] ]
+          errorMsgs
+      formGroup =
+        Html.div
+          [ classList
+              [ ("form-group", True)
+              , ("has-error", hasErrors)
+              , ("has-feedback", hasErrors)
+              ]
+          ]
+          [ Html.label
+              [ for inputName ]
+              [ labelContent ]
+          , Html.input
+              [ class "form-control"
+              , id inputName
+              , name inputName
+              , onInput address inputParser
+              ]
+              []
+          , Html.span
+              [ classList
+                  [ ("glyphicon", hasErrors)
+                  , ("glyphicon-remove", hasErrors)
+                  , ("form-control-feedback", hasErrors)
+                  ]
+              ]
+              []
+          ]
+  in
+     Html.div [] [ formGroup, errorHelpText ]
+
+textarea' : Signal.Address a -> InputField a -> Html
+textarea' address { inputName, labelContent, inputParser, validationErrors } =
+  let hasErrors = not <| List.isEmpty validationErrors
+      errorMsgs = List.map Html.text validationErrors
+      errorHelpText =
+        Html.span
+          [ classList [("help-block", True)] ]
+          errorMsgs
+      formGroup =
+        Html.div
+          [ classList
+              [ ("form-group", True)
+              , ("has-error", hasErrors)
+              , ("has-feedback", hasErrors)
+              ]
+          ]
+          [ Html.label
+              [ for inputName ]
+              [ labelContent ]
+          , Html.textarea
+              [ class "form-control"
+              , id inputName
+              , name inputName
+              , onInput address inputParser
+              ]
+              []
+          , Html.span
+              [ classList
+                  [ ("glyphicon", hasErrors)
+                  , ("glyphicon-remove", hasErrors)
+                  , ("form-control-feedback", hasErrors)
+                  ]
+              ]
+              []
+          ]
+  in
+     Html.div [] [ formGroup, errorHelpText ]
 
 input : Signal.Address a -> String -> Html -> (String -> a) -> Html
 input address inputName labelContent inputParser =

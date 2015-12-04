@@ -15,8 +15,10 @@ import Utils.Http
 
 type alias UserRoleForm =
   { product : Product
-  , userRoleFormVisible : Bool
-  , newUserRole         : UserRole
+  , userRoleFormVisible  : Bool
+  , newUserRole          : UserRole
+  , titleField           : InputField Action
+  , descriptionField     : InputField Action
   }
 
 type Action = AddUserRole (Result Error UserRole)
@@ -28,9 +30,27 @@ type Action = AddUserRole (Result Error UserRole)
 
 init : Product -> UserRoleForm
 init prod =
-  { product = prod
-  , userRoleFormVisible = False
-  , newUserRole = UR.init
+  { product              = prod
+  , userRoleFormVisible  = False
+  , newUserRole          = UR.init
+  , titleField           = defaultTitleField
+  , descriptionField     = defaultDescriptionField
+  }
+
+defaultTitleField : InputField Action
+defaultTitleField =
+  { inputName = "userRoleTitle"
+  , labelContent = (Html.text "Title")
+  , inputParser = SetUserRoleTitle
+  , validationErrors = []
+  }
+
+defaultDescriptionField : InputField Action
+defaultDescriptionField =
+  { inputName = "userRoleDescription"
+  , labelContent = (Html.text "Description")
+  , inputParser = SetUserRoleDescription
+  , validationErrors = []
   }
 
 update : Action -> UserRoleForm -> (UserRoleForm, Effects Action)
@@ -63,33 +83,70 @@ update action userRoleForm =
       in ({ userRoleForm | newUserRole = updatedUserRole }, Effects.none)
 
     SubmitUserRoleForm ->
-      ( userRoleForm
-      , createUserRole (userRolesUrl userRoleForm.product) userRoleForm.newUserRole
-      )
+      let newUserRoleForm = validateForm userRoleForm
+      in
+         case hasErrors newUserRoleForm of
+           True ->
+             ( newUserRoleForm
+             , Effects.none
+             )
+           False ->
+             ( newUserRoleForm
+             , createUserRole (userRolesUrl newUserRoleForm.product) newUserRoleForm.newUserRole
+             )
+
+validateForm : UserRoleForm -> UserRoleForm
+validateForm form =
+  let userRole = form.newUserRole
+      titleField = form.titleField
+      descriptionField = form.descriptionField
+      newTitleField = { titleField | validationErrors = validateTitle userRole.title }
+      newDescriptionField = { descriptionField | validationErrors = validateDescription userRole.description }
+  in
+     { form | titleField = newTitleField
+            , descriptionField = newDescriptionField
+     }
+
+validateTitle : String -> (List String)
+validateTitle = requiredStringFieldValidation
+
+validateDescription : String -> (List String)
+validateDescription = requiredStringFieldValidation
+
+hasErrors : UserRoleForm -> Bool
+hasErrors = not << isSubmittable
+
+isSubmittable : UserRoleForm -> Bool
+isSubmittable userRoleForm =
+  let titleField       = userRoleForm.titleField
+      descriptionField = userRoleForm.descriptionField
+  in
+     (List.isEmpty titleField.validationErrors)
+     && (List.isEmpty descriptionField.validationErrors)
 
 view : Signal.Address Action -> UserRoleForm -> Html
 view address userRoleForm =
   if userRoleForm.userRoleFormVisible
     then
-      let userRoleFormHtml = renderUserRoleForm address
+      let userRoleFormHtml = renderUserRoleForm address userRoleForm
       in Html.div [] [ userRoleFormHtml ]
     else
       Html.a
       [ href "#", onClick address ShowUserRoleForm ]
       [ Html.text "Create User Role" ]
 
-renderUserRoleForm : Signal.Address Action -> Html
-renderUserRoleForm address =
+renderUserRoleForm : Signal.Address Action -> UserRoleForm -> Html
+renderUserRoleForm address userRoleForm =
   let headingContent = Html.text "Create A New User Role"
-      bodyContent    = renderForm address
+      bodyContent    = renderForm address userRoleForm
   in UI.panelWithHeading headingContent bodyContent
 
-renderForm : Signal.Address Action -> Html
-renderForm address =
+renderForm : Signal.Address Action -> UserRoleForm -> Html
+renderForm address userRoleForm =
   Html.div
     []
-    [ UI.input address "userRoleTitle" (Html.text "Title") SetUserRoleTitle
-    , UI.textarea address "userRoleDescription" (Html.text "Description") SetUserRoleDescription
+    [ UI.input' address userRoleForm.titleField
+    , UI.textarea' address userRoleForm.descriptionField
     , UI.cancelButton (onClick address HideUserRoleForm)
     , UI.submitButton (onClick address SubmitUserRoleForm)
     ]
