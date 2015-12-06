@@ -30,8 +30,8 @@ renderForm : Signal.Address Action -> DomainTermForm -> Html
 renderForm address domainTermForm =
   Html.div
     []
-    [ UI.input' address domainTermForm.titleField
-    , UI.textarea' address domainTermForm.descriptionField
+    [ UI.input address domainTermForm.titleField
+    , UI.textarea address domainTermForm.descriptionField
     , UI.cancelButton (onClick address HideDomainTermForm)
     , UI.submitButton (onClick address SubmitDomainTermForm)
     ]

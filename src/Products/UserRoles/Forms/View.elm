@@ -30,8 +30,8 @@ renderForm : Signal.Address Action -> UserRoleForm -> Html
 renderForm address userRoleForm =
   Html.div
     []
-    [ UI.input' address userRoleForm.titleField
-    , UI.textarea' address userRoleForm.descriptionField
+    [ UI.input address userRoleForm.titleField
+    , UI.textarea address userRoleForm.descriptionField
     , UI.cancelButton (onClick address HideUserRoleForm)
     , UI.submitButton (onClick address SubmitUserRoleForm)
     ]

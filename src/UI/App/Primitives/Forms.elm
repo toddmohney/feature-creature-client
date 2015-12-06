@@ -19,8 +19,8 @@ requiredStringFieldValidation str =
     True  -> [ "This field cannot be blank." ]
     False -> []
 
-input' : Signal.Address a -> InputField a -> Html
-input' address { inputName, labelContent, inputParser, validationErrors } =
+input : Signal.Address a -> InputField a -> Html
+input address { inputName, labelContent, inputParser, validationErrors } =
   let hasErrors = not <| List.isEmpty validationErrors
       errorMsgs = List.map Html.text validationErrors
       errorHelpText =
@@ -57,8 +57,8 @@ input' address { inputName, labelContent, inputParser, validationErrors } =
   in
      Html.div [] [ formGroup, errorHelpText ]
 
-textarea' : Signal.Address a -> InputField a -> Html
-textarea' address { inputName, labelContent, inputParser, validationErrors } =
+textarea : Signal.Address a -> InputField a -> Html
+textarea address { inputName, labelContent, inputParser, validationErrors } =
   let hasErrors = not <| List.isEmpty validationErrors
       errorMsgs = List.map Html.text validationErrors
       errorHelpText =
@@ -94,40 +94,6 @@ textarea' address { inputName, labelContent, inputParser, validationErrors } =
           ]
   in
      Html.div [] [ formGroup, errorHelpText ]
-
-input : Signal.Address a -> String -> Html -> (String -> a) -> Html
-input address inputName labelContent inputParser =
-  Html.div
-    [ class "form-group" ]
-    [
-      Html.label
-        [ for inputName ]
-        [ labelContent ]
-    , Html.input
-        [ class "form-control"
-        , id inputName
-        , name inputName
-        , onInput address inputParser
-        ]
-        []
-    ]
-
-textarea : Signal.Address a -> String -> Html -> (String -> a) -> Html
-textarea address inputName labelContent inputParser =
-  Html.div
-    [ class "form-group" ]
-    [
-      Html.label
-        [ for inputName ]
-        [ labelContent ]
-    , Html.textarea
-        [ class "form-control"
-        , id inputName
-        , name inputName
-        , onInput address inputParser
-        ]
-        []
-    ]
 
 cancelButton : Attribute -> Html
 cancelButton cancelAction =

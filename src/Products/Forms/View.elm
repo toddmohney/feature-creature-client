@@ -10,7 +10,7 @@ view : Signal.Address Action -> CreateProductForm -> Html
 view address createProductForm =
   Html.div
     []
-    [ UI.input' address createProductForm.nameField
-    , UI.textarea' address createProductForm.repoUrlField
+    [ UI.input address createProductForm.nameField
+    , UI.textarea address createProductForm.repoUrlField
     , UI.submitButton (onClick address SubmitForm)
     ]
