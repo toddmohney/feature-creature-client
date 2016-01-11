@@ -2,7 +2,10 @@ module Products.ProductView where
 
 import Effects                                     exposing (Effects)
 import Html                                        exposing (Html)
-import Products.DomainTerms.DomainTermsView as DTV exposing (DomainTermsView)
+import Products.DomainTerms.Index.Actions as DTV
+import Products.DomainTerms.Index.Model as DTV     exposing (DomainTermsView)
+import Products.DomainTerms.Index.Update as DTV
+import Products.DomainTerms.Index.View as DTV
 import Products.FeaturesView as FV                 exposing (FeaturesView)
 import Products.Product                            exposing (Product)
 import Products.Navigation as Nav
