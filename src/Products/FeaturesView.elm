@@ -123,10 +123,8 @@ view address productView =
     Just featureList ->
       let featureListAddress = (Signal.forwardTo address FeatureListAction)
           featureHtml = case productView.selectedFeature of
-            Just feature ->
-              [ F.view feature ]
-            Nothing ->
-              []
+            Just feature -> [ F.view feature ]
+            Nothing      -> []
           listHtml = [ FL.render featureListAddress featureList ]
       in UI.listDetailView listHtml featureHtml
 

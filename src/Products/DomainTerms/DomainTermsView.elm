@@ -3,6 +3,7 @@ module Products.DomainTerms.DomainTermsView where
 import Debug                                     exposing (crash)
 import Effects                                   exposing (Effects)
 import Html                                      exposing (Html)
+import Html.Attributes                           exposing (class)
 import Http                                      exposing (Error)
 import Products.DomainTerms.DomainTerm    as DT  exposing (DomainTerm)
 import Products.DomainTerms.Forms.Model   as DTF
@@ -81,7 +82,10 @@ getDomainTermsList url =
 
 renderDomainTerm : Signal.Address Action -> DomainTerm -> Html
 renderDomainTerm address domainTerm =
-  UI.panelWithHeading (Html.text domainTerm.title) (Html.text domainTerm.description)
+  let domainTermName = Html.div [ class "pull-left" ] [ Html.text domainTerm.title ]
+      featureLink = Html.div [ class "pull-right" ] [ Html.a [] [ Html.text "View features" ] ]
+      headingContent = Html.div [ class "clearfix" ] [ domainTermName, featureLink ]
+  in UI.panelWithHeading headingContent (Html.text domainTerm.description)
 
 domainTermsUrl : Product -> String
 domainTermsUrl prod = "http://localhost:8081/products/" ++ (toString prod.id) ++ "/domain-terms"
