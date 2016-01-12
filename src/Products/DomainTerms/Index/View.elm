@@ -3,9 +3,10 @@ module Products.DomainTerms.Index.View
   ) where
 
 import Html                                          exposing (Html)
-import Html.Attributes                               exposing (class)
-import Products.DomainTerms.DomainTerm               exposing (DomainTerm)
-import Products.DomainTerms.Index.Actions as Actions exposing (Action)
+import Html.Events                                   exposing (onClick)
+import Html.Attributes                               exposing (class, href)
+import Products.DomainTerms.DomainTerm               exposing (DomainTerm, toSearchQuery)
+import Products.DomainTerms.Index.Actions as Actions exposing (Action(..))
 import Products.DomainTerms.Index.Model              exposing (DomainTermsView)
 import Products.DomainTerms.Forms.View    as DTF
 import UI.App.Components.Panels           as UI
@@ -21,6 +22,8 @@ view address domainTermsView =
 renderDomainTerm : Signal.Address Action -> DomainTerm -> Html
 renderDomainTerm address domainTerm =
   let domainTermName = Html.div [ class "pull-left" ] [ Html.text domainTerm.title ]
-      featureLink    = Html.div [ class "pull-right" ] [ Html.a [] [ Html.text "View features" ] ]
-      headingContent = Html.div [ class "clearfix" ] [ domainTermName, featureLink ]
+      linkAction     = SearchFeatures (toSearchQuery domainTerm)
+      featureLink    = Html.a [ href "#", onClick address linkAction ] [ Html.text "View features" ]
+      featureLinkContainer = Html.div [ class "pull-right" ] [ featureLink ]
+      headingContent = Html.div [ class "clearfix" ] [ domainTermName, featureLinkContainer ]
   in UI.panelWithHeading headingContent (Html.text domainTerm.description)

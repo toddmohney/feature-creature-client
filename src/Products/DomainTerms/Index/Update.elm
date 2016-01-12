@@ -2,7 +2,7 @@ module Products.DomainTerms.Index.Update
   ( update
   ) where
 
-import Debug                                         exposing (crash)
+import Debug                                         exposing (crash, log)
 import Effects                                       exposing (Effects)
 import Products.DomainTerms.Forms.Update  as DTF
 import Products.DomainTerms.Index.Actions as Actions exposing (Action)
@@ -42,4 +42,8 @@ update action domainTermsView =
       in ( updatedDomainTermsView
          , Effects.map Actions.DomainTermFormAction dtFormFx
          )
+
+    Actions.SearchFeatures searchQuery ->
+      let query = log "SearchFeatures: " searchQuery
+      in (domainTermsView, Effects.none)
 

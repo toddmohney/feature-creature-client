@@ -2,6 +2,7 @@ module Products.DomainTerms.DomainTerm where
 
 import Json.Encode
 import Json.Decode as Json exposing ((:=))
+import Search.Types as Search
 
 type alias DomainTerm =
   { title : String
@@ -12,6 +13,12 @@ init : DomainTerm
 init = { title = ""
        , description = ""
        }
+
+toSearchQuery : DomainTerm -> Search.Query
+toSearchQuery domainTerm =
+  { datatype = "DomainTerm"
+  , term = domainTerm.title
+  }
 
 encodeDomainTerm : DomainTerm -> String
 encodeDomainTerm domainTerm =
