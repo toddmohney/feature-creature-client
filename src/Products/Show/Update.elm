@@ -3,13 +3,13 @@ module Products.Show.Update where
 import Debug                                       exposing (crash, log)
 import Effects                                     exposing (Effects)
 import Products.DomainTerms.Index.Actions as DT
-import Products.DomainTerms.Index.Model as DT
+import Products.DomainTerms.Index.ViewModel as DT
 import Products.DomainTerms.Index.Update as DT
-import Products.Features.Index.Model as F
+import Products.Features.Index.ViewModel as F
 import Products.Features.Index.Update as F
 import Products.Navigation as Nav
 import Products.Show.Actions as Actions exposing (Action)
-import Products.Show.Model exposing (ProductView)
+import Products.Show.ViewModel exposing (ProductView)
 import Products.UserRoles.UserRolesView as URV
 import UI.App.Components.ProductViewNavBar as PVNB
 

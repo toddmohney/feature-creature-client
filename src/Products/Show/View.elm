@@ -4,7 +4,7 @@ import Html                                        exposing (Html)
 import Products.DomainTerms.Index.View as DTV
 import Products.Features.Index.View as FV
 import Products.Show.Actions exposing (Action(..))
-import Products.Show.Model exposing (ProductView)
+import Products.Show.ViewModel exposing (ProductView)
 import Products.UserRoles.UserRolesView as URV
 import UI.App.Components.ProductViewNavBar as PVNB
 

@@ -1,4 +1,4 @@
-module Products.DomainTerms.Index.Model
+module Products.DomainTerms.Index.ViewModel
   ( DomainTermsView
   , init
   ) where
@@ -7,7 +7,7 @@ import Effects                                   exposing (Effects)
 import Http
 import Products.DomainTerms.DomainTerm as DT
 import Products.DomainTerms.Index.Actions as DTI exposing (Action)
-import Products.DomainTerms.Forms.Model as DTF
+import Products.DomainTerms.Forms.ViewModel as DTF
 import Products.Product                          exposing (Product)
 import Task                                      exposing (Task)
 

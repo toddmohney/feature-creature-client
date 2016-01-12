@@ -3,8 +3,8 @@ module Products.Forms.Validation
   , hasErrors
   ) where
 
-import Products.Forms.Model    exposing (CreateProductForm)
-import UI.App.Primitives.Forms exposing (requiredStringFieldValidation)
+import Products.Forms.ViewModel exposing (CreateProductForm)
+import UI.App.Primitives.Forms  exposing (requiredStringFieldValidation)
 
 validateForm : CreateProductForm -> CreateProductForm
 validateForm createProductForm =

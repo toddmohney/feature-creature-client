@@ -3,7 +3,7 @@ module Products.DomainTerms.Forms.Validation
   , hasErrors
   ) where
 
-import Products.DomainTerms.Forms.Model      exposing (..)
+import Products.DomainTerms.Forms.ViewModel  exposing (..)
 import UI.App.Primitives.Forms     as UI     exposing (..)
 
 validateForm : DomainTermForm -> DomainTermForm

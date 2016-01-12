@@ -7,7 +7,7 @@ import Html.Events                                   exposing (onClick)
 import Html.Attributes                               exposing (class, href)
 import Products.DomainTerms.DomainTerm               exposing (DomainTerm, toSearchQuery)
 import Products.DomainTerms.Index.Actions as Actions exposing (Action(..))
-import Products.DomainTerms.Index.Model              exposing (DomainTermsView)
+import Products.DomainTerms.Index.ViewModel          exposing (DomainTermsView)
 import Products.DomainTerms.Forms.View    as DTF
 import UI.App.Components.Panels           as UI
 

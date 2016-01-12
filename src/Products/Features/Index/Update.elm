@@ -4,7 +4,7 @@ import Debug                               exposing (crash)
 import Effects                             exposing (Effects)
 import Products.Features.FeatureList as FL
 import Products.Features.Index.Actions     exposing (Action(..))
-import Products.Features.Index.Model       exposing (FeaturesView, featureUrl, featuresUrl, getFeature, getFeaturesList)
+import Products.Features.Index.ViewModel   exposing (FeaturesView, featureUrl, featuresUrl, getFeature, getFeaturesList)
 import UI.SyntaxHighlighting as Highlight  exposing (highlightSyntaxMailbox)
 import Task                                exposing (..)
 

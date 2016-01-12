@@ -6,7 +6,7 @@ import Debug                                         exposing (crash, log)
 import Effects                                       exposing (Effects)
 import Products.DomainTerms.Forms.Update  as DTF
 import Products.DomainTerms.Index.Actions as Actions exposing (Action)
-import Products.DomainTerms.Index.Model              exposing (DomainTermsView)
+import Products.DomainTerms.Index.ViewModel              exposing (DomainTermsView)
 
 update : Action -> DomainTermsView -> (DomainTermsView, Effects Action)
 update action domainTermsView =

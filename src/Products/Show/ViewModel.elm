@@ -1,8 +1,8 @@
-module Products.Show.Model where
+module Products.Show.ViewModel where
 
 import Effects                                     exposing (Effects)
-import Products.DomainTerms.Index.Model as DTV     exposing (DomainTermsView)
-import Products.Features.Index.Model as FV         exposing (FeaturesView)
+import Products.DomainTerms.Index.ViewModel as DTV exposing (DomainTermsView)
+import Products.Features.Index.ViewModel as FV     exposing (FeaturesView)
 import Products.Product                            exposing (Product)
 import Products.Show.Actions                       exposing (Action(..))
 import Products.UserRoles.UserRolesView as URV     exposing (UserRolesView)

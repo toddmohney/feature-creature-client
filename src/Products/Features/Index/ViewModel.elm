@@ -1,4 +1,4 @@
-module Products.Features.Index.Model where
+module Products.Features.Index.ViewModel where
 
 import Data.DirectoryTree as DT
 import Effects exposing (Effects)

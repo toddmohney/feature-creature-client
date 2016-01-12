@@ -5,7 +5,7 @@ import Html                                  exposing (Html)
 import Html.Attributes                       exposing (href)
 import Html.Events                           exposing (onClick)
 import Products.DomainTerms.Forms.Actions    exposing (..)
-import Products.DomainTerms.Forms.Model      exposing (DomainTermForm)
+import Products.DomainTerms.Forms.ViewModel  exposing (DomainTermForm)
 import UI.App.Components.Panels    as UI
 import UI.App.Primitives.Forms     as UI
 

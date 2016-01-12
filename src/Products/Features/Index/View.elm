@@ -4,7 +4,7 @@ import Html                                   exposing (..)
 import Products.Features.Feature as F
 import Products.Features.FeatureList as FL
 import Products.Features.Index.Actions        exposing (Action(..))
-import Products.Features.Index.Model          exposing (FeaturesView)
+import Products.Features.Index.ViewModel      exposing (FeaturesView)
 import UI.App.Components.ListDetailView as UI
 
 view : Signal.Address Action -> FeaturesView -> Html

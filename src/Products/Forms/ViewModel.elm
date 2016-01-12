@@ -1,4 +1,4 @@
-module Products.Forms.Model
+module Products.Forms.ViewModel
   ( CreateProductForm
   , init
   ) where
