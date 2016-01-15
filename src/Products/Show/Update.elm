@@ -1,6 +1,5 @@
 module Products.Show.Update where
 
-import Debug                                       exposing (crash, log)
 import Effects                                     exposing (Effects)
 import Products.DomainTerms.Index.Actions as DT
 import Products.DomainTerms.Index.ViewModel as DT
@@ -8,10 +7,14 @@ import Products.DomainTerms.Index.Update as DT
 import Products.Features.Index.ViewModel as F
 import Products.Features.Index.Update as F
 import Products.Navigation as Nav
+import Products.Product                            exposing (Product)
 import Products.Show.Actions as Actions exposing (Action)
 import Products.Show.ViewModel exposing (ProductView)
 import Products.UserRoles.UserRolesView as URV
+import Search.Types as Search
 import UI.App.Components.ProductViewNavBar as PVNB
+
+import Products.Features.Index.Actions as FeaturesActions
 
 update : Action -> ProductView -> (ProductView, Effects Action)
 update action productView =
@@ -21,22 +24,26 @@ update action productView =
 
     Actions.FeaturesViewAction fvAction ->
       let (featView, fvFx) = F.update fvAction productView.featuresView
-      in ( { productView | featuresView = featView }
-         , Effects.map Actions.FeaturesViewAction fvFx
-         )
+      in case fvAction of
+        -- This is a duplication of the action above
+        -- How can we make this better?
+        FeaturesActions.NavigationAction navAction ->
+          handleNavigation navAction productView
+        _ ->
+          ( { productView | featuresView = featView }
+            , Effects.map Actions.FeaturesViewAction fvFx
+          )
 
     Actions.DomainTermsViewAction dtvAction ->
       case dtvAction of
         DT.SearchFeatures query ->
           let (domainTermsView, dtvFx) = DT.update dtvAction productView.domainTermsView
-              whatever = log "ProductView.SearchFeatures: " query
           in ( { productView | domainTermsView = domainTermsView }
-             , Effects.map Actions.DomainTermsViewAction dtvFx
+             , Effects.map Actions.FeaturesViewAction (searchFeatures productView.product query)
              )
 
         _ ->
           let (domainTermsView, dtvFx) = DT.update dtvAction productView.domainTermsView
-              query = log "ProductView (pass-through): " dtvAction
           in ( { productView | domainTermsView = domainTermsView }
              , Effects.map Actions.DomainTermsViewAction dtvFx
              )
@@ -46,6 +53,10 @@ update action productView =
       in ( { productView | userRolesView = userRolesView }
          , Effects.map Actions.UserRolesViewAction urvFx
          )
+
+searchFeatures : Product -> Search.Query -> Effects FeaturesActions.Action
+searchFeatures product query =
+  F.getFeaturesList <| F.featuresUrl product (Just query)
 
 handleNavigation : Nav.Action -> ProductView -> (ProductView, Effects Action)
 handleNavigation navBarAction productView =
