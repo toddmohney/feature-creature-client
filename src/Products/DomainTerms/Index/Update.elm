@@ -44,6 +44,6 @@ update action domainTermsView =
          )
 
     Actions.SearchFeatures searchQuery ->
-      let query = log "SearchFeatures: " searchQuery
-      in (domainTermsView, Effects.none)
+      -- noop
+      (domainTermsView, Effects.none)
 

@@ -3,8 +3,10 @@ module Products.UserRoles.UserRolesView where
 import Debug                                 exposing (crash)
 import Effects                               exposing (Effects)
 import Html                                  exposing (Html)
+import Html.Events                                   exposing (onClick)
+import Html.Attributes                               exposing (class, href)
 import Http                                  exposing (Error)
-import Products.UserRoles.UserRole as UR exposing (UserRole)
+import Products.UserRoles.UserRole as UR exposing (UserRole, toSearchQuery)
 import Products.UserRoles.Forms.Actions as URF
 import Products.UserRoles.Forms.ViewModel as URF
 import Products.UserRoles.Forms.Update as URF
@@ -12,6 +14,7 @@ import Products.UserRoles.Forms.View as URF
 import Products.Product                      exposing (Product)
 import Task                                  exposing (Task)
 import UI.App.Components.Panels as UI
+import Search.Types as Search
 
 type alias UserRolesView =
   { product        : Product
@@ -20,6 +23,7 @@ type alias UserRolesView =
 
 type Action = UpdateUserRoles (Result Error (List UserRole))
             | UserRoleFormAction URF.Action
+            | SearchFeatures Search.Query
 
 init : Product -> (UserRolesView, Effects Action)
 init prod =
@@ -64,6 +68,10 @@ update action userRolesView =
       in ( updatedUserRolesView
          , Effects.map UserRoleFormAction dtFormFx
          )
+    SearchFeatures query ->
+      -- noop
+      (userRolesView, Effects.none)
+
 
 view : Signal.Address Action -> UserRolesView -> Html
 view address userRolesView =
@@ -81,7 +89,12 @@ getUserRolesList url =
 
 renderUserRole : Signal.Address Action -> UserRole -> Html
 renderUserRole address userRole =
-  UI.panelWithHeading (Html.text userRole.title) (Html.text userRole.description)
+  let userRoleName = Html.div [ class "pull-left" ] [ Html.text userRole.title ]
+      linkAction     = SearchFeatures (toSearchQuery userRole)
+      featureLink    = Html.a [ href "#", onClick address linkAction ] [ Html.text "View features" ]
+      featureLinkContainer = Html.div [ class "pull-right" ] [ featureLink ]
+      headingContent = Html.div [ class "clearfix" ] [ userRoleName, featureLinkContainer ]
+  in UI.panelWithHeading headingContent (Html.text userRole.description)
 
 userRolesUrl : Product -> String
 userRolesUrl prod = "http://localhost:8081/products/" ++ (toString prod.id) ++ "/user-roles"

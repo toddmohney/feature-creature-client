@@ -26,7 +26,7 @@ update action productView =
       let (featView, fvFx) = F.update fvAction productView.featuresView
       in case fvAction of
         -- This is a duplication of the action above
-        -- How can we make this better?
+        -- how can we make this better?
         FeaturesActions.NavigationAction navAction ->
           handleNavigation navAction productView
         _ ->
@@ -35,24 +35,32 @@ update action productView =
           )
 
     Actions.DomainTermsViewAction dtvAction ->
-      case dtvAction of
+      let (domainTermsView, dtvFx) = DT.update dtvAction productView.domainTermsView
+          newProductView = { productView | domainTermsView = domainTermsView }
+      in case dtvAction of
         DT.SearchFeatures query ->
-          let (domainTermsView, dtvFx) = DT.update dtvAction productView.domainTermsView
-          in ( { productView | domainTermsView = domainTermsView }
-             , Effects.map Actions.FeaturesViewAction (searchFeatures productView.product query)
-             )
+          ( newProductView
+          , Effects.map Actions.FeaturesViewAction (searchFeatures newProductView.product query)
+          )
 
         _ ->
-          let (domainTermsView, dtvFx) = DT.update dtvAction productView.domainTermsView
-          in ( { productView | domainTermsView = domainTermsView }
-             , Effects.map Actions.DomainTermsViewAction dtvFx
-             )
+          ( newProductView
+          , Effects.map Actions.DomainTermsViewAction dtvFx
+          )
 
     Actions.UserRolesViewAction urvAction ->
       let (userRolesView, urvFx) = URV.update urvAction productView.userRolesView
-      in ( { productView | userRolesView = userRolesView }
-         , Effects.map Actions.UserRolesViewAction urvFx
-         )
+          newProductView = { productView | userRolesView = userRolesView }
+      in case urvAction of
+        URV.SearchFeatures query ->
+          ( newProductView
+          , Effects.map Actions.FeaturesViewAction (searchFeatures productView.product query)
+          )
+
+        _ ->
+          ( newProductView
+           , Effects.map Actions.UserRolesViewAction urvFx
+          )
 
 searchFeatures : Product -> Search.Query -> Effects FeaturesActions.Action
 searchFeatures product query =
