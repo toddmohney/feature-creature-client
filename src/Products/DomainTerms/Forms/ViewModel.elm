@@ -1,4 +1,4 @@
-module Products.DomainTerms.Forms.Model
+module Products.DomainTerms.Forms.ViewModel
   ( DomainTermForm
   , init
   ) where

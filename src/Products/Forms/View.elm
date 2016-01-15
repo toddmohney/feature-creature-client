@@ -1,9 +1,9 @@
 module Products.Forms.View where
 
-import Html                  exposing (Html)
-import Html.Events           exposing (onClick)
-import Products.Forms.Actions exposing (..)
-import Products.Forms.Model exposing (CreateProductForm)
+import Html                     exposing (Html)
+import Html.Events              exposing (onClick)
+import Products.Forms.Actions   exposing (..)
+import Products.Forms.ViewModel exposing (CreateProductForm)
 import UI.App.Primitives.Forms     as UI exposing (..)
 
 view : Signal.Address Action -> CreateProductForm -> Html

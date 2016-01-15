@@ -7,7 +7,7 @@ import Http                                  exposing (Error)
 import Products.Product                      exposing (Product)
 import Products.DomainTerms.DomainTerm as DT exposing (DomainTerm)
 import Products.DomainTerms.Forms.Actions    exposing (..)
-import Products.DomainTerms.Forms.Model      exposing (DomainTermForm)
+import Products.DomainTerms.Forms.ViewModel  exposing (DomainTermForm)
 import Products.DomainTerms.Forms.Validation exposing (validateForm, hasErrors)
 import Task                                  exposing (Task)
 import Utils.Http

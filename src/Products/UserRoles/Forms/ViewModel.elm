@@ -1,4 +1,4 @@
-module Products.UserRoles.Forms.Model
+module Products.UserRoles.Forms.ViewModel
   ( UserRoleForm
   , init
   ) where

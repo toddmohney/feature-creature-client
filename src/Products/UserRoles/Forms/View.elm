@@ -2,10 +2,10 @@ module Products.UserRoles.Forms.View
   ( view ) where
 
 import Html                              exposing (Html)
-import Html.Attributes                   exposing (href)
-import Html.Events                       exposing (onClick)
-import Products.UserRoles.Forms.Actions  exposing (..)
-import Products.UserRoles.Forms.Model    exposing (UserRoleForm)
+import Html.Attributes                    exposing (href)
+import Html.Events                        exposing (onClick)
+import Products.UserRoles.Forms.Actions   exposing (..)
+import Products.UserRoles.Forms.ViewModel exposing (UserRoleForm)
 import UI.App.Components.Panels    as UI
 import UI.App.Primitives.Forms     as UI
 

@@ -6,7 +6,7 @@ import Html                                  exposing (Html)
 import Http                                  exposing (Error)
 import Products.UserRoles.UserRole as UR exposing (UserRole)
 import Products.UserRoles.Forms.Actions as URF
-import Products.UserRoles.Forms.Model as URF
+import Products.UserRoles.Forms.ViewModel as URF
 import Products.UserRoles.Forms.Update as URF
 import Products.UserRoles.Forms.View as URF
 import Products.Product                      exposing (Product)

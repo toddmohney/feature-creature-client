@@ -3,12 +3,12 @@ module Products.Forms.Update
 
 import Debug                   exposing (crash)
 import Effects                 exposing (Effects)
-import Http as Http            exposing (..)
-import Products.Product as P   exposing (Product)
-import Products.Forms.Actions  exposing (..)
-import Products.Forms.Model    exposing (CreateProductForm)
-import Products.Forms.Validation    exposing (hasErrors, validateForm)
-import Task as Task            exposing (..)
+import Http as Http              exposing (..)
+import Products.Product as P     exposing (Product)
+import Products.Forms.Actions    exposing (..)
+import Products.Forms.ViewModel  exposing (CreateProductForm)
+import Products.Forms.Validation exposing (hasErrors, validateForm)
+import Task as Task              exposing (..)
 import Utils.Http
 
 update : Action -> CreateProductForm -> (CreateProductForm, Effects Action)

@@ -11,9 +11,12 @@ import List                              exposing (head, length)
 import Products.Product as P             exposing (Product)
 import Products.Forms.View as CPF
 import Products.Forms.Actions as CPF
-import Products.Forms.Model as CPF       exposing (CreateProductForm)
+import Products.Forms.ViewModel as CPF   exposing (CreateProductForm)
 import Products.Forms.Update as CPF
-import Products.ProductView as PV        exposing (ProductView)
+import Products.Show.Actions as PV
+import Products.Show.ViewModel as PV     exposing (ProductView)
+import Products.Show.Update as PV
+import Products.Show.View as PV
 import Products.Navigation as Nav
 import Task as Task                      exposing (..)
 
