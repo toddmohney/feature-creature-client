@@ -7,3 +7,10 @@ type Action = SelectFeaturesView
             | SelectUserRolesView
             | SetSelectedProduct Product
             | ShowCreateNewProductForm
+
+type CurrentView = LoadingView
+                 | ErrorView String
+                 | CreateProductFormView
+                 | ProductView
+                 | DomainTermsView
+                 | UserRolesView

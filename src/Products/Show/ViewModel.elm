@@ -6,7 +6,7 @@ import Products.Features.Index.ViewModel as FV     exposing (FeaturesView)
 import Products.Product                            exposing (Product)
 import Products.Show.Actions                       exposing (Action(..))
 import Products.UserRoles.UserRolesView as URV     exposing (UserRolesView)
-import UI.App.Components.ProductViewNavBar as PVNB exposing (ProductViewNavBar)
+import Products.Navigation.NavBar as NavBar        exposing (ProductViewNavBar)
 
 type alias ProductView =
   { product         : Product
@@ -22,7 +22,7 @@ init products selectedProduct =
       (domainTermsView, domainTermsFx) = DTV.init selectedProduct
       (userRolesView, userRolesFx)     = URV.init selectedProduct
       productView = { product          = selectedProduct
-                    , navBar           = PVNB.init products selectedProduct
+                    , navBar           = NavBar.init products selectedProduct
                     , featuresView     = featView
                     , domainTermsView  = domainTermsView
                     , userRolesView    = userRolesView

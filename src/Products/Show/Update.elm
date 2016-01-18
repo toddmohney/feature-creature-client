@@ -6,13 +6,13 @@ import Products.DomainTerms.Index.ViewModel as DT
 import Products.DomainTerms.Index.Update as DT
 import Products.Features.Index.ViewModel as F
 import Products.Features.Index.Update as F
-import Products.Navigation as Nav
+import Products.Navigation as Navigation
+import Products.Navigation.NavBar as NavBar
 import Products.Product                            exposing (Product)
 import Products.Show.Actions as Actions exposing (Action)
 import Products.Show.ViewModel exposing (ProductView)
 import Products.UserRoles.UserRolesView as URV
 import Search.Types as Search
-import UI.App.Components.ProductViewNavBar as PVNB
 
 import Products.Features.Index.Actions as FeaturesActions
 
@@ -66,9 +66,9 @@ searchFeatures : Product -> Search.Query -> Effects FeaturesActions.Action
 searchFeatures product query =
   F.getFeaturesList <| F.featuresUrl product (Just query)
 
-handleNavigation : Nav.Action -> ProductView -> (ProductView, Effects Action)
+handleNavigation : Navigation.Action -> ProductView -> (ProductView, Effects Action)
 handleNavigation navBarAction productView =
-  let (updatedNavBar, navBarFx) = PVNB.update navBarAction productView.navBar
+  let (updatedNavBar, navBarFx) = NavBar.update navBarAction productView.navBar
       newSelectedProduct        = updatedNavBar.selectedProduct
   in case productView.navBar.selectedProduct == newSelectedProduct of
        True -> ( { productView | navBar = updatedNavBar }

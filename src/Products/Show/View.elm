@@ -6,16 +6,16 @@ import Products.Features.Index.View as FV
 import Products.Show.Actions exposing (Action(..))
 import Products.Show.ViewModel exposing (ProductView)
 import Products.UserRoles.UserRolesView as URV
-import UI.App.Components.ProductViewNavBar as PVNB
+import Products.Navigation.NavBar as NavBar
 
 view : Signal.Address Action -> ProductView -> Html
 view address productView =
   let forwardedAddress = Signal.forwardTo address NavBarAction
-      navBar = PVNB.view forwardedAddress productView.navBar
+      navBar = NavBar.view forwardedAddress productView.navBar
       mainContent = case productView.navBar.selectedView of
-                      PVNB.FeaturesViewOption -> renderFeaturesView address productView
-                      PVNB.DomainTermsViewOption -> renderDomainTermsView address productView
-                      PVNB.UserRolesViewOption -> renderUserRolesView address productView
+                      NavBar.FeaturesViewOption -> renderFeaturesView address productView
+                      NavBar.DomainTermsViewOption -> renderDomainTermsView address productView
+                      NavBar.UserRolesViewOption -> renderUserRolesView address productView
   in Html.div [] [ navBar, mainContent ]
 
 renderFeaturesView : Signal.Address Action -> ProductView -> Html

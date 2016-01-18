@@ -7,6 +7,7 @@ import Products.Product exposing (Product)
 type Action = SubmitForm
             | SetName String
             | SetRepositoryUrl String
-            | AddNewProduct (Result Error Product)
+            | ProductCreated (Result Error Product)
+            | NewProductCreated Product
 
 

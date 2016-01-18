@@ -1,8 +1,8 @@
 module Products.Forms.Update
   ( update ) where
 
-import Debug                   exposing (crash)
-import Effects                 exposing (Effects)
+import Debug                     exposing (crash)
+import Effects                   exposing (Effects)
 import Http as Http              exposing (..)
 import Products.Product as P     exposing (Product)
 import Products.Forms.Actions    exposing (..)
@@ -41,13 +41,16 @@ update action form =
              , createProduct newProductForm.newProduct
              )
 
-    AddNewProduct createProductResult ->
+    ProductCreated createProductResult ->
       case createProductResult of
         Ok product ->
           ( { form | newProduct = product }
-          , Effects.none
+          , Effects.task (Task.succeed (NewProductCreated product))
           )
         Err _ -> crash "Failed to create product"
+
+    NewProductCreated product ->
+      (form, Effects.none)
 
 createProduct : Product -> Effects Action
 createProduct newProduct =
@@ -55,7 +58,7 @@ createProduct newProduct =
   in Http.send Http.defaultSettings request
      |> Http.fromJson P.parseProduct
      |> Task.toResult
-     |> Task.map AddNewProduct
+     |> Task.map ProductCreated
      |> Effects.task
 
 createProductUrl : String
