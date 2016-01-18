@@ -1,5 +1,6 @@
 module Products.UserRoles.UserRole where
 
+import Search.Types as Search
 import Json.Encode
 import Json.Decode as Json exposing ((:=))
 
@@ -29,3 +30,10 @@ parseUserRole =
   Json.object2 UserRole
     ("title"       := Json.string)
     ("description" := Json.string)
+
+toSearchQuery : UserRole -> Search.Query
+toSearchQuery userRole =
+  { datatype = "UserRole"
+  , term = userRole.title
+  }
+

@@ -7,6 +7,7 @@ import Json.Decode as Json                    exposing ((:=))
 import Products.Product                       exposing (Product)
 import Products.Features.Feature as F         exposing (..)
 import Products.Features.Index.Actions        exposing (Action(..))
+import Search.Types as Search
 import Task                                   exposing (..)
 
 type alias FeaturesView =
@@ -19,7 +20,7 @@ init prod =
   let productView = { product               = prod
                     , selectedFeature       = Nothing
                     }
-  in (productView , getFeaturesList (featuresUrl prod))
+  in (productView , getFeaturesList (featuresUrl prod Nothing))
 
 -- this doesn't feel like it belongs in the Model module
 getFeaturesList : String -> Effects Action
@@ -49,8 +50,12 @@ parseFeatureTree =
   ("fileDescription" := parseFileDescription)
   ("forest"          := Json.list (lazy (\_ -> parseFeatureTree)))
 
-featuresUrl : Product -> String
-featuresUrl product = "http://localhost:8081/products/" ++ (toString product.id) ++ "/features"
+featuresUrl : Product -> Maybe Search.Query -> String
+featuresUrl product query =
+  let featuresEndpoint = "http://localhost:8081/products/" ++ (toString product.id) ++ "/features"
+  in case query of
+    Nothing  -> featuresEndpoint
+    (Just q) -> featuresEndpoint ++ "?search=" ++ q.term
 
 featureUrl : Product -> DT.FilePath -> String
 featureUrl product path = "http://localhost:8081/products/" ++ (toString product.id) ++ "/feature?path=" ++ path

@@ -6,7 +6,7 @@ module Products.DomainTerms.Index.ViewModel
 import Effects                                   exposing (Effects)
 import Http
 import Products.DomainTerms.DomainTerm as DT
-import Products.DomainTerms.Index.Actions as DTI exposing (Action)
+import Products.DomainTerms.Index.Actions as DTI exposing (DomainTermAction)
 import Products.DomainTerms.Forms.ViewModel as DTF
 import Products.Product                          exposing (Product)
 import Task                                      exposing (Task)
@@ -16,7 +16,7 @@ type alias DomainTermsView =
   , domainTermForm : DTF.DomainTermForm
   }
 
-init : Product -> (DomainTermsView, Effects Action)
+init : Product -> (DomainTermsView, Effects DomainTermAction)
 init prod =
   let effects = getDomainTermsList (domainTermsUrl prod)
   in ( { product = prod
@@ -25,7 +25,7 @@ init prod =
      , effects
      )
 
-getDomainTermsList : String -> Effects Action
+getDomainTermsList : String -> Effects DomainTermAction
 getDomainTermsList url =
   Http.get DT.parseDomainTerms url
    |> Task.toResult

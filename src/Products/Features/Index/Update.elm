@@ -1,10 +1,11 @@
 module Products.Features.Index.Update where
 
-import Debug                               exposing (crash)
+import Debug                               exposing (crash, log)
 import Effects                             exposing (Effects)
 import Products.Features.FeatureList as FL
 import Products.Features.Index.Actions     exposing (Action(..))
 import Products.Features.Index.ViewModel   exposing (FeaturesView, featureUrl, featuresUrl, getFeature, getFeaturesList)
+import Products.Navigation as Nav
 import UI.SyntaxHighlighting as Highlight  exposing (highlightSyntaxMailbox)
 import Task                                exposing (..)
 
@@ -20,7 +21,7 @@ update action productView =
       ( productView, Effects.none )
 
     RequestFeatures ->
-      (productView, getFeaturesList (featuresUrl productView.product))
+      (productView, getFeaturesList (featuresUrl productView.product Nothing))
 
     ShowFeatureDetails resultFeature ->
       case resultFeature of
@@ -45,5 +46,12 @@ update action productView =
           let newFeatureList = Just { features = featureTree }
               currentProduct = productView.product
               newFeaturesView = { productView | product = { currentProduct | featureList = newFeatureList } }
-            in (newFeaturesView, Effects.none)
+            in ( newFeaturesView
+               , Effects.task (Task.succeed (NavigationAction Nav.SelectFeaturesView))
+               )
         Err _ -> crash "Error handling FeaturesView.UpdateFeatures"
+
+
+    NavigationAction a ->
+      let thingy = log "NavigationAction: " a
+      in (productView, Effects.none)

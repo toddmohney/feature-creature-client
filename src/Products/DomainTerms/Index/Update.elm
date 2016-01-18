@@ -5,10 +5,10 @@ module Products.DomainTerms.Index.Update
 import Debug                                         exposing (crash, log)
 import Effects                                       exposing (Effects)
 import Products.DomainTerms.Forms.Update  as DTF
-import Products.DomainTerms.Index.Actions as Actions exposing (Action)
+import Products.DomainTerms.Index.Actions as Actions exposing (DomainTermAction)
 import Products.DomainTerms.Index.ViewModel              exposing (DomainTermsView)
 
-update : Action -> DomainTermsView -> (DomainTermsView, Effects Action)
+update : DomainTermAction -> DomainTermsView -> (DomainTermsView, Effects DomainTermAction)
 update action domainTermsView =
   case action of
     -- This is smelly. The DomainTermForm is allowed to update the Product,
@@ -44,6 +44,6 @@ update action domainTermsView =
          )
 
     Actions.SearchFeatures searchQuery ->
-      let query = log "SearchFeatures: " searchQuery
-      in (domainTermsView, Effects.none)
+      -- noop
+      (domainTermsView, Effects.none)
 

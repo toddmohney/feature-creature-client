@@ -1,10 +1,10 @@
 module Products.DomainTerms.Forms.Actions
-  ( Action(..) ) where
+  ( DomainTermFormAction(..) ) where
 
 import Http                                  exposing (Error)
 import Products.DomainTerms.DomainTerm       exposing (DomainTerm)
 
-type Action = AddDomainTerm (Result Error DomainTerm)
+type DomainTermFormAction = AddDomainTerm (Result Error DomainTerm)
             | ShowDomainTermForm
             | HideDomainTermForm
             | SubmitDomainTermForm

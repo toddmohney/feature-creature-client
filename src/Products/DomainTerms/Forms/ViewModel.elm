@@ -13,8 +13,8 @@ type alias DomainTermForm =
   { product : Product
   , domainTermFormVisible : Bool
   , newDomainTerm         : DomainTerm
-  , titleField            : InputField Action
-  , descriptionField      : InputField Action
+  , titleField            : InputField DomainTermFormAction
+  , descriptionField      : InputField DomainTermFormAction
   }
 
 init : Product -> DomainTermForm
@@ -26,7 +26,7 @@ init prod =
   , descriptionField     = defaultDescriptionField
   }
 
-defaultTitleField : InputField Action
+defaultTitleField : InputField DomainTermFormAction
 defaultTitleField =
   { inputName = "domainTermTitle"
   , labelContent = (Html.text "Title")
@@ -34,7 +34,7 @@ defaultTitleField =
   , validationErrors = []
   }
 
-defaultDescriptionField : InputField Action
+defaultDescriptionField : InputField DomainTermFormAction
 defaultDescriptionField =
   { inputName = "domainTermDescription"
   , labelContent = (Html.text "Description")

@@ -9,7 +9,7 @@ import Products.DomainTerms.Forms.ViewModel  exposing (DomainTermForm)
 import UI.App.Components.Panels    as UI
 import UI.App.Primitives.Forms     as UI
 
-view : Signal.Address Action -> DomainTermForm -> Html
+view : Signal.Address DomainTermFormAction -> DomainTermForm -> Html
 view address domainTermForm =
   if domainTermForm.domainTermFormVisible
     then
@@ -20,13 +20,13 @@ view address domainTermForm =
       [ href "#", onClick address ShowDomainTermForm ]
       [ Html.text "Create Domain Term" ]
 
-renderDomainTermForm : Signal.Address Action -> DomainTermForm -> Html
+renderDomainTermForm : Signal.Address DomainTermFormAction -> DomainTermForm -> Html
 renderDomainTermForm address domainTermForm =
   let headingContent = Html.text "Create A New Domain Term"
       bodyContent    = renderForm address domainTermForm
   in UI.panelWithHeading headingContent bodyContent
 
-renderForm : Signal.Address Action -> DomainTermForm -> Html
+renderForm : Signal.Address DomainTermFormAction -> DomainTermForm -> Html
 renderForm address domainTermForm =
   Html.div
     []

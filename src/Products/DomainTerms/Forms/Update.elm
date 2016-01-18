@@ -12,7 +12,7 @@ import Products.DomainTerms.Forms.Validation exposing (validateForm, hasErrors)
 import Task                                  exposing (Task)
 import Utils.Http
 
-update : Action -> DomainTermForm -> (DomainTermForm, Effects Action)
+update : DomainTermFormAction -> DomainTermForm -> (DomainTermForm, Effects DomainTermFormAction)
 update action domainTermForm =
   case action of
     AddDomainTerm domainTermResult ->
@@ -57,7 +57,7 @@ update action domainTermForm =
 domainTermsUrl : Product -> String
 domainTermsUrl prod = "http://localhost:8081/products/" ++ (toString prod.id) ++ "/domain-terms"
 
-createDomainTerm : String -> DomainTerm -> Effects Action
+createDomainTerm : String -> DomainTerm -> Effects DomainTermFormAction
 createDomainTerm url domainTerm =
   let request = Utils.Http.jsonPostRequest url (DT.encodeDomainTerm domainTerm)
   in Http.send Http.defaultSettings request
