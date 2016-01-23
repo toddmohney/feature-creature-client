@@ -1,38 +1,38 @@
-module App.App where
+module App where
 
-import App.AppConfig                                      exposing (..)
-import App.Products.Product         as P                  exposing (Product)
-import App.Products.Forms.Actions   as ProductFormActions
-import App.Products.Forms.ViewModel as CPF                exposing (CreateProductForm)
-import App.Products.Forms.View      as CPF
-import App.Products.Forms.Update    as CPF
-import App.Products.Navigation      as Navigation
-import App.Products.Show.Actions    as ProductViewActions
-import App.Products.Show.ViewModel  as PV                 exposing (ProductView)
-import App.Products.Show.View       as PV
-import App.Products.Show.Update     as PV
-import CoreExtensions.Maybe                               exposing (fromJust)
-import Data.External                                      exposing (External(..))
-import Effects                                            exposing (Effects)
-import Html                                               exposing (Html)
-import Http as Http                                       exposing (..)
-import List                                               exposing (head, length)
-import Task as Task                                       exposing (..)
-
-import Debug exposing (log)
+import CoreExtensions.Maybe            exposing (fromJust)
+import Debug                           exposing (log)
+import Effects                         exposing (Effects)
+import Html                            exposing (Html)
+import Http as Http                    exposing (..)
+import List                            exposing (head, length)
+import Products.Product         as P   exposing (Product)
+import Products.Forms.Actions   as ProductFormActions
+import Products.Forms.ViewModel as CPF exposing (CreateProductForm)
+import Products.Forms.View      as CPF
+import Products.Forms.Update    as CPF
+import Products.Navigation      as Navigation
+import Products.Show.Actions    as ProductViewActions
+import Products.Show.ViewModel  as PV  exposing (ProductView)
+import Products.Show.View       as PV
+import Products.Show.Update     as PV
+import Task as Task                    exposing (..)
 
 type alias App =
-  { products          : External (List Product)
+  { products          : ExternalData (List Product)
   , currentView       : Navigation.CurrentView
   , productForm       : CreateProductForm
   , productView       : Maybe ProductView
   }
 
 type Action = ProductsLoaded (Result Error (List Product))
-            | ConfigLoaded AppConfig
             | ProductFormActions ProductFormActions.Action
             | ProductViewActions ProductViewActions.Action
             | NavigationActions Navigation.Action
+
+type ExternalData a = NotLoaded
+                    | Loaded a
+                    | LoadedWithError String
 
 init : (App, Effects Action)
 init =
@@ -46,16 +46,40 @@ init =
 
 update : Action -> App -> (App, Effects Action)
 update action app =
-  case action of
-    ConfigLoaded appConfig               -> processAppConfig appConfig app
+  case (log "app.action" action) of
     NavigationActions  navAction         -> processNavigationAction navAction app
     ProductFormActions productFormAction -> processFormAction productFormAction app
     ProductViewActions productViewAction -> processProductViewAction productViewAction app
     ProductsLoaded resultProducts        -> processProductsResponse resultProducts app
 
+setProductView : App -> List Product -> Product -> (App, Effects Action)
+setProductView app products selectedProduct =
+  let (productView, fx) = PV.init products selectedProduct
+  in
+    ( { app | products    = Loaded products
+            , productView = Just productView
+            , currentView = Navigation.ProductView
+      }
+    , Effects.map ProductViewActions fx
+    )
+
+setCreateProductView : App -> List Product -> (App, Effects Action)
+setCreateProductView app products =
+  ( { app | products    = Loaded products
+          , currentView = Navigation.CreateProductFormView
+    }
+  , Effects.none
+  )
+
+setErrorView : App -> String -> App
+setErrorView app err =
+  { app | products    = LoadedWithError err
+        , currentView = Navigation.ErrorView err
+  }
+
 view : Signal.Address Action -> App -> Html
 view address app =
-  case app.currentView of
+  case (log "CurrentView: " app.currentView) of
     Navigation.LoadingView           -> renderLoadingView
     Navigation.ErrorView err         -> renderErrorView err
     Navigation.CreateProductFormView -> renderProductsForm address app
@@ -85,31 +109,6 @@ renderProductView address app =
           productViewHtml  = PV.view forwardedAddress pv
       in Html.div [] [ productViewHtml ]
 
-setProductView : App -> List Product -> Product -> (App, Effects Action)
-setProductView app products selectedProduct =
-  let (productView, fx) = PV.init products selectedProduct
-  in
-    ( { app | products    = Loaded products
-            , productView = Just productView
-            , currentView = Navigation.ProductView
-      }
-    , Effects.map ProductViewActions fx
-    )
-
-setCreateProductView : App -> List Product -> (App, Effects Action)
-setCreateProductView app products =
-  ( { app | products    = Loaded products
-          , currentView = Navigation.CreateProductFormView
-    }
-  , Effects.none
-  )
-
-setErrorView : App -> String -> App
-setErrorView app err =
-  { app | products    = LoadedWithError err
-        , currentView = Navigation.ErrorView err
-  }
-
 getProducts : String -> Effects Action
 getProducts url =
    Http.get P.parseProducts url
@@ -119,13 +118,6 @@ getProducts url =
 
 productsEndpoint : String
 productsEndpoint = "http://localhost:8081/products"
-
-
-processAppConfig : AppConfig -> App -> (App, Effects Action)
-processAppConfig appConfig app =
-  let thing = log "AppConfig: " appConfig
-  in
-     (app, Effects.none)
 
 
 -- product response action handler
@@ -141,7 +133,8 @@ processProductsResponse result app =
       in
         (newState, fx)
     Err err ->
-      let newState = setErrorView app "Error loading products"
+      let loggedErr = log "Error: " err
+          newState = setErrorView app "Error loading products"
       in
         (newState, Effects.none)
 
@@ -150,7 +143,7 @@ processProductsResponse result app =
 
 processProductViewAction : ProductViewActions.Action -> App -> (App, Effects Action)
 processProductViewAction productViewAction app =
-  case productViewAction of
+  case (log "productViewAction: " productViewAction) of
     -- ProductViewActions.NavBarAction Navigation.ShowCreateNewProductForm ->
     ProductViewActions.NavBarAction navBarAction ->
       case navBarAction of
@@ -177,7 +170,7 @@ processProductViewAction productViewAction app =
 
 processNavigationAction : Navigation.Action -> App -> (App, Effects Action)
 processNavigationAction navAction app =
-  case navAction of
+  case (log "navAction: " navAction) of
     Navigation.ShowCreateNewProductForm ->
       case app.productView of
         Nothing ->
@@ -204,7 +197,7 @@ processNavigationAction navAction app =
 
 -- form action handler
 
-extractProducts : External (List Product) -> List Product
+extractProducts : ExternalData (List Product) -> List Product
 extractProducts exData =
   case exData of
     Loaded products -> products
@@ -222,7 +215,7 @@ processFormAction formAction app =
       in
         (newApp, Effects.map ProductViewActions fx)
     _ ->
-      let (newCreateProductForm, fx) = CPF.update formAction app.productForm
+      let (newCreateProductForm, fx) = CPF.update (log "FormAction: " formAction) app.productForm
           newApp = { app | productForm = newCreateProductForm }
       in
         (newApp, Effects.map ProductFormActions fx)
