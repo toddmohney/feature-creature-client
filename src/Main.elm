@@ -1,6 +1,6 @@
 module Main where
 
-import App      as App    exposing (update, init, view)
+import App.App  as App    exposing (update, init, view)
 import Effects            exposing (Never)
 import Html               exposing (Html)
 import UI.SyntaxHighlighting exposing (highlightSyntaxMailbox)
