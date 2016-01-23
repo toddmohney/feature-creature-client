@@ -12,7 +12,6 @@ import App.Products.Show.View       as PV
 import App.Products.Show.Update     as PV
 import CoreExtensions.Maybe                               exposing (fromJust)
 import Data.External                                      exposing (External(..))
-import Debug                                              exposing (log)
 import Effects                                            exposing (Effects)
 import Html                                               exposing (Html)
 import Http as Http                                       exposing (..)
@@ -43,40 +42,15 @@ init =
 
 update : Action -> App -> (App, Effects Action)
 update action app =
-  case (log "app.action" action) of
+  case action of
     NavigationActions  navAction         -> processNavigationAction navAction app
     ProductFormActions productFormAction -> processFormAction productFormAction app
     ProductViewActions productViewAction -> processProductViewAction productViewAction app
     ProductsLoaded resultProducts        -> processProductsResponse resultProducts app
 
-setProductView : App -> List Product -> Product -> (App, Effects Action)
-setProductView app products selectedProduct =
-  let (productView, fx) = PV.init products selectedProduct
-  in
-    ( { app | products    = Loaded products
-            , productView = Just productView
-            , currentView = Navigation.ProductView
-      }
-    , Effects.map ProductViewActions fx
-    )
-
-setCreateProductView : App -> List Product -> (App, Effects Action)
-setCreateProductView app products =
-  ( { app | products    = Loaded products
-          , currentView = Navigation.CreateProductFormView
-    }
-  , Effects.none
-  )
-
-setErrorView : App -> String -> App
-setErrorView app err =
-  { app | products    = LoadedWithError err
-        , currentView = Navigation.ErrorView err
-  }
-
 view : Signal.Address Action -> App -> Html
 view address app =
-  case (log "CurrentView: " app.currentView) of
+  case app.currentView of
     Navigation.LoadingView           -> renderLoadingView
     Navigation.ErrorView err         -> renderErrorView err
     Navigation.CreateProductFormView -> renderProductsForm address app
@@ -106,6 +80,31 @@ renderProductView address app =
           productViewHtml  = PV.view forwardedAddress pv
       in Html.div [] [ productViewHtml ]
 
+setProductView : App -> List Product -> Product -> (App, Effects Action)
+setProductView app products selectedProduct =
+  let (productView, fx) = PV.init products selectedProduct
+  in
+    ( { app | products    = Loaded products
+            , productView = Just productView
+            , currentView = Navigation.ProductView
+      }
+    , Effects.map ProductViewActions fx
+    )
+
+setCreateProductView : App -> List Product -> (App, Effects Action)
+setCreateProductView app products =
+  ( { app | products    = Loaded products
+          , currentView = Navigation.CreateProductFormView
+    }
+  , Effects.none
+  )
+
+setErrorView : App -> String -> App
+setErrorView app err =
+  { app | products    = LoadedWithError err
+        , currentView = Navigation.ErrorView err
+  }
+
 getProducts : String -> Effects Action
 getProducts url =
    Http.get P.parseProducts url
@@ -130,8 +129,7 @@ processProductsResponse result app =
       in
         (newState, fx)
     Err err ->
-      let loggedErr = log "Error: " err
-          newState = setErrorView app "Error loading products"
+      let newState = setErrorView app "Error loading products"
       in
         (newState, Effects.none)
 
@@ -140,7 +138,7 @@ processProductsResponse result app =
 
 processProductViewAction : ProductViewActions.Action -> App -> (App, Effects Action)
 processProductViewAction productViewAction app =
-  case (log "productViewAction: " productViewAction) of
+  case productViewAction of
     -- ProductViewActions.NavBarAction Navigation.ShowCreateNewProductForm ->
     ProductViewActions.NavBarAction navBarAction ->
       case navBarAction of
@@ -167,7 +165,7 @@ processProductViewAction productViewAction app =
 
 processNavigationAction : Navigation.Action -> App -> (App, Effects Action)
 processNavigationAction navAction app =
-  case (log "navAction: " navAction) of
+  case navAction of
     Navigation.ShowCreateNewProductForm ->
       case app.productView of
         Nothing ->
@@ -212,7 +210,7 @@ processFormAction formAction app =
       in
         (newApp, Effects.map ProductViewActions fx)
     _ ->
-      let (newCreateProductForm, fx) = CPF.update (log "FormAction: " formAction) app.productForm
+      let (newCreateProductForm, fx) = CPF.update formAction app.productForm
           newApp = { app | productForm = newCreateProductForm }
       in
         (newApp, Effects.map ProductFormActions fx)
