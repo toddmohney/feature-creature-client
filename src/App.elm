@@ -50,22 +50,7 @@ update action app =
     NavigationActions  navAction         -> processNavigationAction navAction app
     ProductFormActions productFormAction -> processFormAction productFormAction app
     ProductViewActions productViewAction -> processProductViewAction productViewAction app
-    ProductsLoaded resultProducts ->
-      case resultProducts of
-        Ok products ->
-          let selectedProduct = head products
-              (newState, fx) = case selectedProduct of
-                Just p  ->
-                  setProductView app products p
-                Nothing ->
-                  setCreateProductView app products
-          in
-            (newState, fx)
-        Err err ->
-          let loggedErr = log "Error: " err
-              newState = setErrorView app "Error loading products"
-          in
-            (newState, Effects.none)
+    ProductsLoaded resultProducts        -> processProductsResponse resultProducts app
 
 setProductView : App -> List Product -> Product -> (App, Effects Action)
 setProductView app products selectedProduct =
@@ -133,6 +118,25 @@ getProducts url =
 
 productsEndpoint : String
 productsEndpoint = "http://localhost:8081/products"
+
+
+-- product response action handler
+
+processProductsResponse : Result Error (List Product) -> App -> (App, Effects Action)
+processProductsResponse result app =
+  case result of
+    Ok products ->
+      let selectedProduct = head products
+          (newState, fx) = case selectedProduct of
+            Just p  -> setProductView app products p
+            Nothing -> setCreateProductView app products
+      in
+        (newState, fx)
+    Err err ->
+      let loggedErr = log "Error: " err
+          newState = setErrorView app "Error loading products"
+      in
+        (newState, Effects.none)
 
 
 -- product view action handler
