@@ -86,7 +86,7 @@ renderProductView address app =
 
 setProductView : App -> List Product -> Product -> (App, Effects Action)
 setProductView app products selectedProduct =
-  let (productView, fx) = PV.init products selectedProduct
+  let (productView, fx) = PV.init (fromJust app.appConfig) products selectedProduct
   in
     ( { app | products    = Loaded products
             , productView = Just productView
@@ -159,7 +159,7 @@ showNewProductForm productViewAction app =
     (newState, Effects.map ProductViewActions fx)
 
 forwardToProductView : ProductViewActions.Action -> App -> (App, Effects Action)
-forwardToProductView productViewAction app =
+forwardToProductView  productViewAction app =
   let (newProductView, fx) = PV.update productViewAction (fromJust app.productView) (fromJust app.appConfig)
       newState = { app | productView = Just newProductView }
   in
@@ -191,7 +191,7 @@ processFormAction : ProductFormActions.Action -> App -> (App, Effects Action)
 processFormAction formAction app =
   case formAction of
     ProductFormActions.NewProductCreated product ->
-      let (newProductView, fx) = PV.init (extractProducts app.products) product
+      let (newProductView, fx) = PV.init (fromJust app.appConfig) (extractProducts app.products) product
           newApp = { app | currentView = Navigation.ProductView
                          , productView = Just newProductView
                          , productForm = CPF.init

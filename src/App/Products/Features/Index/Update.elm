@@ -1,8 +1,10 @@
 module App.Products.Features.Index.Update where
 
+import App.AppConfig                           exposing (..)
 import App.Products.Features.FeatureList as FL
+import App.Products.Features.Requests as F
 import App.Products.Features.Index.Actions     exposing (Action(..))
-import App.Products.Features.Index.ViewModel   exposing (FeaturesView, featureUrl, featuresUrl, getFeature, getFeaturesList)
+import App.Products.Features.Index.ViewModel   exposing (FeaturesView)
 import App.Products.Navigation as Navigation
 import Data.External                           exposing (External(..))
 import Debug                                   exposing (crash, log)
@@ -10,16 +12,20 @@ import Effects                                 exposing (Effects)
 import UI.SyntaxHighlighting as Highlight      exposing (highlightSyntaxMailbox)
 import Task                                    exposing (..)
 
-update : Action -> FeaturesView -> (FeaturesView, Effects Action)
-update action productView =
+update : AppConfig -> Action -> FeaturesView -> (FeaturesView, Effects Action)
+update appConfig action productView =
   case action of
     FeatureListAction featureListAction ->
       case featureListAction of
         FL.ShowFeature fileDescription ->
-          (productView, getFeature (featureUrl productView.product fileDescription.filePath))
+          let product = productView.product
+              filePath = fileDescription.filePath
+              fx = F.getFeature appConfig product filePath ShowFeatureDetails
+          in
+            (productView, fx)
 
     RequestFeatures ->
-      (productView, getFeaturesList (featuresUrl productView.product Nothing))
+      (productView, F.getFeaturesList appConfig productView.product Nothing UpdateFeatures)
 
     ShowFeatureDetails resultFeature ->
       case resultFeature of

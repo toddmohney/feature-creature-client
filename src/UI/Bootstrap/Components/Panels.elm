@@ -3,7 +3,6 @@ module UI.Bootstrap.Components.Panels
   ) where
 
 import Html exposing (Html)
-import Html.Attributes
 import UI.Bootstrap.CSS.Panels as BS
 
 panelWithHeading : Html -> Html -> Html

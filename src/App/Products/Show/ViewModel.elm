@@ -1,5 +1,6 @@
 module App.Products.Show.ViewModel where
 
+import App.AppConfig                                   exposing (..)
 import Effects                                         exposing (Effects)
 import App.Products.DomainTerms.Index.ViewModel as DTV exposing (DomainTermsView)
 import App.Products.Features.Index.ViewModel as FV     exposing (FeaturesView)
@@ -16,9 +17,9 @@ type alias ProductView =
   , userRolesView   : UserRolesView
   }
 
-init : List Product -> Product -> (ProductView, Effects Action)
-init products selectedProduct =
-  let (featView, featuresViewFx)       = FV.init selectedProduct
+init : AppConfig -> List Product -> Product -> (ProductView, Effects Action)
+init appConfig products selectedProduct =
+  let (featView, featuresViewFx)       = FV.init appConfig selectedProduct
       (domainTermsView, domainTermsFx) = DTV.init selectedProduct
       (userRolesView, userRolesFx)     = URV.init selectedProduct
       productView = { product          = selectedProduct
