@@ -4,6 +4,7 @@ import App.Products.Features.FeatureList as FL
 import App.Products.Features.Index.Actions     exposing (Action(..))
 import App.Products.Features.Index.ViewModel   exposing (FeaturesView, featureUrl, featuresUrl, getFeature, getFeaturesList)
 import App.Products.Navigation as Navigation
+import Data.External                           exposing (External(..))
 import Debug                                   exposing (crash, log)
 import Effects                                 exposing (Effects)
 import UI.SyntaxHighlighting as Highlight      exposing (highlightSyntaxMailbox)
@@ -16,9 +17,6 @@ update action productView =
       case featureListAction of
         FL.ShowFeature fileDescription ->
           (productView, getFeature (featureUrl productView.product fileDescription.filePath))
-
-    Noop ->
-      ( productView, Effects.none )
 
     RequestFeatures ->
       (productView, getFeaturesList (featuresUrl productView.product Nothing))
@@ -41,17 +39,16 @@ update action productView =
          )
 
     UpdateFeatures resultFeatureTree ->
-      case resultFeatureTree of
-        Ok featureTree ->
-          let newFeatureList = Just { features = featureTree }
-              currentProduct = productView.product
-              newFeaturesView = { productView | product = { currentProduct | featureList = newFeatureList } }
-            in ( newFeaturesView
-               , Effects.task (Task.succeed (NavigationAction Navigation.SelectFeaturesView))
-               )
-        Err _ -> crash "Error handling FeaturesView.UpdateFeatures"
+      let newFeatureList = case resultFeatureTree of
+                             Ok featureTree -> Loaded { features = featureTree }
+                             Err _ -> LoadedWithError "An error occurred while loading features"
+          currentProduct = productView.product
+          newFeaturesView = { productView | product = { currentProduct | featureList = newFeatureList } }
+      in
+        ( newFeaturesView
+        , Effects.task (Task.succeed (NavigationAction Navigation.SelectFeaturesView))
+        )
 
+    Noop -> ( productView, Effects.none )
 
-    NavigationAction a ->
-      let thingy = log "NavigationAction: " a
-      in (productView, Effects.none)
+    NavigationAction a -> (productView, Effects.none)

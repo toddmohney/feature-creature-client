@@ -1,6 +1,7 @@
 module App.Products.Product where
 
 import App.AppConfig                       exposing (..)
+import Data.External                       exposing (External(..))
 import Json.Encode
 import Json.Decode as Json                 exposing ((:=))
 import App.Products.DomainTerms.DomainTerm exposing (..)
@@ -15,7 +16,7 @@ type alias Product =
   { id          : Int
   , name        : String
   , repoUrl     : String
-  , featureList : Maybe FeatureList
+  , featureList : External FeatureList
   , domainTerms : List DomainTerm
   , userRoles   : List UserRole
   }
@@ -31,7 +32,7 @@ init' prodID prodName prodRepoUrl =
   { id          = prodID
   , name        = prodName
   , repoUrl     = prodRepoUrl
-  , featureList = Nothing
+  , featureList = NotLoaded
   , domainTerms = []
   , userRoles   = []
   }

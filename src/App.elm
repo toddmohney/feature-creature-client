@@ -1,6 +1,7 @@
 module App where
 
 import CoreExtensions.Maybe            exposing (fromJust)
+import Data.External                   exposing (External(..))
 import Debug                           exposing (log)
 import Effects                         exposing (Effects)
 import Html                            exposing (Html)
@@ -19,7 +20,7 @@ import Products.Show.Update     as PV
 import Task as Task                    exposing (..)
 
 type alias App =
-  { products          : ExternalData (List Product)
+  { products          : External (List Product)
   , currentView       : Navigation.CurrentView
   , productForm       : CreateProductForm
   , productView       : Maybe ProductView
@@ -29,10 +30,6 @@ type Action = ProductsLoaded (Result Error (List Product))
             | ProductFormActions ProductFormActions.Action
             | ProductViewActions ProductViewActions.Action
             | NavigationActions Navigation.Action
-
-type ExternalData a = NotLoaded
-                    | Loaded a
-                    | LoadedWithError String
 
 init : (App, Effects Action)
 init =
@@ -196,7 +193,7 @@ processNavigationAction navAction app =
 
 -- form action handler
 
-extractProducts : ExternalData (List Product) -> List Product
+extractProducts : External (List Product) -> List Product
 extractProducts exData =
   case exData of
     Loaded products -> products
