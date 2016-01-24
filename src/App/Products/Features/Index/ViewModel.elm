@@ -17,10 +17,10 @@ type alias FeaturesView =
 
 init : Product -> (FeaturesView, Effects Action)
 init prod =
-  let productView = { product               = prod
-                    , selectedFeature       = Nothing
-                    }
-  in (productView , getFeaturesList (featuresUrl prod Nothing))
+  let featuresView = { product        = prod
+                     , selectedFeature = Nothing
+                     }
+  in (featuresView , getFeaturesList (featuresUrl prod Nothing))
 
 -- this doesn't feel like it belongs in the Model module
 getFeaturesList : String -> Effects Action
