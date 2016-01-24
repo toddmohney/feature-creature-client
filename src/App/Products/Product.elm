@@ -1,11 +1,15 @@
 module App.Products.Product where
 
+import App.AppConfig                       exposing (..)
 import Json.Encode
 import Json.Decode as Json                 exposing ((:=))
 import App.Products.DomainTerms.DomainTerm exposing (..)
 import App.Products.Features.FeatureList   exposing (..)
 import App.Products.UserRoles.UserRole     exposing (..)
+import Effects                             exposing (Effects)
 import Html                                exposing (..)
+import Http as Http                        exposing (..)
+import Task as Task                        exposing (..)
 
 type alias Product =
   { id          : Int
@@ -54,3 +58,12 @@ encodeProduct product =
         [ ("name",    Json.Encode.string product.name)
         , ("repoUrl", Json.Encode.string product.repoUrl)
         ]
+
+getProducts : AppConfig -> (Result Error (List Product) -> a) -> Effects a
+getProducts appConfig action =
+  let url = appConfig.apiPath ++ "/products"
+  in
+    Http.get parseProducts url
+     |> Task.toResult
+     |> Task.map action
+     |> Effects.task

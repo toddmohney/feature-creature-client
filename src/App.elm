@@ -144,7 +144,6 @@ processProductsResponse result app =
 processProductViewAction : ProductViewActions.Action -> App -> (App, Effects Action)
 processProductViewAction productViewAction app =
   case (log "productViewAction: " productViewAction) of
-    -- ProductViewActions.NavBarAction Navigation.ShowCreateNewProductForm ->
     ProductViewActions.NavBarAction navBarAction ->
       case navBarAction of
         Navigation.ShowCreateNewProductForm ->

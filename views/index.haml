@@ -34,7 +34,7 @@
         Prism.highlightAll();
       }
 
-      var app = Elm.fullscreen(Elm.Main, { initAppConfig: { apiPath: "no apiPath for you" } });
+      var app = Elm.fullscreen(Elm.Main, { initAppConfig: { apiPath: "" } });
       app.ports.highlightSyntaxPort.subscribe(highlightSyntax);
 
       app.ports.initAppConfig.send(
