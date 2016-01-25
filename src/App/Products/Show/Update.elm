@@ -11,6 +11,7 @@ import App.Products.Navigation.NavBar as NavBar
 import App.Products.Product                           exposing (Product)
 import App.Products.Show.Actions as Actions           exposing (Action)
 import App.Products.Show.ViewModel as PV              exposing (ProductView)
+import App.Products.UserRoles.Actions as URV
 import App.Products.UserRoles.UserRolesView as URV
 import App.Search.Types as Search
 import Effects                                        exposing (Effects)
@@ -46,7 +47,7 @@ update action productView appConfig =
           )
 
     Actions.UserRolesViewAction urvAction ->
-      let (userRolesView, urvFx) = URV.update urvAction productView.userRolesView
+      let (userRolesView, urvFx) = URV.update urvAction productView.userRolesView appConfig
           newProductView = { productView | userRolesView = userRolesView }
       in case urvAction of
         URV.SearchFeatures query ->

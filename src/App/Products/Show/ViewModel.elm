@@ -21,7 +21,7 @@ init : AppConfig -> List Product -> Product -> (ProductView, Effects Action)
 init appConfig products selectedProduct =
   let (featView, featuresViewFx)       = FV.init appConfig selectedProduct
       (domainTermsView, domainTermsFx) = DTV.init selectedProduct appConfig
-      (userRolesView, userRolesFx)     = URV.init selectedProduct
+      (userRolesView, userRolesFx)     = URV.init selectedProduct appConfig
       productView = { product          = selectedProduct
                     , navBar           = NavBar.init products selectedProduct
                     , featuresView     = featView

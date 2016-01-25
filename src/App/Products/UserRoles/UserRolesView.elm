@@ -1,19 +1,18 @@
 module App.Products.UserRoles.UserRolesView where
 
+import App.AppConfig                                 exposing (..)
+import App.Products.UserRoles.Actions                exposing (Action(..))
+import App.Products.UserRoles.Forms.ViewModel as URF
+import App.Products.UserRoles.Forms.Update as URF
+import App.Products.UserRoles.Forms.View as URF
+import App.Products.UserRoles.Requests               exposing (getUserRolesList)
+import App.Products.UserRoles.UserRole as UR         exposing (UserRole, toSearchQuery)
+import App.Products.Product                          exposing (Product)
 import Debug                                         exposing (crash)
 import Effects                                       exposing (Effects)
 import Html                                          exposing (Html)
 import Html.Events                                   exposing (onClick)
 import Html.Attributes                               exposing (class, href)
-import Http                                          exposing (Error)
-import App.Products.UserRoles.UserRole as UR         exposing (UserRole, toSearchQuery)
-import App.Products.UserRoles.Forms.Actions as URF
-import App.Products.UserRoles.Forms.ViewModel as URF
-import App.Products.UserRoles.Forms.Update as URF
-import App.Products.UserRoles.Forms.View as URF
-import App.Products.Product                          exposing (Product)
-import App.Search.Types as Search
-import Task                                          exposing (Task)
 import UI.App.Components.Panels as UI
 
 type alias UserRolesView =
@@ -21,21 +20,17 @@ type alias UserRolesView =
   , userRoleForm : URF.UserRoleForm
   }
 
-type Action = UpdateUserRoles (Result Error (List UserRole))
-            | UserRoleFormAction URF.Action
-            | SearchFeatures Search.Query
+init : Product -> AppConfig -> (UserRolesView, Effects Action)
+init prod appConfig =
+  let effects = getUserRolesList appConfig prod UpdateUserRoles
+  in (,)
+     { product = prod
+     , userRoleForm = URF.init prod
+     }
+     effects
 
-init : Product -> (UserRolesView, Effects Action)
-init prod =
-  let effects = getUserRolesList (userRolesUrl prod)
-  in ( { product = prod
-       , userRoleForm = URF.init prod
-       }
-     , effects
-     )
-
-update : Action -> UserRolesView -> (UserRolesView, Effects Action)
-update action userRolesView =
+update : Action -> UserRolesView -> AppConfig -> (UserRolesView, Effects Action)
+update action userRolesView appConfig =
   case action of
     -- This is smelly. The UserRoleFrom is allowed to update the Product,
     -- so we need to update both this model and the form model.
@@ -58,7 +53,7 @@ update action userRolesView =
     -- so we need to update both this model and the form model.
     -- Try to refactor to let the updates flow in One Direction
     UserRoleFormAction dtFormAction ->
-      let (dtForm, dtFormFx) = URF.update dtFormAction userRolesView.userRoleForm
+      let (dtForm, dtFormFx) = URF.update dtFormAction userRolesView.userRoleForm appConfig
           prod = userRolesView.product
           updatedProduct = { prod | userRoles = dtForm.product.userRoles }
           updatedUserRolesView = { userRolesView |
@@ -72,20 +67,13 @@ update action userRolesView =
       -- noop
       (userRolesView, Effects.none)
 
-
 view : Signal.Address Action -> UserRolesView -> Html
 view address userRolesView =
   let userRoles = userRolesView.product.userRoles
       forwardedAddress = (Signal.forwardTo address UserRoleFormAction)
       newUserRoleForm = URF.view forwardedAddress userRolesView.userRoleForm
-  in Html.div [] (newUserRoleForm :: (List.map (renderUserRole address) userRoles))
-
-getUserRolesList : String -> Effects Action
-getUserRolesList url =
-  Http.get UR.parseUserRoles url
-   |> Task.toResult
-   |> Task.map UpdateUserRoles
-   |> Effects.task
+  in
+    Html.div [] (newUserRoleForm :: (List.map (renderUserRole address) userRoles))
 
 renderUserRole : Signal.Address Action -> UserRole -> Html
 renderUserRole address userRole =
@@ -94,7 +82,5 @@ renderUserRole address userRole =
       featureLink    = Html.a [ href "#", onClick address linkAction ] [ Html.text "View features" ]
       featureLinkContainer = Html.div [ class "pull-right" ] [ featureLink ]
       headingContent = Html.div [ class "clearfix" ] [ userRoleName, featureLinkContainer ]
-  in UI.panelWithHeading headingContent (Html.text userRole.description)
-
-userRolesUrl : Product -> String
-userRolesUrl prod = "http://localhost:8081/products/" ++ (toString prod.id) ++ "/user-roles"
+  in
+    UI.panelWithHeading headingContent (Html.text userRole.description)
