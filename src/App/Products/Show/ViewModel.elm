@@ -6,7 +6,7 @@ import App.Products.DomainTerms.Index.ViewModel as DTV exposing (DomainTermsView
 import App.Products.Features.Index.ViewModel as FV     exposing (FeaturesView)
 import App.Products.Product                            exposing (Product)
 import App.Products.Show.Actions                       exposing (Action(..))
-import App.Products.UserRoles.UserRolesView as URV     exposing (UserRolesView)
+import App.Products.UserRoles.Index.ViewModel as URV   exposing (UserRolesView)
 import App.Products.Navigation.NavBar as NavBar        exposing (ProductViewNavBar)
 
 type alias ProductView =

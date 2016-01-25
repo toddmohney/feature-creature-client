@@ -1,34 +1,14 @@
-module App.Products.UserRoles.UserRolesView where
+module App.Products.UserRoles.Index.Update
+  ( update
+  ) where
 
 import App.AppConfig                                 exposing (..)
 import App.Products.UserRoles.Actions                exposing (Action(..))
-import App.Products.UserRoles.Forms.ViewModel as URF
 import App.Products.UserRoles.Forms.Update as URF
-import App.Products.UserRoles.Forms.View as URF
-import App.Products.UserRoles.Requests               exposing (getUserRolesList)
-import App.Products.UserRoles.UserRole as UR         exposing (UserRole, toSearchQuery)
-import App.Products.Product                          exposing (Product)
+import App.Products.UserRoles.Index.ViewModel        exposing (UserRolesView)
 import Data.External                                 exposing (External(..))
 import Debug                                         exposing (crash)
 import Effects                                       exposing (Effects)
-import Html                                          exposing (Html)
-import Html.Events                                   exposing (onClick)
-import Html.Attributes                               exposing (class, href)
-import UI.App.Components.Panels as UI
-
-type alias UserRolesView =
-  { product        : Product
-  , userRoleForm : URF.UserRoleForm
-  }
-
-init : Product -> AppConfig -> (UserRolesView, Effects Action)
-init prod appConfig =
-  let effects = getUserRolesList appConfig prod UpdateUserRoles
-  in (,)
-     { product = prod
-     , userRoleForm = URF.init prod
-     }
-     effects
 
 update : Action -> UserRolesView -> AppConfig -> (UserRolesView, Effects Action)
 update action userRolesView appConfig =
@@ -67,23 +47,3 @@ update action userRolesView appConfig =
     SearchFeatures query ->
       -- noop
       (userRolesView, Effects.none)
-
-view : Signal.Address Action -> UserRolesView -> Html
-view address userRolesView =
-  let forwardedAddress = (Signal.forwardTo address UserRoleFormAction)
-      newUserRoleForm = URF.view forwardedAddress userRolesView.userRoleForm
-      userRoles = case userRolesView.product.userRoles of
-        Loaded urs -> urs
-        _          -> []
-  in
-    Html.div [] (newUserRoleForm :: (List.map (renderUserRole address) userRoles))
-
-renderUserRole : Signal.Address Action -> UserRole -> Html
-renderUserRole address userRole =
-  let userRoleName = Html.div [ class "pull-left" ] [ Html.text userRole.title ]
-      linkAction     = SearchFeatures (toSearchQuery userRole)
-      featureLink    = Html.a [ href "#", onClick address linkAction ] [ Html.text "View features" ]
-      featureLinkContainer = Html.div [ class "pull-right" ] [ featureLink ]
-      headingContent = Html.div [ class "clearfix" ] [ userRoleName, featureLinkContainer ]
-  in
-    UI.panelWithHeading headingContent (Html.text userRole.description)

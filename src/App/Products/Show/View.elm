@@ -5,7 +5,7 @@ import App.Products.DomainTerms.Index.View as DTV
 import App.Products.Features.Index.View as FV
 import App.Products.Show.Actions                   exposing (Action(..))
 import App.Products.Show.ViewModel                 exposing (ProductView)
-import App.Products.UserRoles.UserRolesView as URV
+import App.Products.UserRoles.Index.View as URV
 import App.Products.Navigation.NavBar as NavBar
 
 view : Signal.Address Action -> ProductView -> Html
