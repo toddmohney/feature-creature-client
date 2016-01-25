@@ -20,7 +20,7 @@ type alias ProductView =
 init : AppConfig -> List Product -> Product -> (ProductView, Effects Action)
 init appConfig products selectedProduct =
   let (featView, featuresViewFx)       = FV.init appConfig selectedProduct
-      (domainTermsView, domainTermsFx) = DTV.init selectedProduct
+      (domainTermsView, domainTermsFx) = DTV.init selectedProduct appConfig
       (userRolesView, userRolesFx)     = URV.init selectedProduct
       productView = { product          = selectedProduct
                     , navBar           = NavBar.init products selectedProduct

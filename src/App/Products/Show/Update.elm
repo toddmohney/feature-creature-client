@@ -32,7 +32,7 @@ update action productView appConfig =
           )
 
     Actions.DomainTermsViewAction dtvAction ->
-      let (domainTermsView, dtvFx) = DT.update dtvAction productView.domainTermsView
+      let (domainTermsView, dtvFx) = DT.update dtvAction productView.domainTermsView appConfig
           newProductView = { productView | domainTermsView = domainTermsView }
       in case dtvAction of
         DT.SearchFeatures query ->

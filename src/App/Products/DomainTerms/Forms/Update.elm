@@ -1,19 +1,16 @@
 module App.Products.DomainTerms.Forms.Update
   ( update ) where
 
-import App.Products.Product                      exposing (Product)
-import App.Products.DomainTerms.DomainTerm as DT exposing (DomainTerm)
+import App.AppConfig                             exposing (..)
 import App.Products.DomainTerms.Forms.Actions    exposing (..)
 import App.Products.DomainTerms.Forms.ViewModel  exposing (DomainTermForm)
 import App.Products.DomainTerms.Forms.Validation exposing (validateForm, hasErrors)
+import App.Products.DomainTerms.Requests         exposing (createDomainTerm)
 import Debug                                     exposing (crash)
 import Effects                                   exposing (Effects)
-import Http                                      exposing (Error)
-import Task                                      exposing (Task)
-import Utils.Http
 
-update : DomainTermFormAction -> DomainTermForm -> (DomainTermForm, Effects DomainTermFormAction)
-update action domainTermForm =
+update : DomainTermFormAction -> DomainTermForm -> AppConfig -> (DomainTermForm, Effects DomainTermFormAction)
+update action domainTermForm appConfig =
   case action of
     AddDomainTerm domainTermResult ->
       case domainTermResult of
@@ -51,17 +48,5 @@ update action domainTermForm =
              )
            False ->
              ( newDomainTermForm
-             , createDomainTerm (domainTermsUrl newDomainTermForm.product) newDomainTermForm.newDomainTerm
+             , createDomainTerm appConfig newDomainTermForm.product newDomainTermForm.newDomainTerm AddDomainTerm
              )
-
-domainTermsUrl : Product -> String
-domainTermsUrl prod = "http://localhost:8081/products/" ++ (toString prod.id) ++ "/domain-terms"
-
-createDomainTerm : String -> DomainTerm -> Effects DomainTermFormAction
-createDomainTerm url domainTerm =
-  let request = Utils.Http.jsonPostRequest url (DT.encodeDomainTerm domainTerm)
-  in Http.send Http.defaultSettings request
-     |> Http.fromJson DT.parseDomainTerm
-     |> Task.toResult
-     |> Task.map AddDomainTerm
-     |> Effects.task
