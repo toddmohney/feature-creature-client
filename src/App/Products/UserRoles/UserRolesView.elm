@@ -8,6 +8,7 @@ import App.Products.UserRoles.Forms.View as URF
 import App.Products.UserRoles.Requests               exposing (getUserRolesList)
 import App.Products.UserRoles.UserRole as UR         exposing (UserRole, toSearchQuery)
 import App.Products.Product                          exposing (Product)
+import Data.External                                 exposing (External(..))
 import Debug                                         exposing (crash)
 import Effects                                       exposing (Effects)
 import Html                                          exposing (Html)
@@ -39,7 +40,7 @@ update action userRolesView appConfig =
       case userRolesResult of
         Ok userRoleList ->
           let prod = userRolesView.product
-              updatedProduct = { prod | userRoles = userRoleList }
+              updatedProduct = { prod | userRoles = Loaded userRoleList }
               userRoleForm = userRolesView.userRoleForm
               newUserRoleForm = { userRoleForm | product = updatedProduct }
               newView = { userRolesView |
@@ -69,9 +70,11 @@ update action userRolesView appConfig =
 
 view : Signal.Address Action -> UserRolesView -> Html
 view address userRolesView =
-  let userRoles = userRolesView.product.userRoles
-      forwardedAddress = (Signal.forwardTo address UserRoleFormAction)
+  let forwardedAddress = (Signal.forwardTo address UserRoleFormAction)
       newUserRoleForm = URF.view forwardedAddress userRolesView.userRoleForm
+      userRoles = case userRolesView.product.userRoles of
+        Loaded urs -> urs
+        _          -> []
   in
     Html.div [] (newUserRoleForm :: (List.map (renderUserRole address) userRoles))
 

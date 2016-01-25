@@ -6,6 +6,7 @@ import App.Products.UserRoles.Forms.Actions    exposing (..)
 import App.Products.UserRoles.Forms.ViewModel  exposing (UserRoleForm)
 import App.Products.UserRoles.Forms.Validation exposing (hasErrors, validateForm)
 import App.Products.UserRoles.Requests         exposing (createUserRole)
+import App.Products.Product as P
 import Debug                                   exposing (crash)
 import Effects                                 exposing (Effects)
 
@@ -15,12 +16,12 @@ update action userRoleForm appConfig =
     AddUserRole userRoleResult ->
       case userRoleResult of
         Ok userRole ->
-          let prod             = userRoleForm.product
-              newUserRolesList = userRole :: prod.userRoles
-              updatedProduct   = { prod | userRoles = newUserRolesList }
-              newView          = { userRoleForm | product = updatedProduct }
-          in (newView, Effects.none)
-        Err _ -> crash "Something went wrong!"
+          let updatedProduct = P.addUserRole userRoleForm.product userRole
+              newView        = { userRoleForm | product = updatedProduct }
+          in
+            (newView, Effects.none)
+        Err _ ->
+          crash "Something went wrong!"
 
     ShowUserRoleForm ->
       ({ userRoleForm | userRoleFormVisible = True }, Effects.none)

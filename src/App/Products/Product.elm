@@ -18,7 +18,7 @@ type alias Product =
   , repoUrl     : String
   , featureList : External FeatureList
   , domainTerms : External (List DomainTerm)
-  , userRoles   : List UserRole
+  , userRoles   : External (List UserRole)
   }
 
 newProduct : Product
@@ -34,7 +34,7 @@ init' prodID prodName prodRepoUrl =
   , repoUrl     = prodRepoUrl
   , featureList = NotLoaded
   , domainTerms = NotLoaded
-  , userRoles   = []
+  , userRoles   = NotLoaded
   }
 
 view : Product -> Html
@@ -46,6 +46,12 @@ addDomainTerm product domainTerm =
   case product.domainTerms of
     Loaded dts -> { product | domainTerms = Loaded (domainTerm :: dts) }
     _          -> { product | domainTerms = Loaded [domainTerm] }
+
+addUserRole : Product -> UserRole -> Product
+addUserRole product userRole =
+  case product.userRoles of
+    Loaded urs -> { product | domainTerms = Loaded (userRole :: urs) }
+    _          -> { product | domainTerms = Loaded [userRole] }
 
 parseProducts : Json.Decoder (List Product)
 parseProducts = parseProduct |> Json.list
