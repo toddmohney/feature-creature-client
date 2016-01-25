@@ -2,6 +2,7 @@ module App.Products.DomainTerms.Forms.Update
   ( update ) where
 
 import App.AppConfig                             exposing (..)
+import App.Products.Product as P
 import App.Products.DomainTerms.Forms.Actions    exposing (..)
 import App.Products.DomainTerms.Forms.ViewModel  exposing (DomainTermForm)
 import App.Products.DomainTerms.Forms.Validation exposing (validateForm, hasErrors)
@@ -15,12 +16,12 @@ update action domainTermForm appConfig =
     AddDomainTerm domainTermResult ->
       case domainTermResult of
         Ok domainTerm ->
-          let prod = domainTermForm.product
-              newDomainTermsList = domainTerm :: prod.domainTerms
-              updatedProduct = { prod | domainTerms = newDomainTermsList }
+          let updatedProduct = P.addDomainTerm domainTermForm.product domainTerm
               newView = { domainTermForm | product = updatedProduct }
-          in (newView, Effects.none)
-        Err _ -> crash "Something went wrong!"
+          in
+            (newView, Effects.none)
+        Err _ ->
+          crash "Something went wrong!"
 
     ShowDomainTermForm ->
       ({ domainTermForm | domainTermFormVisible = True }, Effects.none)
