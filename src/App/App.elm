@@ -2,6 +2,7 @@ module App.App where
 
 import App.AppConfig                                      exposing (..)
 import App.Products.Product         as P                  exposing (Product)
+import App.Products.Requests        as P
 import App.Products.Forms.Actions   as ProductFormActions
 import App.Products.Forms.ViewModel as CPF                exposing (CreateProductForm)
 import App.Products.Forms.View      as CPF
@@ -199,7 +200,7 @@ processFormAction formAction app =
       in
         (newApp, Effects.map ProductViewActions fx)
     _ ->
-      let (newCreateProductForm, fx) = CPF.update formAction app.productForm
+      let (newCreateProductForm, fx) = CPF.update formAction app.productForm (fromJust app.appConfig)
           newApp = { app | productForm = newCreateProductForm }
       in
         (newApp, Effects.map ProductFormActions fx)

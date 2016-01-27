@@ -1,16 +1,10 @@
 module App.Products.Product where
 
-import App.AppConfig                       exposing (..)
 import Data.External                       exposing (External(..))
-import Json.Encode
-import Json.Decode as Json                 exposing ((:=))
 import App.Products.DomainTerms.DomainTerm exposing (..)
 import App.Products.Features.FeatureList   exposing (..)
 import App.Products.UserRoles.UserRole     exposing (..)
-import Effects                             exposing (Effects)
 import Html                                exposing (..)
-import Http as Http                        exposing (..)
-import Task as Task                        exposing (..)
 
 type alias Product =
   { id          : Int
@@ -52,31 +46,3 @@ addUserRole product userRole =
   case product.userRoles of
     Loaded urs -> { product | domainTerms = Loaded (userRole :: urs) }
     _          -> { product | domainTerms = Loaded [userRole] }
-
-parseProducts : Json.Decoder (List Product)
-parseProducts = parseProduct |> Json.list
-
-parseProduct : Json.Decoder Product
-parseProduct =
-  Json.object3
-    init'
-    ("id"      := Json.int)
-    ("name"    := Json.string)
-    ("repoUrl" := Json.string)
-
-encodeProduct : Product -> String
-encodeProduct product =
-  Json.Encode.encode 0
-    <| Json.Encode.object
-        [ ("name",    Json.Encode.string product.name)
-        , ("repoUrl", Json.Encode.string product.repoUrl)
-        ]
-
-getProducts : AppConfig -> (Result Error (List Product) -> a) -> Effects a
-getProducts appConfig action =
-  let url = appConfig.apiPath ++ "/products"
-  in
-    Http.get parseProducts url
-     |> Task.toResult
-     |> Task.map action
-     |> Effects.task
