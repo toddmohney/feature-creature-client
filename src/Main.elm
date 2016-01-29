@@ -1,6 +1,8 @@
 module Main where
 
-import App.App  as App    exposing (update, init, view)
+import App.Actions as App
+import App.App  as App
+import App.Update  as App
 import App.AppConfig      exposing (..)
 import Effects            exposing (Never)
 import Html               exposing (Html)
