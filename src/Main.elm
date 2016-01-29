@@ -1,6 +1,7 @@
 module Main where
 
 import App.App  as App    exposing (update, init, view)
+import App.AppConfig      exposing (..)
 import Effects            exposing (Never)
 import Html               exposing (Html)
 import UI.SyntaxHighlighting exposing (highlightSyntaxMailbox)
@@ -13,7 +14,7 @@ app = SA.start
   { init   = App.init
   , update = App.update
   , view   = App.view
-  , inputs = []
+  , inputs = [(Signal.map App.ConfigLoaded initAppConfig)]
   }
 
 main : Signal Html.Html
@@ -21,6 +22,8 @@ main = app.html
 
 port tasks : Signal (Task.Task Never ())
 port tasks = app.tasks
+
+port initAppConfig : Signal AppConfig
 
 port highlightSyntaxPort : Signal (Maybe ())
 port highlightSyntaxPort = highlightSyntaxMailbox.signal

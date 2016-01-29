@@ -1,27 +1,31 @@
 module App.Products.Features.Index.Update where
 
+import App.AppConfig                           exposing (..)
 import App.Products.Features.FeatureList as FL
+import App.Products.Features.Requests as F
 import App.Products.Features.Index.Actions     exposing (Action(..))
-import App.Products.Features.Index.ViewModel   exposing (FeaturesView, featureUrl, featuresUrl, getFeature, getFeaturesList)
+import App.Products.Features.Index.ViewModel   exposing (FeaturesView)
 import App.Products.Navigation as Navigation
+import Data.External                           exposing (External(..))
 import Debug                                   exposing (crash, log)
 import Effects                                 exposing (Effects)
 import UI.SyntaxHighlighting as Highlight      exposing (highlightSyntaxMailbox)
 import Task                                    exposing (..)
 
-update : Action -> FeaturesView -> (FeaturesView, Effects Action)
-update action productView =
+update : AppConfig -> Action -> FeaturesView -> (FeaturesView, Effects Action)
+update appConfig action productView =
   case action of
     FeatureListAction featureListAction ->
       case featureListAction of
         FL.ShowFeature fileDescription ->
-          (productView, getFeature (featureUrl productView.product fileDescription.filePath))
-
-    Noop ->
-      ( productView, Effects.none )
+          let product = productView.product
+              filePath = fileDescription.filePath
+              fx = F.getFeature appConfig product filePath ShowFeatureDetails
+          in
+            (productView, fx)
 
     RequestFeatures ->
-      (productView, getFeaturesList (featuresUrl productView.product Nothing))
+      (productView, F.getFeaturesList appConfig productView.product Nothing UpdateFeatures)
 
     ShowFeatureDetails resultFeature ->
       case resultFeature of
@@ -41,17 +45,16 @@ update action productView =
          )
 
     UpdateFeatures resultFeatureTree ->
-      case resultFeatureTree of
-        Ok featureTree ->
-          let newFeatureList = Just { features = featureTree }
-              currentProduct = productView.product
-              newFeaturesView = { productView | product = { currentProduct | featureList = newFeatureList } }
-            in ( newFeaturesView
-               , Effects.task (Task.succeed (NavigationAction Navigation.SelectFeaturesView))
-               )
-        Err _ -> crash "Error handling FeaturesView.UpdateFeatures"
+      let newFeatureList = case resultFeatureTree of
+                             Ok featureTree -> Loaded { features = featureTree }
+                             Err _ -> LoadedWithError "An error occurred while loading features"
+          currentProduct = productView.product
+          newFeaturesView = { productView | product = { currentProduct | featureList = newFeatureList } }
+      in
+        ( newFeaturesView
+        , Effects.task (Task.succeed (NavigationAction Navigation.SelectFeaturesView))
+        )
 
+    Noop -> ( productView, Effects.none )
 
-    NavigationAction a ->
-      let thingy = log "NavigationAction: " a
-      in (productView, Effects.none)
+    NavigationAction a -> (productView, Effects.none)

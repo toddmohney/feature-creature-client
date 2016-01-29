@@ -1,29 +1,27 @@
 module App.Products.UserRoles.Forms.Update
   ( update ) where
 
-import Debug                                   exposing (crash)
-import Effects                                 exposing (Effects)
-import Http                                    exposing (Error)
-import App.Products.Product                    exposing (Product)
+import App.AppConfig                           exposing (..)
 import App.Products.UserRoles.Forms.Actions    exposing (..)
 import App.Products.UserRoles.Forms.ViewModel  exposing (UserRoleForm)
 import App.Products.UserRoles.Forms.Validation exposing (hasErrors, validateForm)
-import App.Products.UserRoles.UserRole as UR   exposing (UserRole)
-import Task                                    exposing (Task)
-import Utils.Http
+import App.Products.UserRoles.Requests         exposing (createUserRole)
+import App.Products.Product as P
+import Debug                                   exposing (crash)
+import Effects                                 exposing (Effects)
 
-update : Action -> UserRoleForm -> (UserRoleForm, Effects Action)
-update action userRoleForm =
+update : Action -> UserRoleForm -> AppConfig -> (UserRoleForm, Effects Action)
+update action userRoleForm appConfig =
   case action of
     AddUserRole userRoleResult ->
       case userRoleResult of
         Ok userRole ->
-          let prod             = userRoleForm.product
-              newUserRolesList = userRole :: prod.userRoles
-              updatedProduct   = { prod | userRoles = newUserRolesList }
-              newView          = { userRoleForm | product = updatedProduct }
-          in (newView, Effects.none)
-        Err _ -> crash "Something went wrong!"
+          let updatedProduct = P.addUserRole userRoleForm.product userRole
+              newView        = { userRoleForm | product = updatedProduct }
+          in
+            (newView, Effects.none)
+        Err _ ->
+          crash "Something went wrong!"
 
     ShowUserRoleForm ->
       ({ userRoleForm | userRoleFormVisible = True }, Effects.none)
@@ -51,17 +49,5 @@ update action userRoleForm =
              )
            False ->
              ( newUserRoleForm
-             , createUserRole (userRolesUrl newUserRoleForm.product) newUserRoleForm.newUserRole
+             , createUserRole appConfig newUserRoleForm.product newUserRoleForm.newUserRole AddUserRole
              )
-
-userRolesUrl : Product -> String
-userRolesUrl prod = "http://localhost:8081/products/" ++ (toString prod.id) ++ "/user-roles"
-
-createUserRole : String -> UserRole -> Effects Action
-createUserRole url userRole =
-  let request = Utils.Http.jsonPostRequest url (UR.encodeUserRole userRole)
-  in Http.send Http.defaultSettings request
-     |> Http.fromJson UR.parseUserRole
-     |> Task.toResult
-     |> Task.map AddUserRole
-     |> Effects.task

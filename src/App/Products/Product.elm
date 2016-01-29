@@ -1,7 +1,6 @@
 module App.Products.Product where
 
-import Json.Encode
-import Json.Decode as Json                 exposing ((:=))
+import Data.External                       exposing (External(..))
 import App.Products.DomainTerms.DomainTerm exposing (..)
 import App.Products.Features.FeatureList   exposing (..)
 import App.Products.UserRoles.UserRole     exposing (..)
@@ -11,9 +10,9 @@ type alias Product =
   { id          : Int
   , name        : String
   , repoUrl     : String
-  , featureList : Maybe FeatureList
-  , domainTerms : List DomainTerm
-  , userRoles   : List UserRole
+  , featureList : External FeatureList
+  , domainTerms : External (List DomainTerm)
+  , userRoles   : External (List UserRole)
   }
 
 newProduct : Product
@@ -27,30 +26,23 @@ init' prodID prodName prodRepoUrl =
   { id          = prodID
   , name        = prodName
   , repoUrl     = prodRepoUrl
-  , featureList = Nothing
-  , domainTerms = []
-  , userRoles   = []
+  , featureList = NotLoaded
+  , domainTerms = NotLoaded
+  , userRoles   = NotLoaded
   }
 
 view : Product -> Html
 view product =
   Html.div [] [ text product.name ]
 
-parseProducts : Json.Decoder (List Product)
-parseProducts = parseProduct |> Json.list
+addDomainTerm : Product -> DomainTerm -> Product
+addDomainTerm product domainTerm =
+  case product.domainTerms of
+    Loaded dts -> { product | domainTerms = Loaded (domainTerm :: dts) }
+    _          -> { product | domainTerms = Loaded [domainTerm] }
 
-parseProduct : Json.Decoder Product
-parseProduct =
-  Json.object3
-    init'
-    ("id"      := Json.int)
-    ("name"    := Json.string)
-    ("repoUrl" := Json.string)
-
-encodeProduct : Product -> String
-encodeProduct product =
-  Json.Encode.encode 0
-    <| Json.Encode.object
-        [ ("name",    Json.Encode.string product.name)
-        , ("repoUrl", Json.Encode.string product.repoUrl)
-        ]
+addUserRole : Product -> UserRole -> Product
+addUserRole product userRole =
+  case product.userRoles of
+    Loaded urs -> { product | domainTerms = Loaded (userRole :: urs) }
+    _          -> { product | domainTerms = Loaded [userRole] }

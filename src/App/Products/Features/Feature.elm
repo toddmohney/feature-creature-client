@@ -1,11 +1,12 @@
 module App.Products.Features.Feature where
 
-import Html            exposing (..)
-import Html.Attributes exposing (class)
+import Html                                exposing (..)
+import Html.Attributes                     exposing (class)
 
-type alias Feature = { featureID : String
-                     , description : String
-                     }
+type alias Feature =
+  { featureID : String
+  , description : String
+  }
 
 view : Feature -> Html
 view feature =

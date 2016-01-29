@@ -1,6 +1,8 @@
 module App.App where
 
+import App.AppConfig                                      exposing (..)
 import App.Products.Product         as P                  exposing (Product)
+import App.Products.Requests        as P
 import App.Products.Forms.Actions   as ProductFormActions
 import App.Products.Forms.ViewModel as CPF                exposing (CreateProductForm)
 import App.Products.Forms.View      as CPF
@@ -14,35 +16,38 @@ import CoreExtensions.Maybe                               exposing (fromJust)
 import Data.External                                      exposing (External(..))
 import Effects                                            exposing (Effects)
 import Html                                               exposing (Html)
-import Http as Http                                       exposing (..)
+import Http as Http                                       exposing (Error)
 import List                                               exposing (head, length)
-import Task as Task                                       exposing (..)
 
 type alias App =
-  { products          : External (List Product)
-  , currentView       : Navigation.CurrentView
-  , productForm       : CreateProductForm
-  , productView       : Maybe ProductView
+  { appConfig   : Maybe AppConfig
+  , products    : External (List Product)
+  , currentView : Navigation.CurrentView
+  , productForm : CreateProductForm
+  , productView : Maybe ProductView
   }
 
 type Action = ProductsLoaded (Result Error (List Product))
+            | ConfigLoaded AppConfig
             | ProductFormActions ProductFormActions.Action
             | ProductViewActions ProductViewActions.Action
             | NavigationActions Navigation.Action
 
 init : (App, Effects Action)
 init =
-  let initialState = { products    = NotLoaded
+  let initialState = { appConfig   = Nothing
+                     , products    = NotLoaded
                      , currentView = Navigation.LoadingView
                      , productForm = CPF.init
                      , productView = Nothing
                      }
   in
-    (initialState, getProducts productsEndpoint)
+    (initialState, Effects.none)
 
 update : Action -> App -> (App, Effects Action)
 update action app =
   case action of
+    ConfigLoaded appConfig               -> processAppConfig appConfig app
     NavigationActions  navAction         -> processNavigationAction navAction app
     ProductFormActions productFormAction -> processFormAction productFormAction app
     ProductViewActions productViewAction -> processProductViewAction productViewAction app
@@ -74,7 +79,7 @@ renderProductsForm address app =
 renderProductView : Signal.Address Action -> App -> Html
 renderProductView address app =
   case app.productView of
-    Nothing          -> Html.div [] [ Html.text "No products found" ]
+    Nothing -> Html.div [] [ Html.text "No products found" ]
     Just pv ->
       let forwardedAddress = (Signal.forwardTo address ProductViewActions)
           productViewHtml  = PV.view forwardedAddress pv
@@ -82,7 +87,7 @@ renderProductView address app =
 
 setProductView : App -> List Product -> Product -> (App, Effects Action)
 setProductView app products selectedProduct =
-  let (productView, fx) = PV.init products selectedProduct
+  let (productView, fx) = PV.init (fromJust app.appConfig) products selectedProduct
   in
     ( { app | products    = Loaded products
             , productView = Just productView
@@ -105,15 +110,10 @@ setErrorView app err =
         , currentView = Navigation.ErrorView err
   }
 
-getProducts : String -> Effects Action
-getProducts url =
-   Http.get P.parseProducts url
-    |> Task.toResult
-    |> Task.map ProductsLoaded
-    |> Effects.task
 
-productsEndpoint : String
-productsEndpoint = "http://localhost:8081/products"
+processAppConfig : AppConfig -> App -> (App, Effects Action)
+processAppConfig appConfig app =
+  ({ app | appConfig = Just appConfig }, P.getProducts appConfig ProductsLoaded)
 
 
 -- product response action handler
@@ -138,56 +138,46 @@ processProductsResponse result app =
 
 processProductViewAction : ProductViewActions.Action -> App -> (App, Effects Action)
 processProductViewAction productViewAction app =
+  case creatingNewProduct productViewAction of
+    True  -> showNewProductForm productViewAction app
+    False -> forwardToProductView productViewAction app
+
+
+creatingNewProduct : ProductViewActions.Action -> Bool
+creatingNewProduct productViewAction =
   case productViewAction of
-    -- ProductViewActions.NavBarAction Navigation.ShowCreateNewProductForm ->
     ProductViewActions.NavBarAction navBarAction ->
-      case navBarAction of
-        Navigation.ShowCreateNewProductForm ->
-          let (newProductView, fx) = PV.update productViewAction (fromJust app.productView)
-              newState = { app | productView = Just newProductView
-                               , currentView = Navigation.CreateProductFormView
-                         }
-          in
-            (newState, Effects.map ProductViewActions fx)
-        _ ->
-          let (newProductView, fx) = PV.update productViewAction (fromJust app.productView)
-              newState = { app | productView = Just newProductView }
-          in
-            (newState, Effects.map ProductViewActions fx)
-    _ ->
-      let (newProductView, fx) = PV.update productViewAction (fromJust app.productView)
-          newState = { app | productView = Just newProductView }
-      in
-        (newState, Effects.map ProductViewActions fx)
+      navBarAction == Navigation.ShowCreateNewProductForm
+    _ -> False
+
+showNewProductForm : ProductViewActions.Action -> App -> (App, Effects Action)
+showNewProductForm productViewAction app =
+  let (newProductView, fx) = PV.update productViewAction (fromJust app.productView) (fromJust app.appConfig)
+      newState = { app | productView = Just newProductView
+                       , currentView = Navigation.CreateProductFormView
+                 }
+  in
+    (newState, Effects.map ProductViewActions fx)
+
+forwardToProductView : ProductViewActions.Action -> App -> (App, Effects Action)
+forwardToProductView  productViewAction app =
+  let (newProductView, fx) = PV.update productViewAction (fromJust app.productView) (fromJust app.appConfig)
+      newState = { app | productView = Just newProductView }
+  in
+    (newState, Effects.map ProductViewActions fx)
 
 
 -- nav action handler
 
 processNavigationAction : Navigation.Action -> App -> (App, Effects Action)
 processNavigationAction navAction app =
-  case navAction of
-    Navigation.ShowCreateNewProductForm ->
-      case app.productView of
-        Nothing ->
-          ( { app | currentView = Navigation.CreateProductFormView }
-          , Effects.none
-          )
-        Just pv ->
-          let (newProductView, fx) = PV.update (ProductViewActions.NavBarAction navAction) pv
-              newApp = { app | productView = Just newProductView
-                             , currentView = Navigation.CreateProductFormView
-                       }
-          in
-            (newApp, Effects.map ProductViewActions fx)
-    _ ->
-      case app.productView of
-        Nothing ->
-          (app, Effects.none)
-        Just pv ->
-          let (newProductView, fx) = PV.update (ProductViewActions.NavBarAction navAction) pv
-              newApp = { app | productView = Just newProductView }
-          in
-            (newApp, Effects.map ProductViewActions fx)
+  case app.productView of
+    Nothing -> (app, Effects.none)
+    Just pv ->
+      let (newProductView, fx) = PV.update (ProductViewActions.NavBarAction navAction) pv (fromJust app.appConfig)
+          newApp = { app | productView = Just newProductView }
+      in
+        (newApp, Effects.map ProductViewActions fx)
 
 
 -- form action handler
@@ -202,7 +192,7 @@ processFormAction : ProductFormActions.Action -> App -> (App, Effects Action)
 processFormAction formAction app =
   case formAction of
     ProductFormActions.NewProductCreated product ->
-      let (newProductView, fx) = PV.init (extractProducts app.products) product
+      let (newProductView, fx) = PV.init (fromJust app.appConfig) (extractProducts app.products) product
           newApp = { app | currentView = Navigation.ProductView
                          , productView = Just newProductView
                          , productForm = CPF.init
@@ -210,7 +200,7 @@ processFormAction formAction app =
       in
         (newApp, Effects.map ProductViewActions fx)
     _ ->
-      let (newCreateProductForm, fx) = CPF.update formAction app.productForm
+      let (newCreateProductForm, fx) = CPF.update formAction app.productForm (fromJust app.appConfig)
           newApp = { app | productForm = newCreateProductForm }
       in
         (newApp, Effects.map ProductFormActions fx)
