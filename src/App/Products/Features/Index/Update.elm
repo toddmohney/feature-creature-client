@@ -25,7 +25,12 @@ update appConfig action productView =
             (productView, fx)
 
     RequestFeatures ->
-      (productView, F.getFeaturesList appConfig productView.product Nothing UpdateFeatures)
+      let query = Nothing
+          action = UpdateFeatures query
+      in
+        (,)
+        productView
+        (F.getFeaturesList appConfig productView.product query action)
 
     ShowFeatureDetails resultFeature ->
       case resultFeature of
@@ -44,7 +49,7 @@ update appConfig action productView =
          , Effects.task <| highlightSyntax `andThen` (\_ -> (Task.succeed Noop))
          )
 
-    UpdateFeatures resultFeatureTree ->
+    UpdateFeatures query resultFeatureTree ->
       let newFeatureList = case resultFeatureTree of
                              Ok featureTree -> Loaded { features = featureTree }
                              Err _ -> LoadedWithError "An error occurred while loading features"

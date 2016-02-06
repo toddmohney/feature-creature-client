@@ -18,4 +18,9 @@ init appConfig prod =
   let featuresView = { product        = prod
                      , selectedFeature = Nothing
                      }
-  in (featuresView , getFeaturesList appConfig prod Nothing UpdateFeatures)
+      query = Nothing
+      action = UpdateFeatures query
+  in
+    (,)
+    featuresView
+    (getFeaturesList appConfig prod query action)

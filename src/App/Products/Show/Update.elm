@@ -62,7 +62,10 @@ update action productView appConfig =
 
 searchFeatures : AppConfig -> Product -> Search.Query -> Effects FeaturesActions.Action
 searchFeatures appConfig product query =
-  F.getFeaturesList appConfig product (Just query) FeaturesActions.UpdateFeatures
+  let searchQuery = Just query
+      action = FeaturesActions.UpdateFeatures searchQuery
+  in
+    F.getFeaturesList appConfig product searchQuery action
 
 handleNavigation : AppConfig -> Navigation.Action -> ProductView -> (ProductView, Effects Action)
 handleNavigation appConfig navBarAction productView =
