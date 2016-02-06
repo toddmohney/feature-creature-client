@@ -50,11 +50,14 @@ update appConfig action productView =
          )
 
     UpdateFeatures query resultFeatureTree ->
-      let newFeatureList = case resultFeatureTree of
-                             Ok featureTree -> Loaded { features = featureTree }
-                             Err _ -> LoadedWithError "An error occurred while loading features"
-          currentProduct = productView.product
-          newFeaturesView = { productView | product = { currentProduct | featureList = newFeatureList } }
+      let newFeatureList    = case resultFeatureTree of
+                                Ok featureTree -> Loaded { features = featureTree }
+                                Err _ -> LoadedWithError "An error occurred while loading features"
+          currentProduct    = productView.product
+          newCurrentProduct = { currentProduct | featureList = newFeatureList }
+          newFeaturesView   = { productView | product = newCurrentProduct
+                                            , currentSearchTerm = query
+                              }
       in
         ( newFeaturesView
         , Effects.task (Task.succeed (NavigationAction Navigation.SelectFeaturesView))

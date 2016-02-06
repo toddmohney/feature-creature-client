@@ -4,6 +4,7 @@ import App.Products.Features.Feature as F
 import App.Products.Features.FeatureList as FL
 import App.Products.Features.Index.Actions   exposing (Action(..))
 import App.Products.Features.Index.ViewModel exposing (FeaturesView)
+import App.Search.Types                      exposing (..)
 import Data.External                         exposing (External(..))
 import Html                                  exposing (..)
 import UI.App.Components.ListDetailView as UI
@@ -21,5 +22,25 @@ view address featuresView =
               Just feature -> [ F.view feature ]
               Nothing      -> []
             listHtml = [ FL.render featureListAddress featureList ]
-        in UI.listDetailView listHtml featureHtml
+        in
+          case featuresView.currentSearchTerm of
+            Nothing ->
+              Html.div
+              []
+              [ renderListDetailView listHtml featureHtml ]
+            Just query ->
+              Html.div
+              []
+              [ renderCurrentSearchTerm query
+              , renderListDetailView listHtml featureHtml
+              ]
+
+renderCurrentSearchTerm : Query -> Html
+renderCurrentSearchTerm query =
+  Html.div
+  []
+  [ (Html.text ("Results filtered by: " ++ query.datatype ++ ": " ++ query.term)) ]
+
+renderListDetailView : List Html -> List Html -> Html
+renderListDetailView = UI.listDetailView
 
