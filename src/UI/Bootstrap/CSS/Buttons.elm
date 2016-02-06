@@ -10,3 +10,6 @@ primaryBtn : Attribute
 primaryBtn = classList [ ("btn", True)
                        , ("btn-primary", True)
                        ]
+
+secondaryBtn : Attribute
+secondaryBtn = classList [ ("btn", True) ]
