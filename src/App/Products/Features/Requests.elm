@@ -13,10 +13,10 @@ import Http                                exposing (..)
 import Json.Decode as Json                 exposing ((:=))
 import Task                                exposing (..)
 
-getFeaturesList : AppConfig 
-               -> Product 
-               -> Maybe Search.Query 
-               -> (Result Error DirectoryTree -> a) 
+getFeaturesList : AppConfig
+               -> Product
+               -> Maybe Search.Query
+               -> (Result Error DirectoryTree -> a)
                -> Effects a
 getFeaturesList appConfig product query action =
   let url = featuresUrl appConfig product query

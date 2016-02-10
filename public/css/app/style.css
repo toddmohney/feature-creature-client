@@ -3,7 +3,16 @@ html, body {
   padding: 0;
 }
 
+.fc-padding--horizontal--small {
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
 .directory-tree ul {
+  padding-left: 0px;
+}
+
+.directory-tree ul ul {
   padding-left: 20px;
 }
 
