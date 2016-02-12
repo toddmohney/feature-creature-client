@@ -13,29 +13,33 @@ import UI.SyntaxHighlighting as Highlight      exposing (highlightSyntaxMailbox)
 import Task                                    exposing (..)
 
 update : AppConfig -> Action -> FeaturesView -> (FeaturesView, Effects Action)
-update appConfig action productView =
+update appConfig action featuresView =
   case action of
     FeatureListAction featureListAction ->
       case featureListAction of
         FL.ShowFeature fileDescription ->
-          let product = productView.product
+          let product = featuresView.product
               filePath = fileDescription.filePath
               fx = F.getFeature appConfig product filePath ShowFeatureDetails
           in
-            (productView, fx)
+            -- reset the current feature until the request comes back
+            -- we need this to avoid appending to the view rather than
+            -- replacing it.
+            -- https://github.com/gust/feature-creature/issues/65
+            ({ featuresView | selectedFeature = Nothing }, fx)
 
     RequestFeatures ->
       let query = Nothing
           action = UpdateFeatures query
       in
         (,)
-        productView
-        (F.getFeaturesList appConfig productView.product query action)
+        featuresView
+        (F.getFeaturesList appConfig featuresView.product query action)
 
     ShowFeatureDetails resultFeature ->
       case resultFeature of
         Ok feature ->
-          ({ productView | selectedFeature = Just feature }
+          ({ featuresView | selectedFeature = Just feature }
           , Effects.task
               <| Task.succeed
               <| SyntaxHighlightingAction Highlight.HighlightSyntax
@@ -45,7 +49,7 @@ update appConfig action productView =
 
     SyntaxHighlightingAction _ ->
       let highlightSyntax = Signal.send highlightSyntaxMailbox.address Nothing
-      in ( productView
+      in ( featuresView
          , Effects.task <| highlightSyntax `andThen` (\_ -> (Task.succeed Noop))
          )
 
@@ -53,9 +57,9 @@ update appConfig action productView =
       let newFeatureList    = case resultFeatureTree of
                                 Ok featureTree -> Loaded { features = featureTree }
                                 Err _ -> LoadedWithError "An error occurred while loading features"
-          currentProduct    = productView.product
+          currentProduct    = featuresView.product
           newCurrentProduct = { currentProduct | featureList = newFeatureList }
-          newFeaturesView   = { productView | product = newCurrentProduct
+          newFeaturesView   = { featuresView | product = newCurrentProduct
                                             , currentSearchTerm = query
                               }
       in
@@ -63,6 +67,6 @@ update appConfig action productView =
         , Effects.task (Task.succeed (NavigationAction Navigation.SelectFeaturesView))
         )
 
-    Noop -> ( productView, Effects.none )
+    Noop -> ( featuresView, Effects.none )
 
-    NavigationAction a -> (productView, Effects.none)
+    NavigationAction a -> (featuresView, Effects.none)

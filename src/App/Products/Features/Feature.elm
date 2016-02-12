@@ -1,7 +1,7 @@
 module App.Products.Features.Feature where
 
 import Html                                exposing (..)
-import Html.Attributes                     exposing (class)
+import Html.Attributes                     exposing (classList)
 
 type alias Feature =
   { featureID : String
@@ -10,9 +10,15 @@ type alias Feature =
 
 view : Feature -> Html
 view feature =
-  Html.pre
-  []
-  [ Html.code
-    [ class "language-gherkin" ]
-    [ text feature.description ]
-  ]
+  let classes = classList [ ("language-gherkin", True)
+                          , ("lang-gherkin", True)
+                          , ("gherkin", True)
+                          , ("feature-detail", True)
+                          ]
+  in
+    Html.pre
+    []
+    [ Html.code
+      [ classes ]
+      [ text feature.description ]
+    ]

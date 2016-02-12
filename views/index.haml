@@ -13,8 +13,8 @@
     %link{ rel: "stylesheet", href: "css/app/style.css" }
 
     <!-- Highlight JS -->
-    %link{ rel: "stylesheet" href: "//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.1.0/styles/default.min.css" }
-    %script{ src: "//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.1.0/highlight.min.js" }
+    %link{ rel: "stylesheet", href: "css/vendor/highlightjs/tomorrow-night-bright.css" }
+    %script{ src: "js/vendor/highlightjs/highlight.pack.js" }
 
     <!-- Bootstrap -->
     <!-- Latest compiled and minified CSS -->
@@ -30,8 +30,15 @@
       %div#app
 
     :javascript
+      function applyHighlight(val) {
+        $('pre code').each(function(i, block) {
+          hljs.highlightBlock(block);
+        });
+      }
+
       function highlightSyntax(val) {
-        Prism.highlightAll();
+        // sleep to allow DOM changes to render
+        setTimeout(applyHighlight, 10);
       }
 
       var app = Elm.fullscreen(Elm.Main, { initAppConfig: { apiPath: "" } });
