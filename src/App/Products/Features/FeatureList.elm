@@ -5,6 +5,7 @@ import Data.DirectoryTree            exposing (..)
 import Html                          exposing (..)
 import Html.Attributes               exposing (..)
 import Html.Events                   exposing (onClick)
+import String
 
 type alias FeatureList =
   { features: DirectoryTree }
@@ -28,11 +29,18 @@ drawTree address selectedLeaf tree =
         []
         [ drawFeatureFile address fileDesc (isEmphasized fileDesc selectedLeaf) ]
     DirectoryTree fileDesc forest ->
-      Html.li
-        []
-        [ drawFeatureDirectory address fileDesc
-        , Html.ul [] (List.map (drawTree address selectedLeaf) forest)
-        ]
+      let replaceSlashes = \c -> if c == '/' then 'a' else c
+          directoryContentsID = String.map replaceSlashes fileDesc.filePath
+      in
+        Html.li
+          []
+          [ drawFeatureDirectory address fileDesc directoryContentsID
+          , Html.ul
+            [ id directoryContentsID
+            , classList [ ("collapse", True) ]
+            ]
+            (List.map (drawTree address selectedLeaf) forest)
+          ]
 
 isEmphasized : FileDescription -> Maybe Feature -> Bool
 isEmphasized fileDesc selectedFeature =
@@ -54,10 +62,13 @@ drawFeatureFile' address fileDesc =
   , Html.text fileDesc.fileName
   ]
 
-drawFeatureDirectory : Signal.Address Action -> FileDescription -> Html
-drawFeatureDirectory address fileDesc =
-  Html.div
-  [ classList [ ("feature-directory", True) ] ]
+drawFeatureDirectory : Signal.Address Action -> FileDescription -> String -> Html
+drawFeatureDirectory address fileDesc directoryContentsID =
+  Html.a
+  [ href ("#" ++ directoryContentsID)
+  , attribute "data-toggle" "collapse"
+  , classList [ ("feature-directory", True) ]
+  ]
   [ (drawFeatureDirectory' address fileDesc) ]
 
 drawFeatureDirectory' : Signal.Address Action -> FileDescription -> Html

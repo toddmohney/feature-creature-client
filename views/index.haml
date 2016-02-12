@@ -48,3 +48,8 @@
         { apiPath: "#{ENV['FC_API_PATH']}" }
       );
 
+      $(document).ready(function() {
+        // disable bootstrap transition animations
+        $.support.transition = false;
+      });
+
