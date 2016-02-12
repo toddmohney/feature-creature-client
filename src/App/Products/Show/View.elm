@@ -7,6 +7,7 @@ import App.Products.Show.Actions                   exposing (Action(..))
 import App.Products.Show.ViewModel                 exposing (ProductView)
 import App.Products.UserRoles.Index.View as URV
 import App.Products.Navigation.NavBar as NavBar
+import Html.Attributes                       exposing (classList)
 
 view : Signal.Address Action -> ProductView -> Html
 view address productView =
@@ -21,14 +22,23 @@ view address productView =
 renderFeaturesView : Signal.Address Action -> ProductView -> Html
 renderFeaturesView address productView =
   let signal = (Signal.forwardTo address FeaturesViewAction)
-  in Html.div [] [ FV.view signal productView.featuresView ]
+  in
+    Html.div
+    [ classList [("fc-padding--horizontal--medium", True)] ]
+    [ FV.view signal productView.featuresView ]
 
 renderDomainTermsView : Signal.Address Action -> ProductView -> Html
 renderDomainTermsView address productView =
   let signal = (Signal.forwardTo address DomainTermsViewAction)
-  in Html.div [] [ DTV.view signal productView.domainTermsView ]
+  in
+    Html.div
+    [ classList [("fc-padding--horizontal--medium", True)] ]
+    [ DTV.view signal productView.domainTermsView ]
 
 renderUserRolesView : Signal.Address Action -> ProductView -> Html
 renderUserRolesView address productView =
   let signal = (Signal.forwardTo address UserRolesViewAction)
-  in Html.div [] [ URV.view signal productView.userRolesView ]
+  in
+    Html.div
+    [ classList [("fc-padding--horizontal--medium", True)] ]
+    [ URV.view signal productView.userRolesView ]
