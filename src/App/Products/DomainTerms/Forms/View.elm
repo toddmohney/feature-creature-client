@@ -4,21 +4,40 @@ module App.Products.DomainTerms.Forms.View
 import App.Products.DomainTerms.Forms.Actions   exposing (..)
 import App.Products.DomainTerms.Forms.ViewModel exposing (DomainTermForm)
 import Html                                     exposing (Html)
-import Html.Attributes                          exposing (href)
+import Html.Attributes                          exposing (classList, href, style)
 import Html.Events                              exposing (onClick)
 import UI.App.Components.Panels    as UI
 import UI.App.Primitives.Forms     as UI
 
 view : Signal.Address DomainTermFormAction -> DomainTermForm -> Html
 view address domainTermForm =
-  if domainTermForm.domainTermFormVisible
-    then
+  case domainTermForm.domainTermFormVisible of
+    True ->
       let domainTermFormHtml = renderDomainTermForm address domainTermForm
-      in Html.div [] [ domainTermFormHtml ]
-    else
-      Html.a
-      [ href "#", onClick address ShowDomainTermForm ]
-      [ Html.text "Create Domain Term" ]
+      in
+        Html.div
+        [ classList [ ("clearfix", True) ] ]
+        [ Html.div
+          [ classList [ ("pull-right", True) ]
+          , style [ ("width", "50%") ]
+          ]
+          [ domainTermFormHtml ]
+        ]
+    False ->
+      Html.div
+      [ classList [ ("clearfix", True), ("fc-margin--bottom--medium", True) ] ]
+      [ renderFormButton address ]
+
+renderFormButton : Signal.Address DomainTermFormAction -> Html
+renderFormButton address =
+  Html.a
+  [ href "#", onClick address ShowDomainTermForm
+  , classList [ ("pull-right", True)
+              , ("btn", True)
+              , ("btn-primary", True)
+              ]
+  ]
+  [ Html.text "Create Domain Term" ]
 
 renderDomainTermForm : Signal.Address DomainTermFormAction -> DomainTermForm -> Html
 renderDomainTermForm address domainTermForm =

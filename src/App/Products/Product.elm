@@ -44,5 +44,5 @@ addDomainTerm product domainTerm =
 addUserRole : Product -> UserRole -> Product
 addUserRole product userRole =
   case product.userRoles of
-    Loaded urs -> { product | domainTerms = Loaded (userRole :: urs) }
-    _          -> { product | domainTerms = Loaded [userRole] }
+    Loaded urs -> { product | userRoles = Loaded (userRole :: urs) }
+    _          -> { product | userRoles = Loaded [userRole] }

@@ -40,7 +40,7 @@ view address featuresView =
 renderListDetailView : Html -> Html
 renderListDetailView listDetailView =
   Html.div
-  [ classList [("fc-padding--horizontal--small", True)] ]
+  []
   [ listDetailView ]
 
 renderCurrentSearchTerm : Query -> Signal.Address Action -> Html
