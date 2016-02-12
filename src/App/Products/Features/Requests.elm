@@ -1,4 +1,4 @@
-module App.Products.Features.Requests 
+module App.Products.Features.Requests
   ( getFeaturesList
   , getFeature
   ) where
@@ -27,10 +27,10 @@ getFeaturesList appConfig product query action =
       |> Effects.task
 
 
-getFeature : AppConfig 
-          -> Product 
-          -> DT.FilePath 
-          -> (Result Error Feature -> a) 
+getFeature : AppConfig
+          -> Product
+          -> DT.FilePath
+          -> (Result Error Feature -> a)
           -> Effects a
 getFeature appConfig product path action =
   let url = featureUrl appConfig product path
@@ -41,23 +41,23 @@ getFeature appConfig product path action =
       |> Effects.task
 
 
-featuresUrl : AppConfig 
-           -> Product 
-           -> Maybe Search.Query 
+featuresUrl : AppConfig
+           -> Product
+           -> Maybe Search.Query
            -> String
 featuresUrl appConfig product query =
   let featuresEndpoint = appConfig.apiPath ++ "/products/" ++ (toString product.id) ++ "/features"
-  in 
+  in
     case query of
       Nothing  -> featuresEndpoint
       (Just q) -> featuresEndpoint ++ "?search=" ++ q.term
 
 
-featureUrl : AppConfig 
-          -> Product 
-          -> DT.FilePath 
+featureUrl : AppConfig
+          -> Product
+          -> DT.FilePath
           -> String
-featureUrl appConfig product path = 
+featureUrl appConfig product path =
   appConfig.apiPath ++ "/products/" ++ (toString product.id) ++ "/feature?path=" ++ path
 
 
