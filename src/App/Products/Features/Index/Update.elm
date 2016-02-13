@@ -40,9 +40,7 @@ update appConfig action featuresView =
       case resultFeature of
         Ok feature ->
           ({ featuresView | selectedFeature = Just feature }
-          , Effects.task
-              <| Task.succeed
-              <| SyntaxHighlightingAction Highlight.HighlightSyntax
+          , highlightFeatureSyntax
           )
         Err _ ->
           crash "Error handling FeaturesView.ShowFeatureDetails"
@@ -59,14 +57,21 @@ update appConfig action featuresView =
                                 Err _ -> LoadedWithError "An error occurred while loading features"
           currentProduct    = featuresView.product
           newCurrentProduct = { currentProduct | featureList = newFeatureList }
-          newFeaturesView   = { featuresView | product = newCurrentProduct
-                                            , currentSearchTerm = query
-                              }
+          newFeaturesView   = { featuresView | product = newCurrentProduct, currentSearchTerm = query }
       in
         ( newFeaturesView
         , Effects.task (Task.succeed (NavigationAction Navigation.SelectFeaturesView))
         )
 
+    NavigationAction navAction ->
+      case navAction of
+        Navigation.SelectFeaturesView -> (featuresView, highlightFeatureSyntax)
+        _                  -> (featuresView, Effects.none)
+
     Noop -> ( featuresView, Effects.none )
 
-    NavigationAction a -> (featuresView, Effects.none)
+highlightFeatureSyntax : Effects Action
+highlightFeatureSyntax =
+  Effects.task
+    <| Task.succeed
+    <| SyntaxHighlightingAction Highlight.HighlightSyntax
