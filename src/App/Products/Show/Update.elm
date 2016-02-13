@@ -71,11 +71,14 @@ handleNavigation : AppConfig -> Navigation.Action -> ProductView -> (ProductView
 handleNavigation appConfig navBarAction productView =
   let (updatedNavBar, navBarFx) = NavBar.update navBarAction productView.navBar
       newSelectedProduct        = updatedNavBar.selectedProduct
+      (newFeaturesView, featFX) = F.update appConfig (FeaturesActions.NavigationAction navBarAction) productView.featuresView
       switchingProducts         = productView.navBar.selectedProduct == newSelectedProduct
   in
     case switchingProducts of
-      True -> ( { productView | navBar = updatedNavBar }
-              , Effects.map Actions.NavBarAction navBarFx
+      True -> ( { productView | navBar = updatedNavBar, featuresView = newFeaturesView }
+              , Effects.batch [ Effects.map Actions.NavBarAction navBarFx
+                              , Effects.map Actions.FeaturesViewAction featFX
+                              ]
               )
       False ->
         PV.init appConfig productView.navBar.products newSelectedProduct
