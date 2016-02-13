@@ -23,22 +23,23 @@ renderFeaturesView : Signal.Address Action -> ProductView -> Html
 renderFeaturesView address productView =
   let signal = (Signal.forwardTo address FeaturesViewAction)
   in
-    Html.div
-    [ classList [("fc-padding--horizontal--medium", True)] ]
-    [ FV.view signal productView.featuresView ]
+    productViewContainer [ FV.view signal productView.featuresView ]
 
 renderDomainTermsView : Signal.Address Action -> ProductView -> Html
 renderDomainTermsView address productView =
   let signal = (Signal.forwardTo address DomainTermsViewAction)
   in
-    Html.div
-    [ classList [("fc-padding--horizontal--medium", True)] ]
-    [ DTV.view signal productView.domainTermsView ]
+    productViewContainer [ DTV.view signal productView.domainTermsView ]
 
 renderUserRolesView : Signal.Address Action -> ProductView -> Html
 renderUserRolesView address productView =
   let signal = (Signal.forwardTo address UserRolesViewAction)
   in
-    Html.div
-    [ classList [("fc-padding--horizontal--medium", True)] ]
-    [ URV.view signal productView.userRolesView ]
+    productViewContainer [ URV.view signal productView.userRolesView ]
+
+productViewContainer : List Html -> Html
+productViewContainer content =
+  Html.div
+  [ classList [("fc-padding--horizontal--medium", True)] ]
+  content
+
