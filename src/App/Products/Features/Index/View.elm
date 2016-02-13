@@ -1,47 +1,67 @@
 module App.Products.Features.Index.View where
 
-import App.Products.Features.Feature as F
-import App.Products.Features.FeatureList as FL
-import App.Products.Features.Index.Actions   exposing (Action(..))
-import App.Products.Features.Index.ViewModel exposing (FeaturesView)
-import App.Search.Types                      exposing (..)
-import Data.External                         exposing (External(..))
-import Html                                  exposing (..)
-import Html.Attributes                       exposing (classList)
-import Html.Events                           exposing (onClick)
+import App.Products.Features.Feature as F      exposing (Feature)
+import App.Products.Features.FeatureList as FL exposing (FeatureList)
+import App.Products.Features.Index.Actions     exposing (Action(..))
+import App.Products.Features.Index.ViewModel   exposing (FeaturesView)
+import App.Search.Types                        exposing (..)
+import Data.External                           exposing (External(..))
+import Html                                    exposing (..)
+import Html.Attributes                         exposing (classList)
+import Html.Events                             exposing (onClick)
 import UI.App.Components.ListDetailView as UI
 import UI.App.Primitives.Buttons as UI
 
 view : Signal.Address Action -> FeaturesView -> Html
 view address featuresView =
-  let featureList = featuresView.product.featureList
+  let product     = featuresView.product
+      featureList = product.featureList
   in
     case featureList of
       NotLoaded           -> Html.div [] [ text "Loading feature list..." ]
       LoadedWithError err -> Html.div [] [ text err ]
-      Loaded featureList  ->
-        let featureListAddress = Signal.forwardTo address FeatureListAction
-            featureHtml = case featuresView.selectedFeature of
-              Just feature -> [ F.view feature ]
-              Nothing      -> []
-            listHtml = [ FL.render featureListAddress featureList ]
-        in
-          case featuresView.currentSearchTerm of
-            Nothing ->
-              let listDetailView = UI.listDetailView listHtml featureHtml
-              in
-                renderListDetailView listDetailView
-            Just query ->
-              let listHtmlWithSearchFilterIndicator = ((renderCurrentSearchTerm query address) :: listHtml)
-                  listDetailView = UI.listDetailView listHtmlWithSearchFilterIndicator featureHtml
-              in
-                renderListDetailView listDetailView
+      Loaded featureList  -> featureListHtml address featuresView featureList
 
-renderListDetailView : Html -> Html
-renderListDetailView listDetailView =
+featureListHtml : Signal.Address Action -> FeaturesView -> FeatureList -> Html
+featureListHtml address featuresView featureList =
+  let featureListAddress = Signal.forwardTo address FeatureListAction
+      listHtml = [ FL.render featureListAddress featureList ]
+  in
+    case featuresView.currentSearchTerm of
+      Nothing ->
+        listDetailViewContainer
+          <| UI.listDetailView listHtml
+          <| featureHtml featuresView.selectedFeature
+      Just query ->
+        let listHtmlWithSearchFilterIndicator = (renderCurrentSearchTerm query address) :: listHtml
+        in
+          listDetailViewContainer
+            <| UI.listDetailView listHtmlWithSearchFilterIndicator
+            <| featureHtml featuresView.selectedFeature
+
+featureHtml : Maybe Feature -> List Html
+featureHtml selectedFeature =
+  case selectedFeature of
+    Nothing      -> []
+    Just feature ->
+      [ selectedFeatureContainer [ (selectedFeatureUI feature) , (featureUI feature) ] ]
+
+selectedFeatureContainer : List Html -> Html
+selectedFeatureContainer content =
+  Html.div [] content
+
+selectedFeatureUI : Feature -> Html
+selectedFeatureUI feature =
   Html.div
-  []
-  [ listDetailView ]
+  [ (classList [ ("well", True), ("well-sm", True) ]) ]
+  [ Html.text feature.featureID ]
+
+featureUI : Feature -> Html
+featureUI = F.view
+
+listDetailViewContainer : Html -> Html
+listDetailViewContainer listDetailView =
+  Html.div [] [ listDetailView ]
 
 renderCurrentSearchTerm : Query -> Signal.Address Action -> Html
 renderCurrentSearchTerm query address =
