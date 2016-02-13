@@ -25,19 +25,20 @@ view address featuresView =
 featureListHtml : Signal.Address Action -> FeaturesView -> FeatureList -> Html
 featureListHtml address featuresView featureList =
   let featureListAddress = Signal.forwardTo address FeatureListAction
-      listHtml = [ FL.render featureListAddress featureList ]
+      selectedFeature = featuresView.selectedFeature
+      listHtml = [ FL.render featureListAddress featureList selectedFeature ]
   in
     case featuresView.currentSearchTerm of
       Nothing ->
         listDetailViewContainer
           <| UI.listDetailView listHtml
-          <| featureHtml featuresView.selectedFeature
+          <| featureHtml selectedFeature
       Just query ->
         let listHtmlWithSearchFilterIndicator = (renderCurrentSearchTerm query address) :: listHtml
         in
           listDetailViewContainer
             <| UI.listDetailView listHtmlWithSearchFilterIndicator
-            <| featureHtml featuresView.selectedFeature
+            <| featureHtml selectedFeature
 
 featureHtml : Maybe Feature -> List Html
 featureHtml selectedFeature =

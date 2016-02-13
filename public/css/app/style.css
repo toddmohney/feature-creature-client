@@ -36,3 +36,12 @@ html, body {
 .directory-tree .glyphicon {
   padding-right: 10px;
 }
+
+.directory-tree .feature-file.selected {
+  background-color: #e78c45;
+}
+
+.directory-tree .feature-file.selected a:link { color: #fff; }
+.directory-tree .feature-file.selected a:visited { color: #fff; }
+.directory-tree .feature-file.selected a:hover { color: #fff; }
+.directory-tree .feature-file.selected a:active { color: #fff; }
