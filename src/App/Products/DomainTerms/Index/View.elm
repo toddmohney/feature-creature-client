@@ -9,7 +9,7 @@ import App.Products.DomainTerms.Forms.View    as DTF
 import Data.External                                     exposing (External(..))
 import Html                                              exposing (Html)
 import Html.Events                                       exposing (onClick)
-import Html.Attributes                                   exposing (class, href)
+import Html.Attributes as Html                           exposing (class, href)
 import UI.App.Components.Panels           as UI
 import UI.Bootstrap.Components.Glyphicons as Glyph
 
@@ -22,37 +22,68 @@ view address domainTermsView =
                             Loaded dts -> dts
                             _          -> []
   in
-    Html.div [] (newDomainTermForm :: (List.map (renderDomainTerm address) domainTerms))
+    Html.div
+      [ Html.classList [ ("row", True) ] ]
+      (newDomainTermForm :: (List.map (renderDomainTerm address) domainTerms))
 
 renderDomainTerm : Signal.Address DomainTermAction -> DomainTerm -> Html
 renderDomainTerm address domainTerm =
-  let searchFeaturesLink = featureLink address domainTerm
+  let searchFeaturesUI   = searchFeaturesLink address domainTerm
+      editDomainTermUI   = editDomainTermLink address domainTerm
+      removeDomainTermUI = removeDomainTermLink address domainTerm
+      responsiveClasses = Html.classList [ ("col-lg-4", True)
+                                         , ("col-md-6", True)
+                                         , ("col-sm-12", True)
+                                         ]
   in
-    UI.panelWithHeading
-      (domainTermPanelHeading domainTerm searchFeaturesLink)
-      (Html.text domainTerm.description)
+    Html.div
+    [ responsiveClasses ]
+    [ UI.panelWithHeading
+        (domainTermPanelHeading domainTerm searchFeaturesUI editDomainTermUI removeDomainTermUI)
+        (Html.text domainTerm.description)
+    ]
 
-featureLink : Signal.Address DomainTermAction -> DomainTerm -> Html
-featureLink address domainTerm =
+searchFeaturesLink : Signal.Address DomainTermAction -> DomainTerm -> Html
+searchFeaturesLink address domainTerm =
   let linkAction = SearchFeatures (toSearchQuery domainTerm)
   in
     Html.a
     [ href "#", onClick address linkAction ]
     [ Glyph.searchIcon ]
 
-domainTermPanelHeading : DomainTerm -> Html -> Html
-domainTermPanelHeading domainTerm searchFeaturesLink =
+editDomainTermLink : Signal.Address DomainTermAction -> DomainTerm -> Html
+editDomainTermLink address domainTerm =
+  let linkAction = EditDomainTerm domainTerm
+  in
+    Html.a
+    [ href "#", onClick address linkAction ]
+    [ Glyph.editIcon ]
+
+removeDomainTermLink : Signal.Address DomainTermAction -> DomainTerm -> Html
+removeDomainTermLink address domainTerm =
+  let linkAction = RemoveDomainTerm domainTerm
+  in
+    Html.a
+    [ href "#", onClick address linkAction ]
+    [ Glyph.removeIcon ]
+
+-- inject panelHeaderActions
+domainTermPanelHeading : DomainTerm -> Html -> Html -> Html -> Html
+domainTermPanelHeading domainTerm searchFeaturesLink editDomainTermLink removeDomainTermLink =
   Html.div
   [ class "clearfix" ]
   [ panelHeaderInfo domainTerm
-  , panelHeaderActions domainTerm searchFeaturesLink
+  , panelHeaderActions searchFeaturesLink editDomainTermLink removeDomainTermLink
   ]
 
-panelHeaderActions : DomainTerm -> Html -> Html
-panelHeaderActions domainTerm searchFeaturesLink =
+panelHeaderActions : Html -> Html -> Html -> Html
+panelHeaderActions searchFeaturesLink editDomainTermLink removeDomainTermLink =
   Html.div
   [ class "pull-right" ]
-  [ searchFeaturesLink ]
+  [ searchFeaturesLink
+  , editDomainTermLink
+  , removeDomainTermLink
+  ]
 
 panelHeaderInfo : DomainTerm -> Html
 panelHeaderInfo domainTerm =

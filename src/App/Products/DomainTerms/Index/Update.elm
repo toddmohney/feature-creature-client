@@ -48,4 +48,6 @@ update action domainTermsView appConfig =
         (Effects.map Actions.DomainTermFormAction dtFormFx)
 
     Actions.SearchFeatures searchQuery -> (domainTermsView, Effects.none)
+    Actions.EditDomainTerm domainTerm -> (domainTermsView, Effects.none)
+    Actions.RemoveDomainTerm domainTerm -> (domainTermsView, Effects.none)
 

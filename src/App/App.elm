@@ -67,4 +67,9 @@ renderProductView address app =
         mainContent  [ productViewHtml ]
 
 mainContent : List Html -> Html
-mainContent content = Html.div [ Html.id "main_content" ] content
+mainContent content =
+  Html.div
+    [ Html.id "main_content"
+    , Html.classList [ ("container-fluid", True) ]
+    ]
+    content
