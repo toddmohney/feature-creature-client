@@ -12,35 +12,43 @@ type alias FeatureList =
 
 type Action = ShowFeature FileDescription
 
-render : Signal.Address Action
-      -> FeatureList
-      -> Maybe Feature
-      -> Html
+render : Signal.Address Action -> FeatureList -> Maybe Feature -> Html
 render address featureList selectedFeature =
   Html.div
   [ class "directory-tree" ]
-  [ Html.ul [] [ drawTree address selectedFeature featureList.features ] ]
+  [ Html.ul [] [ drawTree address selectedFeature 2 featureList.features ] ]
 
-drawTree : Signal.Address Action -> Maybe Feature -> DirectoryTree -> Html
-drawTree address selectedLeaf tree =
+drawTree : Signal.Address Action -> Maybe Feature -> Int -> DirectoryTree -> Html
+drawTree address selectedLeaf autoOpenDepth tree =
+  drawTree' address selectedLeaf autoOpenDepth 0 tree
+
+drawTree' : Signal.Address Action -> Maybe Feature -> Int -> Int -> DirectoryTree -> Html
+drawTree' address selectedLeaf autoOpenDepth currentDepth tree =
   case tree of
     DirectoryTree fileDesc [] ->
       Html.li
         []
         [ drawFeatureFile address fileDesc (isEmphasized fileDesc selectedLeaf) ]
     DirectoryTree fileDesc forest ->
-      let replaceSlashes = \c -> if c == '/' then 'a' else c
-          directoryContentsID = String.map replaceSlashes fileDesc.filePath
+      let dirContentsID = directoryContentsID fileDesc.filePath
       in
         Html.li
           []
-          [ drawFeatureDirectory address fileDesc directoryContentsID
+          [ drawFeatureDirectory address fileDesc dirContentsID
           , Html.ul
-            [ id directoryContentsID
-            , classList [ ("collapse", True) ]
+            [ id dirContentsID
+            , classList [ ("collapse", True), ("in", (currentDepth < autoOpenDepth)) ]
             ]
-            (List.map (drawTree address selectedLeaf) forest)
+            (List.map (drawTree' address selectedLeaf autoOpenDepth (currentDepth + 1)) forest)
           ]
+
+directoryContentsID : FilePath -> String
+directoryContentsID filePath =
+  -- Html element IDs cannot contain slashes
+  -- Replace all slashes with the letter 'z'
+  let replaceSlashes = \c -> if c == '/' then 'z' else c
+  in
+    String.map replaceSlashes filePath
 
 isEmphasized : FileDescription -> Maybe Feature -> Bool
 isEmphasized fileDesc selectedFeature =
