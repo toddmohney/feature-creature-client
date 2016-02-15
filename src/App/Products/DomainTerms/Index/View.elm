@@ -25,10 +25,34 @@ view address domainTermsView =
 
 renderDomainTerm : Signal.Address DomainTermAction -> DomainTerm -> Html
 renderDomainTerm address domainTerm =
-  let domainTermName = Html.div [ class "pull-left" ] [ Html.text domainTerm.title ]
-      linkAction     = SearchFeatures (toSearchQuery domainTerm)
-      featureLink    = Html.a [ href "#", onClick address linkAction ] [ Html.text "View features" ]
-      featureLinkContainer = Html.div [ class "pull-right" ] [ featureLink ]
-      headingContent = Html.div [ class "clearfix" ] [ domainTermName, featureLinkContainer ]
+  UI.panelWithHeading
+    (domainTermPanelHeading address domainTerm)
+    (Html.text domainTerm.description)
+
+domainTermPanelHeading : Signal.Address DomainTermAction -> DomainTerm -> Html
+domainTermPanelHeading address domainTerm =
+  Html.div
+  [ class "clearfix" ]
+  [ panelHeaderInfo domainTerm
+  , panelHeaderActions address domainTerm
+  ]
+
+panelHeaderActions : Signal.Address DomainTermAction -> DomainTerm -> Html
+panelHeaderActions address domainTerm =
+  Html.div
+  [ class "pull-right" ]
+  [ featureLink address domainTerm ]
+
+featureLink : Signal.Address DomainTermAction -> DomainTerm -> Html
+featureLink address domainTerm =
+  let linkAction     = SearchFeatures (toSearchQuery domainTerm)
   in
-    UI.panelWithHeading headingContent (Html.text domainTerm.description)
+    Html.a
+    [ href "#", onClick address linkAction ]
+    [ Html.text "View features" ]
+
+panelHeaderInfo : DomainTerm -> Html
+panelHeaderInfo domainTerm =
+  Html.div
+  [ class "pull-left" ]
+  [ Html.text domainTerm.title ]
