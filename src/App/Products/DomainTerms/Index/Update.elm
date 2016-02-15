@@ -6,6 +6,7 @@ import App.AppConfig                                     exposing (..)
 import App.Products.DomainTerms.Forms.Update  as DTF
 import App.Products.DomainTerms.Index.Actions as Actions exposing (DomainTermAction)
 import App.Products.DomainTerms.Index.ViewModel          exposing (DomainTermsView)
+import App.Products.DomainTerms.Requests                 exposing (getDomainTerms, removeDomainTerm)
 import Data.External                                     exposing (External(..))
 import Debug                                             exposing (crash, log)
 import Effects                                           exposing (Effects)
@@ -48,6 +49,18 @@ update action domainTermsView appConfig =
         (Effects.map Actions.DomainTermFormAction dtFormFx)
 
     Actions.SearchFeatures searchQuery -> (domainTermsView, Effects.none)
+
     Actions.EditDomainTerm domainTerm -> (domainTermsView, Effects.none)
-    Actions.RemoveDomainTerm domainTerm -> (domainTermsView, Effects.none)
+
+    Actions.RemoveDomainTerm domainTerm ->
+      (,)
+      domainTermsView
+      (removeDomainTerm appConfig domainTermsView.product domainTerm Actions.DomainTermRemoved)
+
+    Actions.DomainTermRemoved result ->
+      -- this always results in an error
+      -- see: https://github.com/evancz/elm-http/issues/5
+      case result of
+        Ok a -> (domainTermsView, (getDomainTerms appConfig domainTermsView.product Actions.UpdateDomainTerms))
+        Err err -> (domainTermsView, (getDomainTerms appConfig domainTermsView.product Actions.UpdateDomainTerms))
 

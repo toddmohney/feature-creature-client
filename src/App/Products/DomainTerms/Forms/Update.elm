@@ -23,30 +23,38 @@ update action domainTermForm appConfig =
         Err _ -> crash "Something went wrong!"
 
     ShowDomainTermForm ->
-      ({ domainTermForm | domainTermFormVisible = True }, Effects.none)
+      (,)
+      { domainTermForm | domainTermFormVisible = True }
+      Effects.none
 
     HideDomainTermForm ->
-      ({ domainTermForm | domainTermFormVisible = False }, Effects.none)
+      (,)
+      { domainTermForm | domainTermFormVisible = False }
+      Effects.none
 
     SetDomainTermTitle newTitle ->
       let newDomainTerm = domainTermForm.newDomainTerm
           updatedDomainTerm = { newDomainTerm | title = newTitle }
-      in ({ domainTermForm | newDomainTerm = updatedDomainTerm }, Effects.none)
+      in
+        (,)
+        { domainTermForm | newDomainTerm = updatedDomainTerm }
+        Effects.none
 
     SetDomainTermDescription newDescription ->
       let newDomainTerm = domainTermForm.newDomainTerm
           updatedDomainTerm = { newDomainTerm | description = newDescription }
-      in ({ domainTermForm | newDomainTerm = updatedDomainTerm }, Effects.none)
+      in
+        (,)
+        { domainTermForm | newDomainTerm = updatedDomainTerm }
+        Effects.none
 
     SubmitDomainTermForm ->
       let newDomainTermForm = validateForm domainTermForm
       in
-         case hasErrors newDomainTermForm of
-           True ->
-             ( newDomainTermForm
-             , Effects.none
-             )
-           False ->
-             ( newDomainTermForm
-             , createDomainTerm appConfig newDomainTermForm.product newDomainTermForm.newDomainTerm AddDomainTerm
-             )
+        case hasErrors newDomainTermForm of
+          True ->
+            (newDomainTermForm , Effects.none)
+          False ->
+            (,)
+            newDomainTermForm
+            (createDomainTerm appConfig newDomainTermForm.product newDomainTermForm.newDomainTerm AddDomainTerm)
