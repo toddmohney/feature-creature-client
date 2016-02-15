@@ -3,6 +3,10 @@ html, body {
   padding: 0;
 }
 
+#main_content {
+  margin-bottom: 25px;
+}
+
 .feature-detail {
   padding: 20px !important;
 }
@@ -21,27 +25,20 @@ html, body {
   padding-left: 20px;
 }
 
-.directory-tree ul {
-  padding-left: 0px;
-}
+.directory-tree ul    { padding-left: 0px; }
+.directory-tree ul ul { padding-left: 20px; }
+.directory-tree ul li { list-style: none; }
 
-.directory-tree ul ul {
-  padding-left: 20px;
-}
+.directory-tree .glyphicon { padding-right: 10px; }
 
-.directory-tree ul li {
-  list-style: none;
-}
+.directory-tree .feature-file.selected { background-color: #e78c45; }
 
-.directory-tree .glyphicon {
-  padding-right: 10px;
-}
-
-.directory-tree .feature-file.selected {
-  background-color: #e78c45;
-}
-
-.directory-tree .feature-file.selected a:link { color: #fff; }
+.directory-tree .feature-file.selected a:link    { color: #fff; }
 .directory-tree .feature-file.selected a:visited { color: #fff; }
-.directory-tree .feature-file.selected a:hover { color: #fff; }
-.directory-tree .feature-file.selected a:active { color: #fff; }
+.directory-tree .feature-file.selected a:hover   { color: #fff; }
+.directory-tree .feature-file.selected a:active  { color: #fff; }
+
+.directory-tree a.feature-directory:link    { color: #000; }
+.directory-tree a.feature-directory:visited { color: #000; }
+.directory-tree a.feature-directory:hover   { color: #000; }
+.directory-tree a.feature-directory:active  { color: #000; }
