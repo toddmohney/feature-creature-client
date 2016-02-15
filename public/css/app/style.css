@@ -3,6 +3,10 @@ html, body {
   padding: 0;
 }
 
+#main_content {
+  margin-bottom: 25px;
+}
+
 .feature-detail {
   padding: 20px !important;
 }

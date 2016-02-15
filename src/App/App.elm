@@ -1,16 +1,17 @@
 module App.App where
 
-import App.Actions exposing (..)
-import App.AppConfig                                      exposing (..)
-import App.Products.Product         as P                  exposing (Product)
-import App.Products.Forms.ViewModel as CPF                exposing (CreateProductForm)
+import App.Actions                                exposing (..)
+import App.AppConfig                              exposing (..)
+import App.Products.Product         as P          exposing (Product)
+import App.Products.Forms.ViewModel as CPF        exposing (CreateProductForm)
 import App.Products.Forms.View      as CPF
 import App.Products.Navigation      as Navigation
-import App.Products.Show.ViewModel  as PV                 exposing (ProductView)
+import App.Products.Show.ViewModel  as PV         exposing (ProductView)
 import App.Products.Show.View       as PV
-import Data.External                                      exposing (External(..))
-import Effects                                            exposing (Effects)
-import Html                                               exposing (Html)
+import Data.External                              exposing (External(..))
+import Effects                                    exposing (Effects)
+import Html                                       exposing (Html)
+import Html.Attributes as Html
 
 type alias App =
   { appConfig   : Maybe AppConfig
@@ -52,7 +53,8 @@ renderProductsForm address app =
   let forwardedAddress  = (Signal.forwardTo address ProductFormActions)
       productForm = CPF.init
       productFormHtml   = CPF.view forwardedAddress productForm
-  in Html.div [] [ productFormHtml ]
+  in
+    mainContent [ productFormHtml ]
 
 renderProductView : Signal.Address Action -> App -> Html
 renderProductView address app =
@@ -61,4 +63,8 @@ renderProductView address app =
     Just pv ->
       let forwardedAddress = (Signal.forwardTo address ProductViewActions)
           productViewHtml  = PV.view forwardedAddress pv
-      in Html.div [] [ productViewHtml ]
+      in
+        mainContent  [ productViewHtml ]
+
+mainContent : List Html -> Html
+mainContent content = Html.div [ Html.id "main_content" ] content
