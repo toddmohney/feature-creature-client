@@ -11,6 +11,7 @@ import Html                                              exposing (Html)
 import Html.Events                                       exposing (onClick)
 import Html.Attributes                                   exposing (class, href)
 import UI.App.Components.Panels           as UI
+import UI.Bootstrap.Components.Glyphicons as Glyph
 
 
 view : Signal.Address DomainTermAction -> DomainTermsView -> Html
@@ -25,31 +26,33 @@ view address domainTermsView =
 
 renderDomainTerm : Signal.Address DomainTermAction -> DomainTerm -> Html
 renderDomainTerm address domainTerm =
-  UI.panelWithHeading
-    (domainTermPanelHeading address domainTerm)
-    (Html.text domainTerm.description)
-
-domainTermPanelHeading : Signal.Address DomainTermAction -> DomainTerm -> Html
-domainTermPanelHeading address domainTerm =
-  Html.div
-  [ class "clearfix" ]
-  [ panelHeaderInfo domainTerm
-  , panelHeaderActions address domainTerm
-  ]
-
-panelHeaderActions : Signal.Address DomainTermAction -> DomainTerm -> Html
-panelHeaderActions address domainTerm =
-  Html.div
-  [ class "pull-right" ]
-  [ featureLink address domainTerm ]
+  let searchFeaturesLink = featureLink address domainTerm
+  in
+    UI.panelWithHeading
+      (domainTermPanelHeading domainTerm searchFeaturesLink)
+      (Html.text domainTerm.description)
 
 featureLink : Signal.Address DomainTermAction -> DomainTerm -> Html
 featureLink address domainTerm =
-  let linkAction     = SearchFeatures (toSearchQuery domainTerm)
+  let linkAction = SearchFeatures (toSearchQuery domainTerm)
   in
     Html.a
     [ href "#", onClick address linkAction ]
-    [ Html.text "View features" ]
+    [ Glyph.searchIcon ]
+
+domainTermPanelHeading : DomainTerm -> Html -> Html
+domainTermPanelHeading domainTerm searchFeaturesLink =
+  Html.div
+  [ class "clearfix" ]
+  [ panelHeaderInfo domainTerm
+  , panelHeaderActions domainTerm searchFeaturesLink
+  ]
+
+panelHeaderActions : DomainTerm -> Html -> Html
+panelHeaderActions domainTerm searchFeaturesLink =
+  Html.div
+  [ class "pull-right" ]
+  [ searchFeaturesLink ]
 
 panelHeaderInfo : DomainTerm -> Html
 panelHeaderInfo domainTerm =
