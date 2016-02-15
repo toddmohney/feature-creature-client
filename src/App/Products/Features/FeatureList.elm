@@ -1,46 +1,78 @@
-module App.Products.Features.FeatureList where
+module App.Products.Features.FeatureList
+  ( FeatureList
+  , Action(..)
+  , render
+  ) where
 
 import App.Products.Features.Feature exposing (Feature)
 import Data.DirectoryTree            exposing (..)
 import Html                          exposing (..)
-import Html.Attributes               exposing (..)
+import Html.Attributes as Html       exposing (..)
 import Html.Events                   exposing (onClick)
 import String
 
 type alias FeatureList =
   { features: DirectoryTree }
 
+type alias DirectoryTreeRenderOptions =
+  { selectedFeature    : Maybe Feature
+  , autoOpenDepth      : Int
+  , currentRenderDepth : Int
+  }
+
 type Action = ShowFeature FileDescription
+
+type FileType = File FileDescription
+              | Directory FileDescription (List DirectoryTree)
 
 render : Signal.Address Action -> FeatureList -> Maybe Feature -> Html
 render address featureList selectedFeature =
   Html.div
   [ class "directory-tree" ]
-  [ Html.ul [] [ drawTree address selectedFeature 2 featureList.features ] ]
+  [ Html.ul [] [ drawTree address (treeRenderOpts selectedFeature 2) featureList.features ] ]
 
-drawTree : Signal.Address Action -> Maybe Feature -> Int -> DirectoryTree -> Html
-drawTree address selectedLeaf autoOpenDepth tree =
-  drawTree' address selectedLeaf autoOpenDepth 0 tree
+drawTree : Signal.Address Action -> DirectoryTreeRenderOptions -> DirectoryTree -> Html
+drawTree address renderOpts tree =
+  case fileType tree of
+    File fileDesc ->
+      drawFile address renderOpts.selectedFeature fileDesc
+    Directory fileDesc directoryContents ->
+      drawDirectory address renderOpts fileDesc directoryContents
 
-drawTree' : Signal.Address Action -> Maybe Feature -> Int -> Int -> DirectoryTree -> Html
-drawTree' address selectedLeaf autoOpenDepth currentDepth tree =
-  case tree of
-    DirectoryTree fileDesc [] ->
-      Html.li
-        []
-        [ drawFeatureFile address fileDesc (isEmphasized fileDesc selectedLeaf) ]
-    DirectoryTree fileDesc forest ->
-      let dirContentsID = directoryContentsID fileDesc.filePath
-      in
-        Html.li
-          []
-          [ drawFeatureDirectory address fileDesc dirContentsID
-          , Html.ul
-            [ id dirContentsID
-            , classList [ ("collapse", True), ("in", (currentDepth < autoOpenDepth)) ]
-            ]
-            (List.map (drawTree' address selectedLeaf autoOpenDepth (currentDepth + 1)) forest)
-          ]
+drawFile : Signal.Address Action -> Maybe Feature -> FileDescription -> Html
+drawFile address selectedFeature fileDesc =
+  fileListItem
+    <| drawFeatureFile address fileDesc
+    <| isEmphasized fileDesc selectedFeature
+
+drawDirectory : Signal.Address Action -> DirectoryTreeRenderOptions -> FileDescription -> List DirectoryTree -> Html
+drawDirectory address renderOpts directory directoryContents =
+  let dirContentsID = directoryContentsID directory.filePath
+  in
+    directoryListItem
+      (drawFeatureDirectory address directory dirContentsID)
+      (directoryList address dirContentsID renderOpts directoryContents)
+
+fileListItem : Html -> Html
+fileListItem content = Html.li [] [ content ]
+
+directoryList : Signal.Address Action -> String -> DirectoryTreeRenderOptions -> List DirectoryTree -> Html
+directoryList address dirContentsID renderOpts directoryContents =
+  let elemID = Html.id dirContentsID
+      nextRenderOpts = { renderOpts | currentRenderDepth = renderOpts.currentRenderDepth + 1 }
+      classes = Html.classList [ ("collapse", True)
+                               , ("in", (renderOpts.currentRenderDepth < renderOpts.autoOpenDepth))
+                               ]
+  in
+    Html.ul
+    [ elemID , classes ]
+    (List.map (drawTree address nextRenderOpts) directoryContents)
+
+directoryListItem : Html -> Html -> Html
+directoryListItem directoryHTML directoryContentsHTML =
+  Html.li
+  []
+  [ directoryHTML, directoryContentsHTML ]
 
 directoryContentsID : FilePath -> String
 directoryContentsID filePath =
@@ -86,3 +118,16 @@ drawFeatureDirectory' address fileDesc =
   [ Html.span [ classList [("glyphicon", True), ("glyphicon-folder-open", True)] ] []
   , Html.text fileDesc.fileName
   ]
+
+fileType : DirectoryTree -> FileType
+fileType tree =
+  case tree of
+    DirectoryTree fileDesc []     -> File fileDesc
+    DirectoryTree fileDesc forest -> Directory fileDesc forest
+
+treeRenderOpts : Maybe Feature -> Int -> DirectoryTreeRenderOptions
+treeRenderOpts selectedFeature autoOpenDepth =
+  { selectedFeature    = selectedFeature
+  , autoOpenDepth      = autoOpenDepth
+  , currentRenderDepth = 0
+  }
