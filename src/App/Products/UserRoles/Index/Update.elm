@@ -3,14 +3,15 @@ module App.Products.UserRoles.Index.Update
   ) where
 
 import App.AppConfig                                 exposing (..)
-import App.Products.UserRoles.Actions                exposing (Action(..))
+import App.Products.UserRoles.Actions                exposing (UserRoleAction(..))
 import App.Products.UserRoles.Forms.Update as URF
 import App.Products.UserRoles.Index.ViewModel        exposing (UserRolesView)
+import App.Products.UserRoles.Requests                 exposing (getUserRolesList, removeUserRole)
 import Data.External                                 exposing (External(..))
 import Debug                                         exposing (crash)
 import Effects                                       exposing (Effects)
 
-update : Action -> UserRolesView -> AppConfig -> (UserRolesView, Effects Action)
+update : UserRoleAction -> UserRolesView -> AppConfig -> (UserRolesView, Effects UserRoleAction)
 update action userRolesView appConfig =
   case action of
     -- This is smelly. The UserRoleFrom is allowed to update the Product,
@@ -44,6 +45,29 @@ update action userRolesView appConfig =
       in ( updatedUserRolesView
          , Effects.map UserRoleFormAction dtFormFx
          )
+
     SearchFeatures query ->
       -- noop
       (userRolesView, Effects.none)
+
+    EditUserRole userRole -> (userRolesView, Effects.none)
+
+    RemoveUserRole userRole ->
+      (,)
+      userRolesView
+      (removeUserRole appConfig userRolesView.product userRole UserRoleRemoved)
+
+    UserRoleRemoved result ->
+      -- This always results in an error, even with a 200 response
+      -- because Elm cannot parse an empty response body.
+      -- We can make this better, however.
+      -- see: https://github.com/evancz/elm-http/issues/5
+      case result of
+        Ok a ->
+          (,)
+          userRolesView
+          (getUserRolesList appConfig userRolesView.product UpdateUserRoles)
+        Err err ->
+          (,)
+          userRolesView
+          (getUserRolesList appConfig userRolesView.product UpdateUserRoles)

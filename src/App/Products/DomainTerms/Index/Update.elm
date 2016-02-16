@@ -58,9 +58,17 @@ update action domainTermsView appConfig =
       (removeDomainTerm appConfig domainTermsView.product domainTerm Actions.DomainTermRemoved)
 
     Actions.DomainTermRemoved result ->
-      -- this always results in an error
+      -- This always results in an error, even with a 200 response
+      -- because Elm cannot parse an empty response body.
+      -- We can make this better, however.
       -- see: https://github.com/evancz/elm-http/issues/5
       case result of
-        Ok a -> (domainTermsView, (getDomainTerms appConfig domainTermsView.product Actions.UpdateDomainTerms))
-        Err err -> (domainTermsView, (getDomainTerms appConfig domainTermsView.product Actions.UpdateDomainTerms))
+        Ok a ->
+          (,)
+          domainTermsView
+          (getDomainTerms appConfig domainTermsView.product Actions.UpdateDomainTerms)
+        Err err ->
+          (,)
+          domainTermsView
+          (getDomainTerms appConfig domainTermsView.product Actions.UpdateDomainTerms)
 

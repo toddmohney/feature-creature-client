@@ -8,5 +8,5 @@ import App.Products.UserRoles.Actions   as UR
 type Action = DomainTermsViewAction DomainTermAction
             | FeaturesViewAction FV.Action
             | NavBarAction Navigation.Action
-            | UserRolesViewAction UR.Action
+            | UserRolesViewAction UR.UserRoleAction
 

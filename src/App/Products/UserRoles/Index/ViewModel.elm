@@ -4,7 +4,7 @@ module App.Products.UserRoles.Index.ViewModel
   ) where
 
 import App.AppConfig                                 exposing (..)
-import App.Products.UserRoles.Actions                exposing (Action(..))
+import App.Products.UserRoles.Actions                exposing (UserRoleAction(..))
 import App.Products.UserRoles.Requests               exposing (getUserRolesList)
 import App.Products.Product                          exposing (Product)
 import App.Products.UserRoles.Forms.ViewModel as URF exposing (UserRoleForm)
@@ -15,7 +15,7 @@ type alias UserRolesView =
   , userRoleForm : UserRoleForm
   }
 
-init : Product -> AppConfig -> (UserRolesView, Effects Action)
+init : Product -> AppConfig -> (UserRolesView, Effects UserRoleAction)
 init prod appConfig =
   let effects = getUserRolesList appConfig prod UpdateUserRoles
   in (,)
