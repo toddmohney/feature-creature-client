@@ -33,19 +33,19 @@ update action domainTermForm appConfig =
       Effects.none
 
     SetDomainTermTitle newTitle ->
-      let newDomainTerm = domainTermForm.newDomainTerm
+      let newDomainTerm = domainTermForm.formObject
           updatedDomainTerm = { newDomainTerm | title = newTitle }
       in
         (,)
-        { domainTermForm | newDomainTerm = updatedDomainTerm }
+        { domainTermForm | formObject = updatedDomainTerm }
         Effects.none
 
     SetDomainTermDescription newDescription ->
-      let newDomainTerm = domainTermForm.newDomainTerm
+      let newDomainTerm = domainTermForm.formObject
           updatedDomainTerm = { newDomainTerm | description = newDescription }
       in
         (,)
-        { domainTermForm | newDomainTerm = updatedDomainTerm }
+        { domainTermForm | formObject = updatedDomainTerm }
         Effects.none
 
     SubmitDomainTermForm ->
@@ -57,4 +57,4 @@ update action domainTermForm appConfig =
           False ->
             (,)
             newDomainTermForm
-            (createDomainTerm appConfig newDomainTermForm.product newDomainTermForm.newDomainTerm AddDomainTerm)
+            (createDomainTerm appConfig newDomainTermForm.product newDomainTermForm.formObject AddDomainTerm)

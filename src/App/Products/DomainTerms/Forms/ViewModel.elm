@@ -12,32 +12,32 @@ import UI.App.Primitives.Forms               exposing (InputField)
 type alias DomainTermForm =
   { product : Product
   , domainTermFormVisible : Bool
-  , newDomainTerm         : DomainTerm
+  , formObject            : DomainTerm
   , titleField            : InputField DomainTermFormAction
   , descriptionField      : InputField DomainTermFormAction
   }
 
 init : Product -> DomainTermForm
 init prod =
-  { product = prod
+  { product               = prod
   , domainTermFormVisible = False
-  , newDomainTerm = DT.init
-  , titleField           = defaultTitleField
-  , descriptionField     = defaultDescriptionField
+  , formObject            = DT.init
+  , titleField            = defaultTitleField
+  , descriptionField      = defaultDescriptionField
   }
 
 defaultTitleField : InputField DomainTermFormAction
 defaultTitleField =
-  { inputName = "domainTermTitle"
-  , labelContent = (Html.text "Title")
-  , inputParser = SetDomainTermTitle
+  { inputName        = "domainTermTitle"
+  , labelContent     = (Html.text "Title")
+  , inputParser      = SetDomainTermTitle
   , validationErrors = []
   }
 
 defaultDescriptionField : InputField DomainTermFormAction
 defaultDescriptionField =
-  { inputName = "domainTermDescription"
-  , labelContent = (Html.text "Description")
-  , inputParser = SetDomainTermDescription
+  { inputName        = "domainTermDescription"
+  , labelContent     = (Html.text "Description")
+  , inputParser      = SetDomainTermDescription
   , validationErrors = []
   }
