@@ -23,8 +23,12 @@ view address domainTermsView =
                             _          -> []
   in
     Html.div
-      [ Html.classList [ ("row", True) ] ]
-      (newDomainTermForm :: (List.map (renderDomainTerm address) domainTerms))
+    []
+    [ newDomainTermForm
+    , Html.div
+        [ Html.classList [ ("row", True) ] ]
+        (List.map (renderDomainTerm address) domainTerms)
+    ]
 
 renderDomainTerm : Signal.Address DomainTermAction -> DomainTerm -> Html
 renderDomainTerm address domainTerm =

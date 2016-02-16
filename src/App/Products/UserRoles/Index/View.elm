@@ -1,4 +1,6 @@
-module App.Products.UserRoles.Index.View where
+module App.Products.UserRoles.Index.View
+  ( view
+  ) where
 
 import App.Products.UserRoles.Actions                exposing (UserRoleAction(..))
 import App.Products.UserRoles.Forms.View as URF
@@ -20,8 +22,12 @@ view address userRolesView =
                            _          -> []
   in
     Html.div
-      [ Html.classList [ ("row", True) ] ]
-      (newUserRoleForm :: (List.map (renderUserRole address) userRoles))
+    []
+    [ newUserRoleForm
+    , Html.div
+        [ Html.classList [ ("row", True) ] ]
+        (List.map (renderUserRole address) userRoles)
+    ]
 
 renderUserRole : Signal.Address UserRoleAction -> UserRole -> Html
 renderUserRole address userRole =

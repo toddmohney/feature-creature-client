@@ -6,7 +6,7 @@ import App.AppConfig                                 exposing (..)
 import App.Products.UserRoles.Actions                exposing (UserRoleAction(..))
 import App.Products.UserRoles.Forms.Update as URF
 import App.Products.UserRoles.Index.ViewModel        exposing (UserRolesView)
-import App.Products.UserRoles.Requests                 exposing (getUserRolesList, removeUserRole)
+import App.Products.UserRoles.Requests               exposing (getUserRolesList, removeUserRole)
 import Data.External                                 exposing (External(..))
 import Debug                                         exposing (crash)
 import Effects                                       exposing (Effects)
@@ -58,7 +58,7 @@ update action userRolesView appConfig =
       (removeUserRole appConfig userRolesView.product userRole UserRoleRemoved)
 
     UserRoleRemoved result ->
-      -- This always results in an error, even with a 200 response
+      -- This always results in an error, even with a 200 response,
       -- because Elm cannot parse an empty response body.
       -- We can make this better, however.
       -- see: https://github.com/evancz/elm-http/issues/5

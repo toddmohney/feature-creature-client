@@ -13,20 +13,23 @@ view : Signal.Address DomainTermFormAction -> DomainTermForm -> Html
 view address domainTermForm =
   case domainTermForm.domainTermFormVisible of
     True ->
-      let domainTermFormHtml = renderDomainTermForm address domainTermForm
+      let domainTermFormHtml = domainTermFormContainer <| renderDomainTermForm address domainTermForm
       in
         Html.div
         [ classList [ ("clearfix", True) ] ]
-        [ Html.div
-          [ classList [ ("pull-right", True) ]
-          , style [ ("width", "50%") ]
-          ]
-          [ domainTermFormHtml ]
-        ]
+        [ domainTermFormHtml ]
     False ->
       Html.div
       [ classList [ ("clearfix", True), ("fc-margin--bottom--medium", True) ] ]
       [ renderFormButton address ]
+
+domainTermFormContainer : Html -> Html
+domainTermFormContainer content =
+  Html.div
+    [ classList [ ("pull-right", True) ]
+    , style [ ("width", "50%") ]
+    ]
+    [ content ]
 
 renderFormButton : Signal.Address DomainTermFormAction -> Html
 renderFormButton address =
