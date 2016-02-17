@@ -14,23 +14,11 @@ import Effects                                         exposing (Effects)
 update : DomainTermFormAction -> DomainTermForm -> AppConfig -> (DomainTermForm, Effects DomainTermFormAction)
 update action domainTermForm appConfig =
   case action of
-    ShowDomainTermForm ->
-      ({ domainTermForm | isVisible = True }, Effects.none)
-
-    HideDomainTermForm ->
-      (DTF.init domainTermForm.product DT.init, Effects.none)
-
     SetDomainTermTitle newTitle ->
       (DTF.setTitle domainTermForm newTitle, Effects.none)
 
     SetDomainTermDescription newDescription ->
       (DTF.setDescription domainTermForm newDescription, Effects.none)
-
-    EditDomainTerm domainTerm ->
-      let product = domainTermForm.product
-          newForm = DTF.init product domainTerm
-      in
-        ({ newForm | isVisible = True }, Effects.none)
 
     AddDomainTerm domainTermResult ->
       case domainTermResult of

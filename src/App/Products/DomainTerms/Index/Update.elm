@@ -3,10 +3,13 @@ module App.Products.DomainTerms.Index.Update
   ) where
 
 import App.AppConfig                                     exposing (..)
+import App.Products.DomainTerms.DomainTerm    as DT
+import App.Products.DomainTerms.Forms.ViewModel as DTF
 import App.Products.DomainTerms.Forms.Update  as DTF
 import App.Products.DomainTerms.Index.Actions as Actions exposing (DomainTermAction)
 import App.Products.DomainTerms.Index.ViewModel          exposing (DomainTermsView)
 import App.Products.DomainTerms.Requests                 exposing (getDomainTerms, removeDomainTerm)
+import CoreExtensions.Maybe as Maybe
 import Data.External                                     exposing (External(..))
 import Debug                                             exposing (crash, log)
 import Effects                                           exposing (Effects)
@@ -23,7 +26,7 @@ update action domainTermsView appConfig =
           let product           = domainTermsView.product
               domainTermForm    = domainTermsView.domainTermForm
               updatedProduct    = { product | domainTerms = Loaded domainTermList }
-              newDomainTermForm = { domainTermForm | product = updatedProduct }
+              newDomainTermForm = Maybe.map2 DTF.setProduct domainTermForm (Just updatedProduct)
               newView = { domainTermsView |
                           product = updatedProduct
                         , domainTermForm = newDomainTermForm
@@ -36,11 +39,11 @@ update action domainTermsView appConfig =
     -- so we need to update both this model and the form model.
     -- Try to refactor to let the updates flow in One Direction
     Actions.DomainTermFormAction dtFormAction ->
-      let (dtForm, dtFormFx) = DTF.update dtFormAction domainTermsView.domainTermForm appConfig
-          product            = domainTermsView.product
-          updatedProduct     = { product | domainTerms = dtForm.product.domainTerms }
+      let (dtForm, dtFormFx) = DTF.update dtFormAction (Maybe.fromJust domainTermsView.domainTermForm) appConfig
+          product            = dtForm.product
+          updatedProduct     = { product | domainTerms = product.domainTerms }
           updatedDomainTermsView = { domainTermsView |
-                                     domainTermForm = dtForm
+                                     domainTermForm = Just dtForm
                                    , product = updatedProduct
                                    }
       in
@@ -69,4 +72,19 @@ update action domainTermsView appConfig =
           (,)
           domainTermsView
           (getDomainTerms appConfig domainTermsView.product Actions.UpdateDomainTerms)
+
+    Actions.ShowCreateDomainTermForm ->
+      let product = domainTermsView.product
+          newForm = DTF.init product DT.init
+      in
+        ({ domainTermsView | domainTermForm = Just newForm }, Effects.none)
+
+    Actions.ShowEditDomainTermForm domainTerm ->
+      let product = domainTermsView.product
+          newForm = DTF.init product domainTerm
+      in
+        ({ domainTermsView | domainTermForm = Just newForm }, Effects.none)
+
+    Actions.HideDomainTermForm ->
+      ({ domainTermsView | domainTermForm = Nothing }, Effects.none)
 

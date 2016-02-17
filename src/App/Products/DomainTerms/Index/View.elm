@@ -5,31 +5,60 @@ module App.Products.DomainTerms.Index.View
 import App.Products.DomainTerms.DomainTerm               exposing (DomainTerm, toSearchQuery)
 import App.Products.DomainTerms.Index.Actions as Actions exposing (DomainTermAction(..))
 import App.Products.DomainTerms.Index.ViewModel          exposing (DomainTermsView)
-import App.Products.DomainTerms.Forms.Actions as FormActions
 import App.Products.DomainTerms.Forms.View    as DTF
+import App.Products.DomainTerms.Forms.ViewModel          exposing (DomainTermForm)
+import Data.Actions                             exposing (..)
 import Data.External                                     exposing (External(..))
 import Html                                              exposing (Html)
 import Html.Events                                       exposing (onClick)
 import Html.Attributes as Html                           exposing (class, href)
+import UI.App.Components.Containers       as UI
 import UI.App.Components.Panels           as UI
 import UI.Bootstrap.Components.Glyphicons as Glyph
 
 
 view : Signal.Address DomainTermAction -> DomainTermsView -> Html
 view address domainTermsView =
-  let forwardedAddress  = Signal.forwardTo address Actions.DomainTermFormAction
-      newDomainTermForm = DTF.view forwardedAddress domainTermsView.domainTermForm
-      domainTerms       = case domainTermsView.product.domainTerms of
-                            Loaded dts -> dts
-                            _          -> []
+  let domainTerms =
+    case domainTermsView.product.domainTerms of
+      Loaded dts -> dts
+      _          -> []
   in
     Html.div
     []
-    [ newDomainTermForm
+    [ domainTermFormUI address domainTermsView.domainTermForm
     , Html.div
         [ Html.classList [ ("row", True) ] ]
         (List.map (renderDomainTerm address) domainTerms)
     ]
+
+domainTermFormUI : Signal.Address DomainTermAction -> Maybe DomainTermForm -> Html
+domainTermFormUI address domainTermForm =
+  case domainTermForm of
+    Nothing ->
+      createDomainTermUI address
+    Just domainTermForm ->
+      let forwardedAddress  = Signal.forwardTo address Actions.DomainTermFormAction
+          hideFormAction = ForwardedAction address Actions.HideDomainTermForm
+      in
+        DTF.view forwardedAddress hideFormAction domainTermForm
+
+createDomainTermUI : Signal.Address DomainTermAction -> Html
+createDomainTermUI address =
+  UI.clearfix
+  [("fc-margin--bottom--medium", True)]
+  [ createDomainTermButton address ]
+
+createDomainTermButton : Signal.Address DomainTermAction -> Html
+createDomainTermButton address =
+  Html.a
+  [ href "#", onClick address Actions.ShowCreateDomainTermForm
+  , Html.classList [ ("pull-right", True)
+                   , ("btn", True)
+                   , ("btn-primary", True)
+                   ]
+  ]
+  [ Html.text "Create Domain Term" ]
 
 renderDomainTerm : Signal.Address DomainTermAction -> DomainTerm -> Html
 renderDomainTerm address domainTerm =
@@ -58,11 +87,10 @@ searchFeaturesLink address domainTerm =
 
 editDomainTermLink : Signal.Address DomainTermAction -> DomainTerm -> Html
 editDomainTermLink address domainTerm =
-  let linkAction = FormActions.EditDomainTerm domainTerm
-      forwardedAddress  = Signal.forwardTo address Actions.DomainTermFormAction
+  let linkAction = ShowEditDomainTermForm domainTerm
   in
     Html.a
-    [ href "#", onClick forwardedAddress linkAction ]
+    [ href "#", onClick address linkAction ]
     [ Glyph.editIcon ]
 
 removeDomainTermLink : Signal.Address DomainTermAction -> DomainTerm -> Html

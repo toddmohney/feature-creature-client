@@ -2,6 +2,7 @@ module App.Products.DomainTerms.Forms.ViewModel
   ( DomainTermForm
   , init
   , setDescription
+  , setProduct
   , setTitle
   ) where
 
@@ -13,7 +14,6 @@ import UI.App.Primitives.Forms                   exposing (InputField)
 
 type alias DomainTermForm =
   { product          : Product
-  , isVisible        : Bool
   , formObject       : DomainTerm
   , titleField       : InputField DomainTermFormAction
   , descriptionField : InputField DomainTermFormAction
@@ -21,28 +21,27 @@ type alias DomainTermForm =
 
 init : Product -> DomainTerm -> DomainTermForm
 init prod domainTerm =
-  init' prod domainTerm False
-
-init' : Product -> DomainTerm -> Bool -> DomainTermForm
-init' prod domainTerm isVisible =
   { product          = prod
-  , isVisible        = isVisible
   , formObject       = domainTerm
   , titleField       = defaultTitleField domainTerm
   , descriptionField = defaultDescriptionField domainTerm
   }
 
+setProduct : DomainTermForm -> Product -> DomainTermForm
+setProduct domainTermForm prod =
+  { domainTermForm | product = prod }
+
 setTitle : DomainTermForm -> String -> DomainTermForm
-setTitle { product, formObject, isVisible } newTitle =
+setTitle { product, formObject } newTitle =
   let updatedDomainTerm = { formObject | title = newTitle }
   in
-    init' product updatedDomainTerm isVisible
+    init product updatedDomainTerm
 
 setDescription : DomainTermForm -> String -> DomainTermForm
-setDescription { product, formObject, isVisible } newDescription =
+setDescription { product, formObject } newDescription =
   let updatedDomainTerm = { formObject | description = newDescription }
   in
-    init' product updatedDomainTerm isVisible
+    init product updatedDomainTerm
 
 defaultTitleField : DomainTerm -> InputField DomainTermFormAction
 defaultTitleField domainTerm =
