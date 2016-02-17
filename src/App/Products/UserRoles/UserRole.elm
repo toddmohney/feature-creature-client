@@ -7,15 +7,15 @@ module App.Products.UserRoles.UserRole
 import App.Search.Types as Search
 
 type alias UserRole =
-  { id          : Int
+  { id          : Maybe Int
   , title       : String
   , description : String
   }
 
 init : UserRole
-init = init' 0
+init = init' Nothing
 
-init' : Int -> UserRole
+init' : Maybe Int -> UserRole
 init' userRoleID =
   { id          = userRoleID
   , title       = ""

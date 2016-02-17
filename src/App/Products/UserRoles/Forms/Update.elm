@@ -2,52 +2,63 @@ module App.Products.UserRoles.Forms.Update
   ( update ) where
 
 import App.AppConfig                                 exposing (..)
-import App.Products.Product as P
 import App.Products.UserRoles.Forms.Actions          exposing (..)
 import App.Products.UserRoles.Forms.ViewModel as URF exposing (UserRoleForm)
 import App.Products.UserRoles.Forms.Validation       exposing (hasErrors, validateForm)
-import App.Products.UserRoles.Requests               exposing (createUserRole)
+import App.Products.UserRoles.Requests               exposing (createUserRole, editUserRole)
 import App.Products.UserRoles.UserRole as UR
 import Debug                                         exposing (crash)
 import Effects                                       exposing (Effects)
+import Task
 
 update : Action -> UserRoleForm -> AppConfig -> (UserRoleForm, Effects Action)
 update action userRoleForm appConfig =
   case action of
-    AddUserRole userRoleResult ->
+    UserRoleAdded userRole   -> (userRoleForm, Effects.none)
+    UserRoleUpdated userRole -> (userRoleForm, Effects.none)
+
+    UserRoleCreated userRoleResult ->
       case userRoleResult of
         Ok userRole ->
-          let updatedProduct = P.addUserRole userRoleForm.product userRole
-              newForm        = URF.init updatedProduct UR.init
+          let newForm = URF.init userRoleForm.product UR.init URF.Create
+              effects = Effects.task (Task.succeed (UserRoleAdded userRole))
           in
-            (newForm, Effects.none)
+            (newForm, effects)
         Err _ -> crash "Something went wrong!"
 
-    ShowUserRoleForm ->
-      ({ userRoleForm | userRoleFormVisible = True }, Effects.none)
-
-    HideUserRoleForm ->
-      ({ userRoleForm | userRoleFormVisible = False }, Effects.none)
+    UserRoleModified userRoleResult ->
+      case userRoleResult of
+        Ok userRole ->
+          let newForm = URF.init userRoleForm.product UR.init URF.Create
+              effects = Effects.task (Task.succeed (UserRoleUpdated userRole))
+          in
+            (newForm, effects)
+        Err _ -> crash "Something went wrong!"
 
     SetUserRoleTitle newTitle ->
-      let newUserRole     = userRoleForm.newUserRole
-          updatedUserRole = { newUserRole | title    = newTitle }
-      in ({ userRoleForm | newUserRole = updatedUserRole }, Effects.none)
+      (URF.setTitle userRoleForm newTitle, Effects.none)
 
     SetUserRoleDescription newDescription ->
-      let newUserRole     = userRoleForm.newUserRole
-          updatedUserRole = { newUserRole | description = newDescription }
-      in ({ userRoleForm | newUserRole = updatedUserRole }, Effects.none)
+      (URF.setDescription userRoleForm newDescription, Effects.none)
 
     SubmitUserRoleForm ->
       let newUserRoleForm = validateForm userRoleForm
       in
-         case hasErrors newUserRoleForm of
-           True ->
-             ( newUserRoleForm
-             , Effects.none
-             )
-           False ->
-             ( newUserRoleForm
-             , createUserRole appConfig newUserRoleForm.product newUserRoleForm.newUserRole AddUserRole
-             )
+        case hasErrors newUserRoleForm of
+          True ->
+            (newUserRoleForm , Effects.none)
+          False ->
+            submitUserRoleForm newUserRoleForm appConfig
+
+
+submitUserRoleForm : UserRoleForm -> AppConfig -> (UserRoleForm, Effects Action)
+submitUserRoleForm userRoleForm appConfig =
+  case userRoleForm.formMode of
+    URF.Create ->
+      (,)
+      userRoleForm
+      (createUserRole appConfig userRoleForm.product userRoleForm.formObject UserRoleCreated)
+    URF.Edit ->
+      (,)
+      userRoleForm
+      (editUserRole appConfig userRoleForm.product userRoleForm.formObject UserRoleModified)

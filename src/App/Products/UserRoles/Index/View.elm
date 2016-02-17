@@ -2,32 +2,62 @@ module App.Products.UserRoles.Index.View
   ( view
   ) where
 
-import App.Products.UserRoles.Actions                exposing (UserRoleAction(..))
+import App.Products.UserRoles.Index.Actions as Actions exposing (UserRoleAction(..))
+import App.Products.UserRoles.Index.ViewModel          exposing (UserRolesView)
 import App.Products.UserRoles.Forms.View as URF
-import App.Products.UserRoles.Index.ViewModel        exposing (UserRolesView)
-import App.Products.UserRoles.UserRole as UR         exposing (UserRole, toSearchQuery)
-import Data.External                                 exposing (External(..))
-import Html                                          exposing (Html)
-import Html.Events                                   exposing (onClick)
-import Html.Attributes as Html                       exposing (class, href)
+import App.Products.UserRoles.Forms.ViewModel          exposing (UserRoleForm)
+import App.Products.UserRoles.UserRole as UR           exposing (UserRole, toSearchQuery)
+import Data.Actions                                    exposing (..)
+import Data.External                                   exposing (External(..))
+import Html                                            exposing (Html)
+import Html.Events                                     exposing (onClick)
+import Html.Attributes as Html                         exposing (class, href)
+import UI.App.Components.Containers       as UI
 import UI.App.Components.Panels as UI
 import UI.Bootstrap.Components.Glyphicons as Glyph
 
 view : Signal.Address UserRoleAction -> UserRolesView -> Html
 view address userRolesView =
-  let forwardedAddress = (Signal.forwardTo address UserRoleFormAction)
-      newUserRoleForm  = URF.view forwardedAddress userRolesView.userRoleForm
-      userRoles        = case userRolesView.product.userRoles of
-                           Loaded urs -> urs
-                           _          -> []
+  let userRoles =
+    case userRolesView.product.userRoles of
+      Loaded dts -> dts
+      _          -> []
   in
     Html.div
     []
-    [ newUserRoleForm
+    [ userRoleFormUI address userRolesView.userRoleForm
     , Html.div
         [ Html.classList [ ("row", True) ] ]
         (List.map (renderUserRole address) userRoles)
     ]
+
+userRoleFormUI : Signal.Address UserRoleAction -> Maybe UserRoleForm -> Html
+userRoleFormUI address userRoleForm =
+  case userRoleForm of
+    Nothing ->
+      createUserRoleUI address
+    Just userRoleForm ->
+      let forwardedAddress  = Signal.forwardTo address Actions.UserRoleFormAction
+          hideFormAction = ForwardedAction address Actions.HideUserRoleForm
+      in
+        URF.view forwardedAddress hideFormAction userRoleForm
+
+createUserRoleUI : Signal.Address UserRoleAction -> Html
+createUserRoleUI address =
+  UI.clearfix
+  [("fc-margin--bottom--medium", True)]
+  [ createUserRoleButton address ]
+
+createUserRoleButton : Signal.Address UserRoleAction -> Html
+createUserRoleButton address =
+  Html.a
+  [ href "#", onClick address Actions.ShowCreateUserRoleForm
+  , Html.classList [ ("pull-right", True)
+                   , ("btn", True)
+                   , ("btn-primary", True)
+                   ]
+  ]
+  [ Html.text "Create Domain Term" ]
 
 renderUserRole : Signal.Address UserRoleAction -> UserRole -> Html
 renderUserRole address userRole =
@@ -56,7 +86,7 @@ searchFeaturesLink address userRole =
 
 editUserRoleLink : Signal.Address UserRoleAction -> UserRole -> Html
 editUserRoleLink address userRole =
-  let linkAction = EditUserRole userRole
+  let linkAction = ShowEditUserRoleForm userRole
   in
     Html.a
     [ href "#", onClick address linkAction ]
@@ -93,14 +123,3 @@ panelHeaderInfo userRole =
   Html.div
   [ class "pull-left" ]
   [ Html.text userRole.title ]
-
--- renderUserRole : Signal.Address Action -> UserRole -> Html
--- renderUserRole address userRole =
-  -- let userRoleName = Html.div [ class "pull-left" ] [ Html.text userRole.title ]
-      -- linkAction     = SearchFeatures (toSearchQuery userRole)
-      -- featureLink    = Html.a [ href "#", onClick address linkAction ] [ Html.text "View features" ]
-      -- featureLinkContainer = Html.div [ class "pull-right" ] [ featureLink ]
-      -- headingContent = Html.div [ class "clearfix" ] [ userRoleName, featureLinkContainer ]
-  -- in
-    -- UI.panelWithHeading headingContent (Html.text userRole.description)
-

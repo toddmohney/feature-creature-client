@@ -17,12 +17,6 @@ update action domainTermForm appConfig =
     DomainTermAdded domainTerm   -> (domainTermForm, Effects.none)
     DomainTermUpdated domainTerm -> (domainTermForm, Effects.none)
 
-    SetDomainTermTitle newTitle ->
-      (DTF.setTitle domainTermForm newTitle, Effects.none)
-
-    SetDomainTermDescription newDescription ->
-      (DTF.setDescription domainTermForm newDescription, Effects.none)
-
     DomainTermCreated domainTermResult ->
       case domainTermResult of
         Ok domainTerm ->
@@ -40,6 +34,12 @@ update action domainTermForm appConfig =
           in
             (newForm, effects)
         Err _ -> crash "Something went wrong!"
+
+    SetDomainTermTitle newTitle ->
+      (DTF.setTitle domainTermForm newTitle, Effects.none)
+
+    SetDomainTermDescription newDescription ->
+      (DTF.setDescription domainTermForm newDescription, Effects.none)
 
     SubmitDomainTermForm ->
       let newDomainTermForm = validateForm domainTermForm

@@ -1,17 +1,19 @@
 module App.Products.UserRoles.Requests
  ( createUserRole
+ , editUserRole
  , getUserRolesList
  , removeUserRole
  ) where
 
-import App.AppConfig                                       exposing (..)
-import App.Products.UserRoles.UserRole                     exposing (UserRole)
-import App.Products.Product                                exposing (Product)
-import Effects                                             exposing (Effects)
-import Http                                                exposing (Error, Request)
+import App.AppConfig                   exposing (..)
+import App.Products.UserRoles.UserRole exposing (UserRole)
+import App.Products.Product            exposing (Product)
+import CoreExtensions.Maybe            exposing (fromJust)
+import Effects                         exposing (Effects)
+import Http                            exposing (Error, Request)
 import Json.Encode
-import Json.Decode as Json exposing ((:=))
-import Task                                                exposing (Task)
+import Json.Decode as Json             exposing ((:=))
+import Task                            exposing (Task)
 import Utils.Http
 
 getUserRolesList : AppConfig -> Product -> (Result Error (List UserRole) -> a) -> Effects a
@@ -32,6 +34,19 @@ createUserRole appConfig product userRole action =
       |> Task.toResult
       |> Task.map action
       |> Effects.task
+
+editUserRole : AppConfig
+            -> Product
+            -> UserRole
+            -> (Result Error UserRole -> a)
+            -> Effects a
+editUserRole appConfig product userRole action =
+  let request = editUserRoleRequest appConfig product userRole
+  in Http.send Http.defaultSettings request
+     |> Http.fromJson parseUserRole
+     |> Task.toResult
+     |> Task.map action
+     |> Effects.task
 
 removeUserRole : AppConfig
               -> Product
@@ -65,7 +80,7 @@ userRoleUrl appConfig prod userRole =
   ++ "/products/"
   ++ (toString prod.id)
   ++ "/user-roles/"
-  ++ (toString userRole.id)
+  ++ (toString (fromJust userRole.id))
 
 createUserRoleRequest : AppConfig -> Product -> UserRole -> Request
 createUserRoleRequest appConfig product userRole =
@@ -73,11 +88,32 @@ createUserRoleRequest appConfig product userRole =
     (userRolesUrl appConfig product)
     (encodeUserRole userRole)
 
+editUserRoleRequest : AppConfig -> Product -> UserRole -> Request
+editUserRoleRequest appConfig product userRole =
+  Utils.Http.jsonPutRequest
+    (userRoleUrl appConfig product userRole)
+    (encodeUserRole userRole)
+
 encodeUserRole : UserRole -> String
 encodeUserRole userRole =
+  case userRole.id of
+    Nothing -> encodeWithoutId userRole
+    Just id -> encodeWithId userRole
+
+encodeWithoutId : UserRole -> String
+encodeWithoutId userRole =
   Json.Encode.encode 0
     <| Json.Encode.object
         [ ("title",       Json.Encode.string userRole.title)
+        , ("description", Json.Encode.string userRole.description)
+        ]
+
+encodeWithId : UserRole -> String
+encodeWithId userRole =
+  Json.Encode.encode 0
+    <| Json.Encode.object
+        [ ("id",          Json.Encode.int (fromJust userRole.id))
+        , ("title",       Json.Encode.string userRole.title)
         , ("description", Json.Encode.string userRole.description)
         ]
 
@@ -87,7 +123,7 @@ parseUserRoles = parseUserRole |> Json.list
 parseUserRole : Json.Decoder UserRole
 parseUserRole =
   Json.object3 UserRole
-    ("id"          := Json.int)
-    ("title"       := Json.string)
-    ("description" := Json.string)
+    (Json.maybe ("id" := Json.int))
+    ("title"         := Json.string)
+    ("description"   := Json.string)
 

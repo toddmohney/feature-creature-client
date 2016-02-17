@@ -1,5 +1,6 @@
 module App.Products.DomainTerms.Forms.View
-  ( view ) where
+  ( view
+  ) where
 
 import App.Products.DomainTerms.Forms.Actions   exposing (..)
 import App.Products.DomainTerms.Forms.ViewModel exposing (DomainTermForm, FormMode(..))
@@ -11,15 +12,14 @@ import UI.App.Components.Containers as UI
 import UI.App.Components.Panels    as UI
 import UI.App.Primitives.Forms     as UI
 
-
 view : Signal.Address DomainTermFormAction -> ForwardedAction a -> DomainTermForm -> Html
 view address hideAction domainTermForm =
-  let domainTermFormHtml = domainTermFormContainer <| renderDomainTermForm address hideAction domainTermForm
+  let domainTermFormHtml = formContainer <| renderDomainTermForm address hideAction domainTermForm
   in
     UI.clearfix [] [ domainTermFormHtml ]
 
-domainTermFormContainer : Html -> Html
-domainTermFormContainer content =
+formContainer : Html -> Html
+formContainer content =
   Html.div
     [ classList [ ("pull-right", True) ]
     , style [ ("width", "50%") ]

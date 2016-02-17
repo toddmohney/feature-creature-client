@@ -7,7 +7,7 @@ import App.Products.DomainTerms.Index.Actions as Actions exposing (DomainTermAct
 import App.Products.DomainTerms.Index.ViewModel          exposing (DomainTermsView)
 import App.Products.DomainTerms.Forms.View    as DTF
 import App.Products.DomainTerms.Forms.ViewModel          exposing (DomainTermForm)
-import Data.Actions                             exposing (..)
+import Data.Actions                                      exposing (..)
 import Data.External                                     exposing (External(..))
 import Html                                              exposing (Html)
 import Html.Events                                       exposing (onClick)
