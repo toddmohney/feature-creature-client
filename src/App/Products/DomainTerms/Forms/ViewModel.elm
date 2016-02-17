@@ -1,5 +1,6 @@
 module App.Products.DomainTerms.Forms.ViewModel
   ( DomainTermForm
+  , FormMode(..)
   , init
   , setDescription
   , setProduct
@@ -12,17 +13,22 @@ import App.Products.Product                      exposing (Product)
 import Html                                      exposing (Html)
 import UI.App.Primitives.Forms                   exposing (InputField)
 
+type FormMode = Create
+              | Edit
+
 type alias DomainTermForm =
-  { product          : Product
+  { formMode         : FormMode
   , formObject       : DomainTerm
+  , product          : Product
   , titleField       : InputField DomainTermFormAction
   , descriptionField : InputField DomainTermFormAction
   }
 
-init : Product -> DomainTerm -> DomainTermForm
-init prod domainTerm =
-  { product          = prod
+init : Product -> DomainTerm -> FormMode -> DomainTermForm
+init prod domainTerm formMode =
+  { formMode         = formMode
   , formObject       = domainTerm
+  , product          = prod
   , titleField       = defaultTitleField domainTerm
   , descriptionField = defaultDescriptionField domainTerm
   }
@@ -32,16 +38,22 @@ setProduct domainTermForm prod =
   { domainTermForm | product = prod }
 
 setTitle : DomainTermForm -> String -> DomainTermForm
-setTitle { product, formObject } newTitle =
-  let updatedDomainTerm = { formObject | title = newTitle }
+setTitle domainTermForm newTitle =
+  let formObject = domainTermForm.formObject
+      updatedDomainTerm = { formObject | title = newTitle }
   in
-    init product updatedDomainTerm
+    -- run through 'init' so we end up with
+    -- correctly initialized fields
+    init domainTermForm.product updatedDomainTerm domainTermForm.formMode
 
 setDescription : DomainTermForm -> String -> DomainTermForm
-setDescription { product, formObject } newDescription =
-  let updatedDomainTerm = { formObject | description = newDescription }
+setDescription domainTermForm newDescription =
+  let formObject = domainTermForm.formObject
+      updatedDomainTerm = { formObject | description = newDescription }
   in
-    init product updatedDomainTerm
+    -- run through 'init' so we end up with
+    -- correctly initialized fields
+    init domainTermForm.product updatedDomainTerm domainTermForm.formMode
 
 defaultTitleField : DomainTerm -> InputField DomainTermFormAction
 defaultTitleField domainTerm =

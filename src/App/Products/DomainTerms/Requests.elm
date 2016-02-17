@@ -1,5 +1,6 @@
 module App.Products.DomainTerms.Requests
   ( createDomainTerm
+  , editDomainTerm
   , getDomainTerms
   , removeDomainTerm
   ) where
@@ -38,6 +39,19 @@ createDomainTerm appConfig product domainTerm action =
      |> Task.map action
      |> Effects.task
 
+editDomainTerm : AppConfig
+              -> Product
+              -> DomainTerm
+              -> (Result Error DomainTerm -> a)
+              -> Effects a
+editDomainTerm appConfig product domainTerm action =
+  let request = editDomainTermRequest appConfig product domainTerm
+  in Http.send Http.defaultSettings request
+     |> Http.fromJson parseDomainTerm
+     |> Task.toResult
+     |> Task.map action
+     |> Effects.task
+
 removeDomainTerm : AppConfig
                 -> Product
                 -> DomainTerm
@@ -55,13 +69,18 @@ removeDomainTerm appConfig product domainTerm action =
 removeDomainTermRequest : AppConfig -> Product -> DomainTerm -> Request
 removeDomainTermRequest appConfig product domainTerm =
   Utils.Http.jsonDeleteRequest
-    (domainTermUrl appConfig product domainTerm)
-    (encodeDomainTerm domainTerm)
+    <| domainTermUrl appConfig product domainTerm
 
 createDomainTermRequest : AppConfig -> Product -> DomainTerm -> Request
 createDomainTermRequest appConfig product domainTerm =
   Utils.Http.jsonPostRequest
     (domainTermsUrl appConfig product)
+    (encodeDomainTerm domainTerm)
+
+editDomainTermRequest : AppConfig -> Product -> DomainTerm -> Request
+editDomainTermRequest appConfig product domainTerm =
+  Utils.Http.jsonPutRequest
+    (domainTermUrl appConfig product domainTerm)
     (encodeDomainTerm domainTerm)
 
 domainTermsUrl : AppConfig -> Product -> String

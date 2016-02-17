@@ -35,12 +35,6 @@ view : Product -> Html
 view product =
   Html.div [] [ text product.name ]
 
-addDomainTerm : Product -> DomainTerm -> Product
-addDomainTerm product domainTerm =
-  case product.domainTerms of
-    Loaded dts -> { product | domainTerms = Loaded (domainTerm :: dts) }
-    _          -> { product | domainTerms = Loaded [domainTerm] }
-
 addUserRole : Product -> UserRole -> Product
 addUserRole product userRole =
   case product.userRoles of

@@ -2,7 +2,7 @@ module App.Products.DomainTerms.Forms.View
   ( view ) where
 
 import App.Products.DomainTerms.Forms.Actions   exposing (..)
-import App.Products.DomainTerms.Forms.ViewModel exposing (DomainTermForm)
+import App.Products.DomainTerms.Forms.ViewModel exposing (DomainTermForm, FormMode(..))
 import Data.Actions                             exposing (..)
 import Html                                     exposing (Html)
 import Html.Attributes                          exposing (classList, href, style)
@@ -28,9 +28,14 @@ domainTermFormContainer content =
 
 renderDomainTermForm : Signal.Address DomainTermFormAction -> ForwardedAction a -> DomainTermForm -> Html
 renderDomainTermForm address hideAction domainTermForm =
-  let headingContent = Html.text "Create A New Domain Term"
-      bodyContent    = renderForm address hideAction domainTermForm
-  in UI.panelWithHeading headingContent bodyContent
+  let bodyContent    = renderForm address hideAction domainTermForm
+  in UI.panelWithHeading (headingContent domainTermForm.formMode) bodyContent
+
+headingContent : FormMode -> Html
+headingContent formMode =
+  case formMode of
+    Create -> Html.text "Create A New Domain Term"
+    Edit   -> Html.text "Edit Domain Term"
 
 renderForm : Signal.Address DomainTermFormAction -> ForwardedAction a -> DomainTermForm -> Html
 renderForm address hideAction domainTermForm =

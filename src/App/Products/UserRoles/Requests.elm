@@ -50,8 +50,7 @@ removeUserRole appConfig product userRole action =
 removeUserRoleRequest : AppConfig -> Product -> UserRole -> Request
 removeUserRoleRequest appConfig product userRole =
   Utils.Http.jsonDeleteRequest
-    (userRoleUrl appConfig product userRole)
-    (encodeUserRole userRole)
+    <| userRoleUrl appConfig product userRole
 
 userRolesUrl : AppConfig -> Product -> String
 userRolesUrl appConfig prod =
