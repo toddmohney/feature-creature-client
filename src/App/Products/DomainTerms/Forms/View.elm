@@ -11,7 +11,7 @@ import UI.App.Primitives.Forms     as UI
 
 view : Signal.Address DomainTermFormAction -> DomainTermForm -> Html
 view address domainTermForm =
-  case domainTermForm.domainTermFormVisible of
+  case domainTermForm.isVisible of
     True ->
       let domainTermFormHtml = domainTermFormContainer <| renderDomainTermForm address domainTermForm
       in

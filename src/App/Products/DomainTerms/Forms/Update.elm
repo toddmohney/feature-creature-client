@@ -3,6 +3,7 @@ module App.Products.DomainTerms.Forms.Update
 
 import App.AppConfig                                   exposing (..)
 import App.Products.Product as P
+import App.Products.DomainTerms.DomainTerm as DT
 import App.Products.DomainTerms.Forms.Actions          exposing (..)
 import App.Products.DomainTerms.Forms.ViewModel as DTF exposing (DomainTermForm)
 import App.Products.DomainTerms.Forms.Validation       exposing (validateForm, hasErrors)
@@ -13,40 +14,32 @@ import Effects                                         exposing (Effects)
 update : DomainTermFormAction -> DomainTermForm -> AppConfig -> (DomainTermForm, Effects DomainTermFormAction)
 update action domainTermForm appConfig =
   case action of
+    ShowDomainTermForm ->
+      ({ domainTermForm | isVisible = True }, Effects.none)
+
+    HideDomainTermForm ->
+      (DTF.init domainTermForm.product DT.init, Effects.none)
+
+    SetDomainTermTitle newTitle ->
+      (DTF.setTitle domainTermForm newTitle, Effects.none)
+
+    SetDomainTermDescription newDescription ->
+      (DTF.setDescription domainTermForm newDescription, Effects.none)
+
+    EditDomainTerm domainTerm ->
+      let product = domainTermForm.product
+          newForm = DTF.init product domainTerm
+      in
+        ({ newForm | isVisible = True }, Effects.none)
+
     AddDomainTerm domainTermResult ->
       case domainTermResult of
         Ok domainTerm ->
           let updatedProduct = P.addDomainTerm domainTermForm.product domainTerm
-              newForm        = DTF.init updatedProduct
+              newForm        = DTF.init updatedProduct DT.init
           in
             (newForm, Effects.none)
         Err _ -> crash "Something went wrong!"
-
-    ShowDomainTermForm ->
-      (,)
-      { domainTermForm | domainTermFormVisible = True }
-      Effects.none
-
-    HideDomainTermForm ->
-      (,)
-      { domainTermForm | domainTermFormVisible = False }
-      Effects.none
-
-    SetDomainTermTitle newTitle ->
-      let newDomainTerm = domainTermForm.formObject
-          updatedDomainTerm = { newDomainTerm | title = newTitle }
-      in
-        (,)
-        { domainTermForm | formObject = updatedDomainTerm }
-        Effects.none
-
-    SetDomainTermDescription newDescription ->
-      let newDomainTerm = domainTermForm.formObject
-          updatedDomainTerm = { newDomainTerm | description = newDescription }
-      in
-        (,)
-        { domainTermForm | formObject = updatedDomainTerm }
-        Effects.none
 
     SubmitDomainTermForm ->
       let newDomainTermForm = validateForm domainTermForm

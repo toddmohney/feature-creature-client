@@ -2,11 +2,12 @@ module App.Products.UserRoles.Forms.Update
   ( update ) where
 
 import App.AppConfig                                 exposing (..)
+import App.Products.Product as P
 import App.Products.UserRoles.Forms.Actions          exposing (..)
 import App.Products.UserRoles.Forms.ViewModel as URF exposing (UserRoleForm)
 import App.Products.UserRoles.Forms.Validation       exposing (hasErrors, validateForm)
 import App.Products.UserRoles.Requests               exposing (createUserRole)
-import App.Products.Product as P
+import App.Products.UserRoles.UserRole as UR
 import Debug                                         exposing (crash)
 import Effects                                       exposing (Effects)
 
@@ -17,7 +18,7 @@ update action userRoleForm appConfig =
       case userRoleResult of
         Ok userRole ->
           let updatedProduct = P.addUserRole userRoleForm.product userRole
-              newForm        = URF.init updatedProduct
+              newForm        = URF.init updatedProduct UR.init
           in
             (newForm, Effects.none)
         Err _ -> crash "Something went wrong!"

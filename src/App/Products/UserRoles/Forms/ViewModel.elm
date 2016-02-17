@@ -17,26 +17,28 @@ type alias UserRoleForm =
   , descriptionField     : InputField Action
   }
 
-init : Product -> UserRoleForm
-init prod =
+init : Product -> UserRole -> UserRoleForm
+init prod userRole =
   { product              = prod
   , userRoleFormVisible  = False
-  , newUserRole          = UR.init
-  , titleField           = defaultTitleField
-  , descriptionField     = defaultDescriptionField
+  , newUserRole          = userRole
+  , titleField           = defaultTitleField userRole
+  , descriptionField     = defaultDescriptionField userRole
   }
 
-defaultTitleField : InputField Action
-defaultTitleField =
-  { inputName = "userRoleTitle"
+defaultTitleField : UserRole -> InputField Action
+defaultTitleField userRole =
+  { defaultValue = userRole.title
+  , inputName = "userRoleTitle"
   , labelContent = (Html.text "Title")
   , inputParser = SetUserRoleTitle
   , validationErrors = []
   }
 
-defaultDescriptionField : InputField Action
-defaultDescriptionField =
-  { inputName = "userRoleDescription"
+defaultDescriptionField : UserRole -> InputField Action
+defaultDescriptionField userRole =
+  { defaultValue = userRole.description
+  , inputName = "userRoleDescription"
   , labelContent = (Html.text "Description")
   , inputParser = SetUserRoleDescription
   , validationErrors = []

@@ -7,15 +7,15 @@ module App.Products.DomainTerms.DomainTerm
 import App.Search.Types as Search
 
 type alias DomainTerm =
-  { id : Int
-  , title : String
+  { id          : Maybe Int
+  , title       : String
   , description : String
   }
 
 init : DomainTerm
-init = init' 0
+init = init' Nothing
 
-init' : Int -> DomainTerm
+init' : Maybe Int -> DomainTerm
 init' domainTermID =
   { id          = domainTermID
   , title       = ""
@@ -25,5 +25,5 @@ init' domainTermID =
 toSearchQuery : DomainTerm -> Search.Query
 toSearchQuery domainTerm =
   { datatype = "DomainTerm"
-  , term = domainTerm.title
+  , term     = domainTerm.title
   }

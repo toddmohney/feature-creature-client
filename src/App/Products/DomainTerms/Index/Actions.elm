@@ -7,7 +7,6 @@ import Http exposing (Error)
 
 type DomainTermAction = UpdateDomainTerms (Result Error (List DomainTerm))
                       | SearchFeatures Search.Query
-                      | EditDomainTerm DomainTerm
                       | RemoveDomainTerm DomainTerm
                       | DomainTermRemoved (Result Error DomainTerm)
                       | DomainTermFormAction DTF.DomainTermFormAction

@@ -4,6 +4,7 @@ module App.Products.DomainTerms.Index.ViewModel
   ) where
 
 import App.AppConfig                                   exposing (..)
+import App.Products.DomainTerms.DomainTerm as DT
 import App.Products.DomainTerms.Index.Actions   as DTI exposing (DomainTermAction)
 import App.Products.DomainTerms.Forms.ViewModel as DTF
 import App.Products.DomainTerms.Requests               exposing (getDomainTerms)
@@ -18,8 +19,6 @@ type alias DomainTermsView =
 init : Product -> AppConfig -> (DomainTermsView, Effects DomainTermAction)
 init prod appConfig =
   let effects = getDomainTerms appConfig prod DTI.UpdateDomainTerms
-  in ( { product = prod
-       , domainTermForm = DTF.init prod
-       }
-     , effects
-     )
+      domainTermsView = { product = prod, domainTermForm = DTF.init prod DT.init }
+  in
+    (domainTermsView, effects)

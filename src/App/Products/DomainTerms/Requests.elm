@@ -7,6 +7,7 @@ module App.Products.DomainTerms.Requests
 import App.AppConfig                       exposing (..)
 import App.Products.Product                exposing (Product)
 import App.Products.DomainTerms.DomainTerm exposing (DomainTerm)
+import CoreExtensions.Maybe                exposing (fromJust)
 import Effects                             exposing (Effects)
 import Http                                exposing (Error, Request)
 import Json.Encode
@@ -76,13 +77,27 @@ domainTermUrl appConfig prod domainTerm =
   ++ "/products/"
   ++ (toString prod.id)
   ++ "/domain-terms/"
-  ++ (toString domainTerm.id)
+  ++ (toString (fromJust domainTerm.id))
 
 encodeDomainTerm : DomainTerm -> String
 encodeDomainTerm domainTerm =
+  case domainTerm.id of
+    Nothing -> encodeWithoutId domainTerm
+    Just id -> encodeWithId domainTerm
+
+encodeWithoutId : DomainTerm -> String
+encodeWithoutId domainTerm =
   Json.Encode.encode 0
     <| Json.Encode.object
-        [ ("id",          Json.Encode.int domainTerm.id)
+        [ ("title",       Json.Encode.string domainTerm.title)
+        , ("description", Json.Encode.string domainTerm.description)
+        ]
+
+encodeWithId : DomainTerm -> String
+encodeWithId domainTerm =
+  Json.Encode.encode 0
+    <| Json.Encode.object
+        [ ("id",          Json.Encode.int (fromJust domainTerm.id))
         , ("title",       Json.Encode.string domainTerm.title)
         , ("description", Json.Encode.string domainTerm.description)
         ]
@@ -93,6 +108,6 @@ parseDomainTerms = parseDomainTerm |> Json.list
 parseDomainTerm : Json.Decoder DomainTerm
 parseDomainTerm =
   Json.object3 DomainTerm
-    ("id"          := Json.int)
+    (Json.maybe ("id"   := Json.int))
     ("title"       := Json.string)
     ("description" := Json.string)

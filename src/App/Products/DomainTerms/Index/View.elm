@@ -5,6 +5,7 @@ module App.Products.DomainTerms.Index.View
 import App.Products.DomainTerms.DomainTerm               exposing (DomainTerm, toSearchQuery)
 import App.Products.DomainTerms.Index.Actions as Actions exposing (DomainTermAction(..))
 import App.Products.DomainTerms.Index.ViewModel          exposing (DomainTermsView)
+import App.Products.DomainTerms.Forms.Actions as FormActions
 import App.Products.DomainTerms.Forms.View    as DTF
 import Data.External                                     exposing (External(..))
 import Html                                              exposing (Html)
@@ -57,10 +58,11 @@ searchFeaturesLink address domainTerm =
 
 editDomainTermLink : Signal.Address DomainTermAction -> DomainTerm -> Html
 editDomainTermLink address domainTerm =
-  let linkAction = EditDomainTerm domainTerm
+  let linkAction = FormActions.EditDomainTerm domainTerm
+      forwardedAddress  = Signal.forwardTo address Actions.DomainTermFormAction
   in
     Html.a
-    [ href "#", onClick address linkAction ]
+    [ href "#", onClick forwardedAddress linkAction ]
     [ Glyph.editIcon ]
 
 removeDomainTermLink : Signal.Address DomainTermAction -> DomainTerm -> Html

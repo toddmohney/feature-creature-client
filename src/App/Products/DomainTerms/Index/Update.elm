@@ -50,8 +50,6 @@ update action domainTermsView appConfig =
 
     Actions.SearchFeatures searchQuery -> (domainTermsView, Effects.none)
 
-    Actions.EditDomainTerm domainTerm -> (domainTermsView, Effects.none)
-
     Actions.RemoveDomainTerm domainTerm ->
       (,)
       domainTermsView
