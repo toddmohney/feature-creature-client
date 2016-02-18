@@ -11,7 +11,7 @@ import App.Products.Navigation.NavBar as NavBar
 import App.Products.Product                           exposing (Product)
 import App.Products.Show.Actions as Actions           exposing (Action)
 import App.Products.Show.ViewModel as PV              exposing (ProductView)
-import App.Products.UserRoles.Actions as URV
+import App.Products.UserRoles.Index.Actions as URV
 import App.Products.UserRoles.Index.Update as URV
 import App.Search.Types as Search
 import Effects                                        exposing (Effects)

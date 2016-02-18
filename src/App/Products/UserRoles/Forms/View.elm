@@ -1,56 +1,48 @@
 module App.Products.UserRoles.Forms.View
-  ( view ) where
+  ( view
+  ) where
 
+import App.Products.UserRoles.Forms.Actions   exposing (..)
+import App.Products.UserRoles.Forms.ViewModel exposing (UserRoleForm, FormMode(..))
+import Data.Actions                           exposing (..)
 import Html                                   exposing (Html)
 import Html.Attributes                        exposing (classList, href, style)
 import Html.Events                            exposing (onClick)
-import App.Products.UserRoles.Forms.Actions   exposing (..)
-import App.Products.UserRoles.Forms.ViewModel exposing (UserRoleForm)
+import UI.App.Components.Containers as UI
 import UI.App.Components.Panels    as UI
 import UI.App.Primitives.Forms     as UI
 
-view : Signal.Address Action -> UserRoleForm -> Html
-view address userRoleForm =
-  case userRoleForm.userRoleFormVisible of
-    True ->
-      let userRoleFormHtml = renderUserRoleForm address userRoleForm
-      in
-        Html.div
-        [ classList [ ("clearfix", True) ] ]
-        [ Html.div
-          [ classList [ ("pull-right", True) ]
-          , style [ ("width", "50%") ]
-          ]
-          [ userRoleFormHtml ]
-        ]
-    False ->
-      Html.div
-      [ classList [ ("clearfix", True), ("fc-margin--bottom--medium", True) ] ]
-      [ renderFormButton address ]
+view : Signal.Address Action -> ForwardedAction a -> UserRoleForm -> Html
+view address hideAction userRoleForm =
+  let userRoleFormHtml = formContainer <| renderUserRoleForm address hideAction userRoleForm
+  in
+    UI.clearfix [] [ userRoleFormHtml ]
 
-renderFormButton : Signal.Address Action -> Html
-renderFormButton address =
-  Html.a
-  [ href "#", onClick address ShowUserRoleForm
-  , classList [ ("pull-right", True)
-              , ("btn", True)
-              , ("btn-primary", True)
-              ]
-  ]
-  [ Html.text "Create User Role" ]
+formContainer : Html -> Html
+formContainer content =
+  Html.div
+    [ classList [ ("pull-right", True) ]
+    , style [ ("width", "50%") ]
+    ]
+    [ content ]
 
-renderUserRoleForm : Signal.Address Action -> UserRoleForm -> Html
-renderUserRoleForm address userRoleForm =
-  let headingContent = Html.text "Create A New User Role"
-      bodyContent    = renderForm address userRoleForm
-  in UI.panelWithHeading headingContent bodyContent
+renderUserRoleForm : Signal.Address Action -> ForwardedAction a -> UserRoleForm -> Html
+renderUserRoleForm address hideAction userRoleForm =
+  let bodyContent    = renderForm address hideAction userRoleForm
+  in UI.panelWithHeading (headingContent userRoleForm.formMode) bodyContent
 
-renderForm : Signal.Address Action -> UserRoleForm -> Html
-renderForm address userRoleForm =
+headingContent : FormMode -> Html
+headingContent formMode =
+  case formMode of
+    Create -> Html.text "Create A New User Role"
+    Edit   -> Html.text "Edit User Role"
+
+renderForm : Signal.Address Action -> ForwardedAction a -> UserRoleForm -> Html
+renderForm address hideAction userRoleForm =
   Html.div
     []
     [ UI.input address userRoleForm.titleField
     , UI.textarea address userRoleForm.descriptionField
-    , UI.cancelButton (onClick address HideUserRoleForm)
+    , UI.cancelButton (onClick hideAction.address hideAction.action)
     , UI.submitButton (onClick address SubmitUserRoleForm)
     ]

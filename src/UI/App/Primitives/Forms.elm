@@ -7,9 +7,10 @@ import String
 import UI.Bootstrap.CSS.Buttons as BS
 
 type alias InputField a =
-  { inputName        : String
-  , labelContent     : Html
+  { defaultValue     : String
+  , inputName        : String
   , inputParser      : (String -> a)
+  , labelContent     : Html
   , validationErrors : (List String)
   }
 
@@ -20,7 +21,7 @@ requiredStringFieldValidation str =
     False -> []
 
 input : Signal.Address a -> InputField a -> Html
-input address { inputName, labelContent, inputParser, validationErrors } =
+input address { defaultValue, inputName, inputParser, labelContent, validationErrors } =
   let hasErrors = not <| List.isEmpty validationErrors
       errorMsgs = List.map Html.text validationErrors
       errorHelpText =
@@ -42,6 +43,7 @@ input address { inputName, labelContent, inputParser, validationErrors } =
               [ class "form-control"
               , id inputName
               , name inputName
+              , value defaultValue
               , onInput address inputParser
               ]
               []
@@ -55,10 +57,10 @@ input address { inputName, labelContent, inputParser, validationErrors } =
               []
           ]
   in
-     Html.div [] [ formGroup, errorHelpText ]
+    Html.div [] [ formGroup, errorHelpText ]
 
 textarea : Signal.Address a -> InputField a -> Html
-textarea address { inputName, labelContent, inputParser, validationErrors } =
+textarea address { defaultValue, inputName, inputParser, labelContent, validationErrors } =
   let hasErrors = not <| List.isEmpty validationErrors
       errorMsgs = List.map Html.text validationErrors
       errorHelpText =
@@ -80,6 +82,7 @@ textarea address { inputName, labelContent, inputParser, validationErrors } =
               [ class "form-control"
               , id inputName
               , name inputName
+              , value defaultValue
               , onInput address inputParser
               ]
               []

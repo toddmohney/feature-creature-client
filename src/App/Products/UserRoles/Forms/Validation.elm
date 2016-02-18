@@ -8,7 +8,7 @@ import UI.App.Primitives.Forms     as UI      exposing (requiredStringFieldValid
 
 validateForm : UserRoleForm -> UserRoleForm
 validateForm form =
-  let userRole            = form.newUserRole
+  let userRole            = form.formObject
       titleField          = form.titleField
       descriptionField    = form.descriptionField
       newTitleField       = { titleField | validationErrors       = validateTitle userRole.title }

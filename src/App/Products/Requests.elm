@@ -1,4 +1,4 @@
-module App.Products.Requests 
+module App.Products.Requests
   ( createProduct
   , getProducts
   ) where
@@ -22,7 +22,7 @@ getProducts appConfig action =
 createProduct : AppConfig -> Product -> (Result Error Product -> a) -> Effects a
 createProduct appConfig newProduct action =
   let request = Utils.Http.jsonPostRequest (productsUrl appConfig) (encodeProduct newProduct)
-  in 
+  in
     Http.send Http.defaultSettings request
       |> Http.fromJson parseProduct
       |> Task.toResult

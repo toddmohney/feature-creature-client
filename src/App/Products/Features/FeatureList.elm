@@ -10,6 +10,7 @@ import Html                          exposing (..)
 import Html.Attributes as Html       exposing (..)
 import Html.Events                   exposing (onClick)
 import String
+import UI.Bootstrap.Components.Glyphicons as Glyph
 
 type alias FeatureList =
   { features: DirectoryTree }
@@ -98,7 +99,7 @@ drawFeatureFile' : Signal.Address Action -> FileDescription -> Html
 drawFeatureFile' address fileDesc =
   Html.a
   [ href "#", onClick address (ShowFeature fileDesc) ]
-  [ Html.span [ classList [("glyphicon", True), ("glyphicon-file", True)] ] []
+  [ Glyph.fileIcon
   , Html.text fileDesc.fileName
   ]
 
@@ -115,7 +116,7 @@ drawFeatureDirectory' : Signal.Address Action -> FileDescription -> Html
 drawFeatureDirectory' address fileDesc =
   Html.div
   []
-  [ Html.span [ classList [("glyphicon", True), ("glyphicon-folder-open", True)] ] []
+  [ Glyph.folderOpenIcon
   , Html.text fileDesc.fileName
   ]
 

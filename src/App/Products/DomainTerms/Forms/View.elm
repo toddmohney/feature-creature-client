@@ -1,56 +1,48 @@
 module App.Products.DomainTerms.Forms.View
-  ( view ) where
+  ( view
+  ) where
 
 import App.Products.DomainTerms.Forms.Actions   exposing (..)
-import App.Products.DomainTerms.Forms.ViewModel exposing (DomainTermForm)
+import App.Products.DomainTerms.Forms.ViewModel exposing (DomainTermForm, FormMode(..))
+import Data.Actions                             exposing (..)
 import Html                                     exposing (Html)
 import Html.Attributes                          exposing (classList, href, style)
 import Html.Events                              exposing (onClick)
+import UI.App.Components.Containers as UI
 import UI.App.Components.Panels    as UI
 import UI.App.Primitives.Forms     as UI
 
-view : Signal.Address DomainTermFormAction -> DomainTermForm -> Html
-view address domainTermForm =
-  case domainTermForm.domainTermFormVisible of
-    True ->
-      let domainTermFormHtml = renderDomainTermForm address domainTermForm
-      in
-        Html.div
-        [ classList [ ("clearfix", True) ] ]
-        [ Html.div
-          [ classList [ ("pull-right", True) ]
-          , style [ ("width", "50%") ]
-          ]
-          [ domainTermFormHtml ]
-        ]
-    False ->
-      Html.div
-      [ classList [ ("clearfix", True), ("fc-margin--bottom--medium", True) ] ]
-      [ renderFormButton address ]
+view : Signal.Address DomainTermFormAction -> ForwardedAction a -> DomainTermForm -> Html
+view address hideAction domainTermForm =
+  let domainTermFormHtml = formContainer <| renderDomainTermForm address hideAction domainTermForm
+  in
+    UI.clearfix [] [ domainTermFormHtml ]
 
-renderFormButton : Signal.Address DomainTermFormAction -> Html
-renderFormButton address =
-  Html.a
-  [ href "#", onClick address ShowDomainTermForm
-  , classList [ ("pull-right", True)
-              , ("btn", True)
-              , ("btn-primary", True)
-              ]
-  ]
-  [ Html.text "Create Domain Term" ]
+formContainer : Html -> Html
+formContainer content =
+  Html.div
+    [ classList [ ("pull-right", True) ]
+    , style [ ("width", "50%") ]
+    ]
+    [ content ]
 
-renderDomainTermForm : Signal.Address DomainTermFormAction -> DomainTermForm -> Html
-renderDomainTermForm address domainTermForm =
-  let headingContent = Html.text "Create A New Domain Term"
-      bodyContent    = renderForm address domainTermForm
-  in UI.panelWithHeading headingContent bodyContent
+renderDomainTermForm : Signal.Address DomainTermFormAction -> ForwardedAction a -> DomainTermForm -> Html
+renderDomainTermForm address hideAction domainTermForm =
+  let bodyContent    = renderForm address hideAction domainTermForm
+  in UI.panelWithHeading (headingContent domainTermForm.formMode) bodyContent
 
-renderForm : Signal.Address DomainTermFormAction -> DomainTermForm -> Html
-renderForm address domainTermForm =
+headingContent : FormMode -> Html
+headingContent formMode =
+  case formMode of
+    Create -> Html.text "Create A New Domain Term"
+    Edit   -> Html.text "Edit Domain Term"
+
+renderForm : Signal.Address DomainTermFormAction -> ForwardedAction a -> DomainTermForm -> Html
+renderForm address hideAction domainTermForm =
   Html.div
     []
     [ UI.input address domainTermForm.titleField
     , UI.textarea address domainTermForm.descriptionField
-    , UI.cancelButton (onClick address HideDomainTermForm)
+    , UI.cancelButton (onClick hideAction.address hideAction.action)
     , UI.submitButton (onClick address SubmitDomainTermForm)
     ]

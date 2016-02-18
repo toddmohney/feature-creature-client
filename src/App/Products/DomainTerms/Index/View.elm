@@ -6,29 +6,121 @@ import App.Products.DomainTerms.DomainTerm               exposing (DomainTerm, t
 import App.Products.DomainTerms.Index.Actions as Actions exposing (DomainTermAction(..))
 import App.Products.DomainTerms.Index.ViewModel          exposing (DomainTermsView)
 import App.Products.DomainTerms.Forms.View    as DTF
+import App.Products.DomainTerms.Forms.ViewModel          exposing (DomainTermForm)
+import Data.Actions                                      exposing (..)
 import Data.External                                     exposing (External(..))
 import Html                                              exposing (Html)
 import Html.Events                                       exposing (onClick)
-import Html.Attributes                                   exposing (class, href)
+import Html.Attributes as Html                           exposing (class, href)
+import UI.App.Components.Containers       as UI
 import UI.App.Components.Panels           as UI
+import UI.Bootstrap.Components.Glyphicons as Glyph
 
 
 view : Signal.Address DomainTermAction -> DomainTermsView -> Html
 view address domainTermsView =
-  let forwardedAddress  = Signal.forwardTo address Actions.DomainTermFormAction
-      newDomainTermForm = DTF.view forwardedAddress domainTermsView.domainTermForm
-      domainTerms       = case domainTermsView.product.domainTerms of
-                            Loaded dts -> dts
-                            _          -> []
+  let domainTerms =
+    case domainTermsView.product.domainTerms of
+      Loaded dts -> dts
+      _          -> []
   in
-    Html.div [] (newDomainTermForm :: (List.map (renderDomainTerm address) domainTerms))
+    Html.div
+    []
+    [ domainTermFormUI address domainTermsView.domainTermForm
+    , Html.div
+        [ Html.classList [ ("row", True) ] ]
+        (List.map (renderDomainTerm address) domainTerms)
+    ]
+
+domainTermFormUI : Signal.Address DomainTermAction -> Maybe DomainTermForm -> Html
+domainTermFormUI address domainTermForm =
+  case domainTermForm of
+    Nothing ->
+      createDomainTermUI address
+    Just domainTermForm ->
+      let forwardedAddress  = Signal.forwardTo address Actions.DomainTermFormAction
+          hideFormAction = ForwardedAction address Actions.HideDomainTermForm
+      in
+        DTF.view forwardedAddress hideFormAction domainTermForm
+
+createDomainTermUI : Signal.Address DomainTermAction -> Html
+createDomainTermUI address =
+  UI.clearfix
+  [("fc-margin--bottom--medium", True)]
+  [ createDomainTermButton address ]
+
+createDomainTermButton : Signal.Address DomainTermAction -> Html
+createDomainTermButton address =
+  Html.a
+  [ href "#", onClick address Actions.ShowCreateDomainTermForm
+  , Html.classList [ ("pull-right", True)
+                   , ("btn", True)
+                   , ("btn-primary", True)
+                   ]
+  ]
+  [ Html.text "Create Domain Term" ]
 
 renderDomainTerm : Signal.Address DomainTermAction -> DomainTerm -> Html
 renderDomainTerm address domainTerm =
-  let domainTermName = Html.div [ class "pull-left" ] [ Html.text domainTerm.title ]
-      linkAction     = SearchFeatures (toSearchQuery domainTerm)
-      featureLink    = Html.a [ href "#", onClick address linkAction ] [ Html.text "View features" ]
-      featureLinkContainer = Html.div [ class "pull-right" ] [ featureLink ]
-      headingContent = Html.div [ class "clearfix" ] [ domainTermName, featureLinkContainer ]
+  let searchFeaturesUI   = searchFeaturesLink address domainTerm
+      editDomainTermUI   = editDomainTermLink address domainTerm
+      removeDomainTermUI = removeDomainTermLink address domainTerm
+      responsiveClasses = Html.classList [ ("col-lg-4", True)
+                                         , ("col-md-6", True)
+                                         , ("col-sm-12", True)
+                                         ]
   in
-    UI.panelWithHeading headingContent (Html.text domainTerm.description)
+    Html.div
+    [ responsiveClasses ]
+    [ UI.panelWithHeading
+        (domainTermPanelHeading domainTerm searchFeaturesUI editDomainTermUI removeDomainTermUI)
+        (Html.text domainTerm.description)
+    ]
+
+searchFeaturesLink : Signal.Address DomainTermAction -> DomainTerm -> Html
+searchFeaturesLink address domainTerm =
+  let linkAction = SearchFeatures (toSearchQuery domainTerm)
+  in
+    Html.a
+    [ href "#", onClick address linkAction ]
+    [ Glyph.searchIcon ]
+
+editDomainTermLink : Signal.Address DomainTermAction -> DomainTerm -> Html
+editDomainTermLink address domainTerm =
+  let linkAction = ShowEditDomainTermForm domainTerm
+  in
+    Html.a
+    [ href "#", onClick address linkAction ]
+    [ Glyph.editIcon ]
+
+removeDomainTermLink : Signal.Address DomainTermAction -> DomainTerm -> Html
+removeDomainTermLink address domainTerm =
+  let linkAction = RemoveDomainTerm domainTerm
+  in
+    Html.a
+    [ href "#", onClick address linkAction ]
+    [ Glyph.removeIcon ]
+
+-- inject panelHeaderActions
+domainTermPanelHeading : DomainTerm -> Html -> Html -> Html -> Html
+domainTermPanelHeading domainTerm searchFeaturesLink editDomainTermLink removeDomainTermLink =
+  Html.div
+  [ class "clearfix" ]
+  [ panelHeaderInfo domainTerm
+  , panelHeaderActions searchFeaturesLink editDomainTermLink removeDomainTermLink
+  ]
+
+panelHeaderActions : Html -> Html -> Html -> Html
+panelHeaderActions searchFeaturesLink editDomainTermLink removeDomainTermLink =
+  Html.div
+  [ class "pull-right" ]
+  [ searchFeaturesLink
+  , editDomainTermLink
+  , removeDomainTermLink
+  ]
+
+panelHeaderInfo : DomainTerm -> Html
+panelHeaderInfo domainTerm =
+  Html.div
+  [ class "pull-left" ]
+  [ Html.text domainTerm.title ]

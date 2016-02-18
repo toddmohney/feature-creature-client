@@ -25,6 +25,8 @@ html, body {
   padding-left: 20px;
 }
 
+.panel-heading .glyphicon { margin-left: 10px; }
+
 .directory-tree ul    { padding-left: 0px; }
 .directory-tree ul ul { padding-left: 20px; }
 .directory-tree ul li { list-style: none; }

@@ -8,7 +8,7 @@ import UI.App.Primitives.Forms     as UI        exposing (..)
 
 validateForm : DomainTermForm -> DomainTermForm
 validateForm form =
-  let domainTerm          = form.newDomainTerm
+  let domainTerm          = form.formObject
       titleField          = form.titleField
       descriptionField    = form.descriptionField
       newTitleField       = { titleField | validationErrors       = validateTitle domainTerm.title }

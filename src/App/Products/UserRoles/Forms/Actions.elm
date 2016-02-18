@@ -1,13 +1,14 @@
 module App.Products.UserRoles.Forms.Actions
-  ( Action(..) ) where
+  ( Action(..)
+  ) where
 
-import Http exposing (Error)
 import App.Products.UserRoles.UserRole as UR exposing (UserRole)
+import Http                                  exposing (Error)
 
-type Action = AddUserRole (Result Error UserRole)
-            | ShowUserRoleForm
-            | HideUserRoleForm
+type Action = UserRoleAdded UserRole
+            | UserRoleUpdated UserRole
+            | UserRoleCreated (Result Error UserRole)
+            | UserRoleModified (Result Error UserRole)
             | SubmitUserRoleForm
             | SetUserRoleTitle String
             | SetUserRoleDescription String
-
