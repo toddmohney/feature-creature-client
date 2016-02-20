@@ -15,6 +15,7 @@ import Html.Attributes as Html                         exposing (class, href)
 import UI.App.Components.Containers       as UI
 import UI.App.Components.Panels as UI
 import UI.Bootstrap.Components.Glyphicons as Glyph
+import UI.Bootstrap.Responsiveness as UI                exposing (ScreenSize(..))
 
 view : Signal.Address UserRoleAction -> UserRolesView -> Html
 view address userRolesView =
@@ -28,7 +29,7 @@ view address userRolesView =
     [ userRoleFormUI address userRolesView.userRoleForm
     , Html.div
         [ Html.classList [ ("row", True) ] ]
-        (List.map (renderUserRole address) userRoles)
+        (renderUserRoles address userRoles [])
     ]
 
 userRoleFormUI : Signal.Address UserRoleAction -> Maybe UserRoleForm -> Html
@@ -58,6 +59,27 @@ createUserRoleButton address =
                    ]
   ]
   [ Html.text "Create Domain Term" ]
+
+renderUserRoles : Signal.Address UserRoleAction -> List UserRole -> List Html -> List Html
+renderUserRoles address userRoles collection =
+  case userRoles of
+    []       -> collection
+    x::[]    ->
+      collection
+        ++ [(renderUserRole address x)]
+    x::y::[] ->
+      collection
+        ++ [(renderUserRole address x)]
+        ++ [(renderUserRole address y)]
+        ++ [UI.colResetBlock Medium]
+    x::y::z::xs ->
+      renderUserRoles address xs
+        <| collection
+          ++ [(renderUserRole address x)]
+          ++ [(renderUserRole address y)]
+          ++ [UI.colResetBlock Medium]
+          ++ [(renderUserRole address z)]
+          ++ [UI.colResetBlock Large]
 
 renderUserRole : Signal.Address UserRoleAction -> UserRole -> Html
 renderUserRole address userRole =
