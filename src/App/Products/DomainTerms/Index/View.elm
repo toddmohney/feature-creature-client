@@ -15,6 +15,7 @@ import Html.Attributes as Html                           exposing (class, href)
 import UI.App.Components.Containers       as UI
 import UI.App.Components.Panels           as UI
 import UI.Bootstrap.Components.Glyphicons as Glyph
+import UI.Bootstrap.Responsiveness as UI                exposing (ScreenSize(..))
 
 
 view : Signal.Address DomainTermAction -> DomainTermsView -> Html
@@ -29,7 +30,7 @@ view address domainTermsView =
     [ domainTermFormUI address domainTermsView.domainTermForm
     , Html.div
         [ Html.classList [ ("row", True) ] ]
-        (List.map (renderDomainTerm address) domainTerms)
+        (renderDomainTerms address domainTerms [])
     ]
 
 domainTermFormUI : Signal.Address DomainTermAction -> Maybe DomainTermForm -> Html
@@ -59,6 +60,27 @@ createDomainTermButton address =
                    ]
   ]
   [ Html.text "Create Domain Term" ]
+
+renderDomainTerms : Signal.Address DomainTermAction -> List DomainTerm -> List Html -> List Html
+renderDomainTerms address domainTerms collection =
+  case domainTerms of
+    []       -> collection
+    x::[]    ->
+      collection
+        ++ [(renderDomainTerm address x)]
+    x::y::[] ->
+      collection
+        ++ [(renderDomainTerm address x)]
+        ++ [(renderDomainTerm address y)]
+        ++ [UI.colResetBlock Medium]
+    x::y::z::xs ->
+      renderDomainTerms address xs
+        <| collection
+          ++ [(renderDomainTerm address x)]
+          ++ [(renderDomainTerm address y)]
+          ++ [UI.colResetBlock Medium]
+          ++ [(renderDomainTerm address z)]
+          ++ [UI.colResetBlock Large]
 
 renderDomainTerm : Signal.Address DomainTermAction -> DomainTerm -> Html
 renderDomainTerm address domainTerm =
