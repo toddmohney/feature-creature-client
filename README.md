@@ -5,12 +5,14 @@ Elm client for feature-creature cucumber visualization tool
 
 ## Setup
 1. Clone this repository.
-2. Download and install Elm: http://elm-lang.org/install
-3. To install all dependencies, run `elm-package install`. (on linux? see below)
-4. Install the `feature-creature` project and follow the instructions to build it and run the web server: https://github.com/gust/feature-creature
-5. Install Ruby dependencies with `bundle install`
-5. Compile the main Elm file into Javascript, use the command: `elm make src/Main.elm --warn --output public/js/elm.js`. 
-6. Run the application locally with `bundle exec rackup`
+1. Download and install Elm: http://elm-lang.org/install
+1. To install all dependencies, run `elm-package install`. (on linux? see below)
+1. Install the `feature-creature` project and follow the instructions to build it and run the web server: https://github.com/gust/feature-creature
+1. Install Ruby dependencies with `bundle install`
+1. Compile the main Elm file into Javascript, use the command: `elm make src/Main.elm --warn --output public/js/elm.js`. 
+1. Run the feature creature API, see https://github.com/gust/feature-creature
+1. Set the environment variable `FC_API_PATH` to the URL of the API
+1. Run the application locally with `bundle exec rackup`
 
 _Note: The elm-reactor debugger is currently not compatible with ports, which are used in the application. Nothing we can do about that, unfortunately. We'll look into alternatives._
 
