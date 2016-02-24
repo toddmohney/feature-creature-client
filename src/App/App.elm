@@ -26,7 +26,7 @@ init =
   let initialState = { appConfig   = Nothing
                      , products    = NotLoaded
                      , currentView = Navigation.LoadingView
-                     , productForm = CPF.init
+                     , productForm = CPF.init P.newProduct
                      , productView = Nothing
                      }
   in
@@ -51,8 +51,7 @@ renderErrorView err = Html.div [] [ Html.text err ]
 renderProductsForm : Signal.Address Action -> App -> Html
 renderProductsForm address app =
   let forwardedAddress  = (Signal.forwardTo address ProductFormActions)
-      productForm = CPF.init
-      productFormHtml   = CPF.view forwardedAddress productForm
+      productFormHtml   = CPF.view forwardedAddress app.productForm
   in
     mainContent [ productFormHtml ]
 
