@@ -124,7 +124,7 @@ processFormAction formAction app =
       let (newProductView, fx) = PV.init (fromJust app.appConfig) (extractProducts app.products) product
           newApp = { app | currentView = Navigation.ProductView
                          , productView = Just newProductView
-                         , productForm = CPF.init
+                         , productForm = CPF.init P.newProduct
                    }
       in
         (newApp, Effects.map ProductViewActions fx)

@@ -4,7 +4,7 @@ module App.Products.Forms.Update
 import App.AppConfig                 exposing (..)
 import App.Products.Requests as P
 import App.Products.Forms.Actions    exposing (..)
-import App.Products.Forms.ViewModel  exposing (CreateProductForm)
+import App.Products.Forms.ViewModel  exposing (CreateProductForm, setName, setRepoUrl)
 import App.Products.Forms.Validation exposing (hasErrors, validateForm)
 import Debug                         exposing (crash)
 import Effects                       exposing (Effects)
@@ -14,18 +14,10 @@ update : Action -> CreateProductForm -> AppConfig -> (CreateProductForm, Effects
 update action form appConfig =
   case action of
     SetName name ->
-      let product = form.newProduct
-          updatedProduct = { product | name = name }
-      in (,)
-         { form | newProduct = updatedProduct }
-         Effects.none
+      (setName form name, Effects.none)
 
     SetRepositoryUrl url ->
-      let product = form.newProduct
-          updatedProduct = { product | repoUrl = url }
-      in (,)
-         { form | newProduct = updatedProduct }
-         Effects.none
+      (setRepoUrl form url, Effects.none)
 
     SubmitForm ->
       let newProductForm = validateForm form

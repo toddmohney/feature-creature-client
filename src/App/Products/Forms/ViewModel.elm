@@ -1,6 +1,8 @@
 module App.Products.Forms.ViewModel
   ( CreateProductForm
   , init
+  , setName
+  , setRepoUrl
   ) where
 
 import App.Products.Product as P  exposing (Product)
@@ -14,14 +16,26 @@ type alias CreateProductForm =
   , repoUrlField : InputField Action
   }
 
-init : CreateProductForm
-init =
-  let product = P.newProduct
-  in
+init : Product -> CreateProductForm
+init product =
     { newProduct   = product
     , nameField    = defaultNameField product
     , repoUrlField = defaultRepoUrlField product
     }
+
+setName : CreateProductForm -> String -> CreateProductForm
+setName form newName =
+  let product = form.newProduct
+      newProduct = { product | name = newName }
+  in
+    init newProduct
+
+setRepoUrl : CreateProductForm -> String -> CreateProductForm
+setRepoUrl form newRepoUrl =
+  let product = form.newProduct
+      newProduct = { product | repoUrl = newRepoUrl }
+  in
+    init newProduct
 
 defaultNameField : Product -> InputField Action
 defaultNameField product =
