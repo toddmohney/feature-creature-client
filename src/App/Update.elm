@@ -97,7 +97,7 @@ setProductView : App -> List Product -> Product -> (App, Effects Action)
 setProductView app products selectedProduct =
   let (productView, fx) = PV.init (fromJust app.appConfig) products selectedProduct
   in
-    (,) 
+    (,)
     { app | products    = Loaded products
           , productView = Just productView
           , currentView = Navigation.ProductView

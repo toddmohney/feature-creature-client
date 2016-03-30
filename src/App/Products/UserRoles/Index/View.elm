@@ -58,7 +58,7 @@ createUserRoleButton address =
                    , ("btn-primary", True)
                    ]
   ]
-  [ Html.text "Create Domain Term" ]
+  [ Html.text "Create User Role" ]
 
 renderUserRoles : Signal.Address UserRoleAction -> List UserRole -> List Html -> List Html
 renderUserRoles address userRoles collection =
