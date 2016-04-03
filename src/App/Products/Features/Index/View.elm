@@ -4,6 +4,7 @@ import App.Products.Features.Feature as F      exposing (Feature)
 import App.Products.Features.FeatureList as FL exposing (FeatureList)
 import App.Products.Features.Index.Actions     exposing (Action(..))
 import App.Products.Features.Index.ViewModel   exposing (FeaturesView)
+import App.Products.Product                    exposing (Product, RepositoryState (..))
 import App.Search.Types                        exposing (..)
 import Data.External                           exposing (External(..))
 import Html                                    exposing (..)
@@ -16,11 +17,27 @@ view : Signal.Address Action -> FeaturesView -> Html
 view address featuresView =
   let product     = featuresView.product
       featureList = product.featureList
-  in
-    case featureList of
-      NotLoaded           -> Html.div [] [ text "Loading feature list..." ]
-      LoadedWithError err -> Html.div [] [ text err ]
-      Loaded featureList  -> featureListHtml address featuresView featureList
+  in case product.repoState of
+      Error   -> renderProductError product
+      Unready -> renderProductUnready
+      Ready   -> renderFeatureList address featuresView featureList
+
+renderProductError : Product -> Html
+renderProductError product =
+  let message = "There's a problem with this product " ++ (Maybe.withDefault "" product.repoError)
+  in Html.div [] [ text message ]
+
+renderProductUnready : Html
+renderProductUnready =
+  let message = "We're still working on creating your stuff. Please, come back in a minute!"
+  in Html.div [] [ text message ]
+
+renderFeatureList : Signal.Address Action -> FeaturesView -> External FL.FeatureList -> Html
+renderFeatureList address featuresView featureList =
+  case featureList of
+    NotLoaded           -> Html.div [] [ text "Loading feature list..." ]
+    LoadedWithError err -> Html.div [] [ text err ]
+    Loaded featureList  -> featureListHtml address featuresView featureList
 
 featureListHtml : Signal.Address Action -> FeaturesView -> FeatureList -> Html
 featureListHtml address featuresView featureList =
