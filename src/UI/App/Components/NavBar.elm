@@ -3,12 +3,12 @@ module UI.App.Components.NavBar exposing (..)
 import Html exposing (Html, Attribute)
 import Html.Attributes exposing (attribute, class, classList, href, id)
 
-type alias NavBarItem =
-  { attributes : List Attribute
-  , html       : List Html
+type alias NavBarItem a =
+  { attributes : List (Attribute a)
+  , html       : List (Html a)
   }
 
-renderNavBar : List NavBarItem -> Html
+renderNavBar : List (NavBarItem a) -> Html a
 renderNavBar navBarItems =
   Html.nav
     [ classList [("navbar", True), ("navbar-inverse", True)] ]
@@ -19,7 +19,7 @@ renderNavBar navBarItems =
         ]
     ]
 
-renderItems : List NavBarItem -> Html
+renderItems : List (NavBarItem a) -> Html a
 renderItems items =
   Html.div
     [ classList [("collapse", True), ("navbar-collapse", True)]
@@ -30,11 +30,11 @@ renderItems items =
         (List.map renderItem items)
     ]
 
-renderItem : NavBarItem -> Html
+renderItem : NavBarItem a -> Html a
 renderItem item =
   Html.li item.attributes item.html
 
-navBarHeader : Html
+navBarHeader : Html a
 navBarHeader =
   Html.div
     [ class "navbar-header" ]
@@ -42,13 +42,13 @@ navBarHeader =
     , navBarBrandButton
     ]
 
-navBarBrandButton : Html
+navBarBrandButton : Html a
 navBarBrandButton =
   Html.a
     [ class "navbar-brand", href "#" ]
     [ Html.text "FeatureCreature" ]
 
-navBarCollapsibleNavButton : Html
+navBarCollapsibleNavButton : Html a
 navBarCollapsibleNavButton =
   Html.button
     [ attribute "type" "button"

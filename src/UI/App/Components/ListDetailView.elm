@@ -3,7 +3,7 @@ module UI.App.Components.ListDetailView exposing ( listDetailView )
 import Html exposing (Html)
 import Html.Attributes exposing (class, style)
 
-listDetailView : List Html -> List Html -> Html
+listDetailView : List (Html a) -> List (Html a) -> Html a
 listDetailView listHtml detailHtml =
   Html.div
     [ class "clearfix" ]

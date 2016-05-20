@@ -6,31 +6,31 @@ module UI.Bootstrap.Components.Glyphicons exposing
   , removeIcon
   )
 
-import Html                    exposing (Attribute, Html)
+import Html exposing (Attribute, Html)
 import Html.Attributes as Html
 
-editIcon : Html
+editIcon : Html a
 editIcon = glyphSpan "pencil" []
 
-removeIcon : Html
+removeIcon : Html a
 removeIcon = glyphSpan "remove" [ ("text-danger", True) ]
 
-fileIcon : Html
+fileIcon : Html a
 fileIcon = glyphSpan "file" []
 
-folderOpenIcon : Html
+folderOpenIcon : Html a
 folderOpenIcon = glyphSpan "folder-open" []
 
-searchIcon : Html
+searchIcon : Html a
 searchIcon = glyphSpan "search" []
 
-glyphSpan : String -> List (String, Bool) -> Html
+glyphSpan : String -> List (String, Bool) -> Html a
 glyphSpan name extraAttrs =
   Html.span
   [ glyphClasses name extraAttrs ]
   []
 
-glyphClasses : String -> List (String, Bool) -> Attribute
+glyphClasses : String -> List (String, Bool) -> Attribute a
 glyphClasses name extraAttrs =
   let glyphClasses = [ ("glyphicon", True)
                      , ("glyphicon-" ++ name, True)

@@ -39,6 +39,6 @@ init' prodID prodName prodRepoUrl prodRepoState prodRepoError =
   , userRoles   = NotLoaded
   }
 
-view : Product -> Html
+view : Product -> Html a
 view product =
   Html.div [] [ text product.name ]

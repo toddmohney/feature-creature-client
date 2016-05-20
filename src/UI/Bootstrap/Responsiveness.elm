@@ -11,7 +11,7 @@ type ScreenSize = Large
                 | Small
                 | XSmall
 
-colResetBlock : ScreenSize -> Html
+colResetBlock : ScreenSize -> Html a
 colResetBlock size =
   let blockClass =
     case size of

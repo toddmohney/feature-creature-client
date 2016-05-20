@@ -3,16 +3,16 @@ module UI.Bootstrap.CSS.Panels exposing (..)
 import Html            exposing (Attribute)
 import Html.Attributes exposing (..)
 
-panelDefault : Attribute
+panelDefault : Attribute a
 panelDefault = classList [ ("panel", True)
                          , ("panel-default", True)
                          ]
 
-panelHeading : Attribute
+panelHeading : Attribute a
 panelHeading = classList [ ("panel-heading", True) ]
 
-panelTitle : Attribute
+panelTitle : Attribute a
 panelTitle = classList [ ("panel-title", True) ]
 
-panelBody : Attribute
+panelBody : Attribute a
 panelBody = classList [ ("panel-body", True) ]
