@@ -1,20 +1,19 @@
 module App.Products.UserRoles.Index.Update exposing ( update )
 
 import App.AppConfig                                 exposing (..)
-import App.Products.UserRoles.Forms.Actions as FormActions
 import App.Products.UserRoles.Forms.ViewModel as URF
 import App.Products.UserRoles.Forms.Update as URF
-import App.Products.UserRoles.Index.Actions as Actions
+import App.Products.UserRoles.Messages as UR
 import App.Products.UserRoles.Index.ViewModel        exposing (UserRolesView)
 import App.Products.UserRoles.Requests               exposing (getUserRolesList, removeUserRole)
 import App.Products.UserRoles.UserRole    as UR
 import Data.External                                 exposing (External(..))
 import Debug                                         exposing (crash)
 
-update : Actions.UserRoleAction -> UserRolesView -> AppConfig -> (UserRolesView, Effects Actions.UserRoleAction)
+update : UR.Msg -> UserRolesView -> AppConfig -> (UserRolesView, Cmd UR.Msg)
 update action userRolesView appConfig =
   case action of
-    Actions.UpdateUserRoles userRolesResult ->
+    UR.UpdateUserRoles userRolesResult ->
       case userRolesResult of
         Ok userRoleList ->
           let product           = userRolesView.product
@@ -25,49 +24,39 @@ update action userRolesView appConfig =
                           product = updatedProduct
                         , userRoleForm = newUserRoleForm
                         }
-          in (newView, Effects.none)
+          in (newView, Cmd.none)
         Err _ ->
           crash "Something went wrong!"
 
-    Actions.UserRoleFormAction dtFormAction ->
-      case dtFormAction of
-        FormActions.UserRoleAdded userRole   -> (userRolesView, getUserRolesList appConfig userRolesView.product Actions.UpdateUserRoles)
+    UR.UserRoleAdded userRole ->
+      (userRolesView, getUserRolesList appConfig userRolesView.product)
 
-        FormActions.UserRoleUpdated userRole -> (userRolesView, getUserRolesList appConfig userRolesView.product Actions.UpdateUserRoles)
+    UR.UserRoleUpdated userRole ->
+      (userRolesView, getUserRolesList appConfig userRolesView.product)
 
-        _ ->
-          case userRolesView.userRoleForm of
-            Nothing             -> (userRolesView, Effects.none)
-            Just userRoleForm ->
-              let (dtForm, dtFormFx) = URF.update dtFormAction userRoleForm appConfig
-              in
-                ( { userRolesView | userRoleForm = Just dtForm }
-                , Effects.map Actions.UserRoleFormAction dtFormFx
-                )
-
-    Actions.ShowCreateUserRoleForm ->
+    UR.ShowCreateUserRoleForm ->
       let product = userRolesView.product
           newForm = URF.init product UR.init URF.Create
       in
-        ({ userRolesView | userRoleForm = Just newForm }, Effects.none)
+        ({ userRolesView | userRoleForm = Just newForm }, Cmd.none)
 
-    Actions.ShowEditUserRoleForm userRole ->
+    UR.ShowEditUserRoleForm userRole ->
       let product = userRolesView.product
           newForm = URF.init product userRole URF.Edit
       in
-        ({ userRolesView | userRoleForm = Just newForm }, Effects.none)
+        ({ userRolesView | userRoleForm = Just newForm }, Cmd.none)
 
-    Actions.HideUserRoleForm ->
-      ({ userRolesView | userRoleForm = Nothing }, Effects.none)
+    UR.HideUserRoleForm ->
+      ({ userRolesView | userRoleForm = Nothing }, Cmd.none)
 
-    Actions.SearchFeatures searchQuery -> (userRolesView, Effects.none)
+    UR.SearchFeatures searchQuery -> (userRolesView, Cmd.none)
 
-    Actions.RemoveUserRole userRole ->
+    UR.RemoveUserRole userRole ->
       (,)
       userRolesView
-      (removeUserRole appConfig userRolesView.product userRole Actions.UserRoleRemoved)
+      (removeUserRole appConfig userRolesView.product userRole)
 
-    Actions.UserRoleRemoved result ->
+    UR.UserRoleRemoved result ->
       -- This always results in an error, even with a 200 response
       -- because Elm cannot parse an empty response body.
       -- We can make this better, however.
@@ -76,8 +65,18 @@ update action userRolesView appConfig =
         Ok a ->
           (,)
           userRolesView
-          (getUserRolesList appConfig userRolesView.product Actions.UpdateUserRoles)
+          (getUserRolesList appConfig userRolesView.product)
         Err err ->
           (,)
           userRolesView
-          (getUserRolesList appConfig userRolesView.product Actions.UpdateUserRoles)
+          (getUserRolesList appConfig userRolesView.product)
+
+    _ ->
+      case userRolesView.userRoleForm of
+        Nothing -> (userRolesView, Cmd.none)
+        Just userRoleForm ->
+          let (dtForm, dtFormFx) = URF.update action userRoleForm appConfig
+          in
+            ( { userRolesView | userRoleForm = Just dtForm }
+            , dtFormFx
+            )

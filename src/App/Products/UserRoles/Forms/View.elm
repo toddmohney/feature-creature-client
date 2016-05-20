@@ -1,6 +1,6 @@
 module App.Products.UserRoles.Forms.View exposing ( view )
 
-import App.Products.UserRoles.Forms.Actions   exposing (..)
+import App.Products.UserRoles.Messages        exposing (..)
 import App.Products.UserRoles.Forms.ViewModel exposing (UserRoleForm, FormMode(..))
 import Data.Actions                           exposing (..)
 import Html                                   exposing (Html)
@@ -10,7 +10,7 @@ import UI.App.Components.Containers as UI
 import UI.App.Components.Panels    as UI
 import UI.App.Primitives.Forms     as UI
 
-view : ForwardedAction Action -> UserRoleForm -> Html Action
+view : ForwardedAction Msg -> UserRoleForm -> Html Msg
 view hideAction userRoleForm =
   let userRoleFormHtml = formContainer <| renderUserRoleForm hideAction userRoleForm
   in
@@ -24,7 +24,7 @@ formContainer content =
     ]
     [ content ]
 
-renderUserRoleForm : ForwardedAction Action -> UserRoleForm -> Html Action
+renderUserRoleForm : ForwardedAction Msg -> UserRoleForm -> Html Msg
 renderUserRoleForm hideAction userRoleForm =
   let bodyContent    = renderForm hideAction userRoleForm
   in UI.panelWithHeading (headingContent userRoleForm.formMode) bodyContent
@@ -35,7 +35,7 @@ headingContent formMode =
     Create -> Html.text "Create A New User Role"
     Edit   -> Html.text "Edit User Role"
 
-renderForm : ForwardedAction Action -> UserRoleForm -> Html Action
+renderForm : ForwardedAction Msg -> UserRoleForm -> Html Msg
 renderForm hideAction userRoleForm =
   Html.div
     []

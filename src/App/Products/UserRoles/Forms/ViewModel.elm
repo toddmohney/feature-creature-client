@@ -8,8 +8,8 @@ module App.Products.UserRoles.Forms.ViewModel exposing
   )
 
 import Html                                  exposing (Html)
-import App.Products.UserRoles.Forms.Actions  exposing (..)
 import App.Products.Product                  exposing (Product)
+import App.Products.UserRoles.Messages       exposing (..)
 import App.Products.UserRoles.UserRole as UR exposing (UserRole)
 import UI.App.Primitives.Forms     as UI     exposing (InputField)
 
@@ -20,8 +20,8 @@ type alias UserRoleForm =
   { formMode         : FormMode
   , formObject       : UserRole
   , product          : Product
-  , titleField       : InputField Action
-  , descriptionField : InputField Action
+  , titleField       : InputField Msg
+  , descriptionField : InputField Msg
   }
 
 init : Product -> UserRole -> FormMode -> UserRoleForm
@@ -55,7 +55,7 @@ setDescription userRoleForm newDescription =
     -- correctly initialized fields
     init userRoleForm.product updatedUserRole userRoleForm.formMode
 
-defaultTitleField : UserRole -> InputField Action
+defaultTitleField : UserRole -> InputField Msg
 defaultTitleField userRole =
   { defaultValue = userRole.title
   , inputName = "userRoleTitle"
@@ -64,7 +64,7 @@ defaultTitleField userRole =
   , validationErrors = []
   }
 
-defaultDescriptionField : UserRole -> InputField Action
+defaultDescriptionField : UserRole -> InputField Msg
 defaultDescriptionField userRole =
   { defaultValue = userRole.description
   , inputName = "userRoleDescription"

@@ -7,6 +7,7 @@ module App.Products.UserRoles.Requests exposing
 
 import App.AppConfig                   exposing (..)
 import App.Products.UserRoles.UserRole exposing (UserRole)
+import App.Products.UserRoles.Messages exposing (..)
 import App.Products.Product            exposing (Product)
 import CoreExtensions.Maybe            exposing (fromJust)
 import Http                            exposing (Error, Request)
@@ -14,16 +15,6 @@ import Json.Encode
 import Json.Decode as Json             exposing ((:=))
 import Task                            exposing (Task)
 import Utils.Http
-
-
-type Msg = FetchUserRolesSucceeded (List UserRole)
-         | FetchUserRolesFailed Error
-         | CreateUserRoleSucceeded UserRole
-         | CreateUserRoleFailed Error
-         | UpdateUserRoleSucceeded UserRole
-         | UpdateUserRoleFailed Error
-         | DeleteUserRoleSucceeded UserRole
-         | DeleteUserRoleFailed Error
 
 getUserRolesList : AppConfig -> Product -> Cmd Msg
 getUserRolesList appConfig product =

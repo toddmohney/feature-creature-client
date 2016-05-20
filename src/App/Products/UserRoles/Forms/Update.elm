@@ -1,62 +1,63 @@
 module App.Products.UserRoles.Forms.Update exposing ( update )
 
 import App.AppConfig                                 exposing (..)
-import App.Products.UserRoles.Forms.Actions          exposing (..)
+import App.Products.UserRoles.Messages               exposing (..)
 import App.Products.UserRoles.Forms.ViewModel as URF exposing (UserRoleForm)
 import App.Products.UserRoles.Forms.Validation       exposing (hasErrors, validateForm)
 import App.Products.UserRoles.Requests               exposing (createUserRole, editUserRole)
 import App.Products.UserRoles.UserRole as UR
 import Debug                                         exposing (crash)
-import Task
 
-update : Action -> UserRoleForm -> AppConfig -> (UserRoleForm, Effects Action)
+update : Msg -> UserRoleForm -> AppConfig -> (UserRoleForm, Cmd Msg)
 update action userRoleForm appConfig =
   case action of
-    UserRoleAdded userRole   -> (userRoleForm, Effects.none)
-    UserRoleUpdated userRole -> (userRoleForm, Effects.none)
+    UserRoleAdded userRole   -> (userRoleForm, Cmd.none)
+    UserRoleUpdated userRole -> (userRoleForm, Cmd.none)
 
     UserRoleCreated userRoleResult ->
       case userRoleResult of
         Ok userRole ->
           let newForm = URF.init userRoleForm.product UR.init URF.Create
-              effects = Effects.task (Task.succeed (UserRoleAdded userRole))
+              cmd = Cmd.map (\_-> UserRoleAdded userRole) Cmd.none
           in
-            (newForm, effects)
+            (newForm, cmd)
         Err _ -> crash "Something went wrong!"
 
     UserRoleModified userRoleResult ->
       case userRoleResult of
         Ok userRole ->
           let newForm = URF.init userRoleForm.product UR.init URF.Create
-              effects = Effects.task (Task.succeed (UserRoleUpdated userRole))
+              cmd = Cmd.map (\_ -> UserRoleUpdated userRole) Cmd.none
           in
-            (newForm, effects)
+            (newForm, cmd)
         Err _ -> crash "Something went wrong!"
 
     SetUserRoleTitle newTitle ->
-      (URF.setTitle userRoleForm newTitle, Effects.none)
+      (URF.setTitle userRoleForm newTitle, Cmd.none)
 
     SetUserRoleDescription newDescription ->
-      (URF.setDescription userRoleForm newDescription, Effects.none)
+      (URF.setDescription userRoleForm newDescription, Cmd.none)
 
     SubmitUserRoleForm ->
       let newUserRoleForm = validateForm userRoleForm
       in
         case hasErrors newUserRoleForm of
           True ->
-            (newUserRoleForm , Effects.none)
+            (newUserRoleForm , Cmd.none)
           False ->
             submitUserRoleForm newUserRoleForm appConfig
 
+    _ -> (userRoleForm, Cmd.none)
 
-submitUserRoleForm : UserRoleForm -> AppConfig -> (UserRoleForm, Effects Action)
+
+submitUserRoleForm : UserRoleForm -> AppConfig -> (UserRoleForm, Cmd Msg)
 submitUserRoleForm userRoleForm appConfig =
   case userRoleForm.formMode of
     URF.Create ->
       (,)
       userRoleForm
-      (createUserRole appConfig userRoleForm.product userRoleForm.formObject UserRoleCreated)
+      (createUserRole appConfig userRoleForm.product userRoleForm.formObject)
     URF.Edit ->
       (,)
       userRoleForm
-      (editUserRole appConfig userRoleForm.product userRoleForm.formObject UserRoleModified)
+      (editUserRole appConfig userRoleForm.product userRoleForm.formObject)
