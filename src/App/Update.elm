@@ -1,6 +1,4 @@
-module App.Update
-  ( update
-  ) where
+module App.Update exposing ( update )
 
 import App.Actions exposing (Action (..))
 import App.App                                            exposing (App)
@@ -16,7 +14,6 @@ import App.Products.Show.ViewModel  as PV                 exposing (ProductView)
 import App.Products.Show.Update     as PV
 import CoreExtensions.Maybe                               exposing (fromJust)
 import Data.External                                      exposing (External(..))
-import Effects                                            exposing (Effects)
 import Http as Http                                       exposing (Error)
 import List                                               exposing (head, length)
 

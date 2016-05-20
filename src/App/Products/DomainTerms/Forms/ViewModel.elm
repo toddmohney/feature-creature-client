@@ -1,11 +1,11 @@
-module App.Products.DomainTerms.Forms.ViewModel
+module App.Products.DomainTerms.Forms.ViewModel exposing
   ( DomainTermForm
   , FormMode(..)
   , init
   , setDescription
   , setProduct
   , setTitle
-  ) where
+  )
 
 import App.Products.DomainTerms.DomainTerm as DT exposing (DomainTerm)
 import App.Products.DomainTerms.Forms.Actions    exposing (..)

@@ -1,6 +1,4 @@
-module App.Actions
-  ( Action(..)
-  ) where
+module App.Actions exposing ( Action(..) )
 
 import App.AppConfig                                      exposing (..)
 import App.Products.Product         as P                  exposing (Product)

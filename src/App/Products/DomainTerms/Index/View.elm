@@ -1,6 +1,4 @@
-module App.Products.DomainTerms.Index.View
-  ( view
-  ) where
+module App.Products.DomainTerms.Index.View exposing ( view )
 
 import App.Products.DomainTerms.DomainTerm               exposing (DomainTerm, toSearchQuery)
 import App.Products.DomainTerms.Index.Actions as Actions exposing (DomainTermAction(..))

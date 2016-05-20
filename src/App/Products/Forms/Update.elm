@@ -1,5 +1,4 @@
-module App.Products.Forms.Update
-  ( update ) where
+module App.Products.Forms.Update exposing ( update )
 
 import App.AppConfig                 exposing (..)
 import App.Products.Requests as P
@@ -7,7 +6,6 @@ import App.Products.Forms.Actions    exposing (..)
 import App.Products.Forms.ViewModel  exposing (CreateProductForm, setName, setRepoUrl)
 import App.Products.Forms.Validation exposing (hasErrors, validateForm)
 import Debug                         exposing (crash)
-import Effects                       exposing (Effects)
 import Task as Task                  exposing (..)
 
 update : Action -> CreateProductForm -> AppConfig -> (CreateProductForm, Effects Action)

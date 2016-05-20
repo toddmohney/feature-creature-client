@@ -1,7 +1,6 @@
-module App.Products.Show.ViewModel where
+module App.Products.Show.ViewModel exposing (..)
 
 import App.AppConfig                                   exposing (..)
-import Effects                                         exposing (Effects)
 import App.Products.DomainTerms.Index.ViewModel as DTV exposing (DomainTermsView)
 import App.Products.Features.Index.ViewModel as FV     exposing (FeaturesView)
 import App.Products.Product                            exposing (Product)

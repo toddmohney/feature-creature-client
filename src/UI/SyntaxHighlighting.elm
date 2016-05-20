@@ -1,4 +1,4 @@
-module UI.SyntaxHighlighting where
+module UI.SyntaxHighlighting exposing (..)
 
 type alias HighlightSyntaxMailbox =
   { address : Signal.Address (Maybe ())

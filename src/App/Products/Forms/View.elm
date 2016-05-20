@@ -1,4 +1,4 @@
-module App.Products.Forms.View where
+module App.Products.Forms.View exposing (..)
 
 import App.Products.Forms.Actions        exposing (..)
 import App.Products.Forms.ViewModel      exposing (CreateProductForm)

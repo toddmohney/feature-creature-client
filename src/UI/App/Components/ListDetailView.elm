@@ -1,6 +1,4 @@
-module UI.App.Components.ListDetailView
-  ( listDetailView
-  ) where
+module UI.App.Components.ListDetailView exposing ( listDetailView )
 
 import Html exposing (Html)
 import Html.Attributes exposing (class, style)

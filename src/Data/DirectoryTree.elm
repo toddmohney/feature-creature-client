@@ -1,11 +1,11 @@
-module Data.DirectoryTree
+module Data.DirectoryTree exposing
   ( DirectoryTree (..)
   , FileDescription
   , FilePath
   , createNode
   , rootNode
   , parseFeatureTree
-  ) where
+  )
 
 import Json.Decode as Json exposing ((:=))
 

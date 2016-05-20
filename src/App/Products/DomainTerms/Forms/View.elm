@@ -1,6 +1,4 @@
-module App.Products.DomainTerms.Forms.View
-  ( view
-  ) where
+module App.Products.DomainTerms.Forms.View exposing ( view )
 
 import App.Products.DomainTerms.Forms.Actions   exposing (..)
 import App.Products.DomainTerms.Forms.ViewModel exposing (DomainTermForm, FormMode(..))

@@ -1,9 +1,9 @@
-module App.Products.Forms.ViewModel
+module App.Products.Forms.ViewModel exposing
   ( CreateProductForm
   , init
   , setName
   , setRepoUrl
-  ) where
+  )
 
 import App.Products.Product as P  exposing (Product)
 import App.Products.Forms.Actions exposing (..)

@@ -1,11 +1,11 @@
-module App.Products.UserRoles.Forms.ViewModel
+module App.Products.UserRoles.Forms.ViewModel exposing
   ( UserRoleForm
   , FormMode(..)
   , init
   , setProduct
   , setTitle
   , setDescription
-  ) where
+  )
 
 import Html                                  exposing (Html)
 import App.Products.UserRoles.Forms.Actions  exposing (..)

@@ -1,4 +1,4 @@
-module App.Products.Features.Feature where
+module App.Products.Features.Feature exposing (..)
 
 import Html                                exposing (..)
 import Html.Attributes                     exposing (classList)

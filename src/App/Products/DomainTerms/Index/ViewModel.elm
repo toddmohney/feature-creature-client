@@ -1,14 +1,10 @@
-module App.Products.DomainTerms.Index.ViewModel
-  ( DomainTermsView
-  , init
-  ) where
+module App.Products.DomainTerms.Index.ViewModel exposing ( DomainTermsView, init )
 
 import App.AppConfig                                   exposing (..)
 import App.Products.DomainTerms.Index.Actions   as DTI exposing (DomainTermAction)
 import App.Products.DomainTerms.Forms.ViewModel as DTF exposing (DomainTermForm)
 import App.Products.DomainTerms.Requests               exposing (getDomainTerms)
 import App.Products.Product                            exposing (Product)
-import Effects                                         exposing (Effects)
 
 type alias DomainTermsView =
   { product        : Product

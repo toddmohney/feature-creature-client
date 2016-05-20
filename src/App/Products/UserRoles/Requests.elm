@@ -1,15 +1,14 @@
-module App.Products.UserRoles.Requests
+module App.Products.UserRoles.Requests exposing
  ( createUserRole
  , editUserRole
  , getUserRolesList
  , removeUserRole
- ) where
+ )
 
 import App.AppConfig                   exposing (..)
 import App.Products.UserRoles.UserRole exposing (UserRole)
 import App.Products.Product            exposing (Product)
 import CoreExtensions.Maybe            exposing (fromJust)
-import Effects                         exposing (Effects)
 import Http                            exposing (Error, Request)
 import Json.Encode
 import Json.Decode as Json             exposing ((:=))

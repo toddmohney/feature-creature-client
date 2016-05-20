@@ -1,4 +1,4 @@
-module App.Products.Features.Index.ViewModel where
+module App.Products.Features.Index.ViewModel exposing (..)
 
 import App.AppConfig                       exposing (..)
 import App.Products.Product                exposing (Product, RepositoryState (..))
@@ -7,7 +7,6 @@ import App.Products.Features.Index.Actions exposing (Action(UpdateFeatures))
 import App.Products.Features.Requests as F exposing (getFeaturesList)
 import App.Products.Features.Index.Actions exposing (Action(..))
 import App.Search.Types                    exposing (Query)
-import Effects                             exposing (Effects)
 
 type alias FeaturesView =
   { product               : Product

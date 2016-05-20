@@ -1,4 +1,4 @@
-module App.Products.Features.Index.Update where
+module App.Products.Features.Index.Update exposing (..)
 
 import App.AppConfig                           exposing (..)
 import App.Products.Features.FeatureList as FL
@@ -8,7 +8,6 @@ import App.Products.Features.Index.ViewModel   exposing (FeaturesView)
 import App.Products.Navigation as Navigation
 import Data.External                           exposing (External(..))
 import Debug                                   exposing (crash, log)
-import Effects                                 exposing (Effects)
 import UI.SyntaxHighlighting as Highlight      exposing (highlightSyntaxMailbox)
 import Task                                    exposing (..)
 

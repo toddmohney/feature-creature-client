@@ -1,4 +1,4 @@
-module App.Search.Types where
+module App.Search.Types exposing (..)
 
 type alias Query =
   { datatype : String

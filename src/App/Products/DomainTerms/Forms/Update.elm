@@ -1,5 +1,4 @@
-module App.Products.DomainTerms.Forms.Update
-  ( update ) where
+module App.Products.DomainTerms.Forms.Update exposing ( update )
 
 import App.AppConfig                                   exposing (..)
 import App.Products.DomainTerms.DomainTerm as DT
@@ -8,7 +7,6 @@ import App.Products.DomainTerms.Forms.ViewModel as DTF exposing (DomainTermForm)
 import App.Products.DomainTerms.Forms.Validation       exposing (validateForm, hasErrors)
 import App.Products.DomainTerms.Requests               exposing (createDomainTerm, editDomainTerm)
 import Debug                                           exposing (crash)
-import Effects                                         exposing (Effects)
 import Task
 
 update : DomainTermFormAction -> DomainTermForm -> AppConfig -> (DomainTermForm, Effects DomainTermFormAction)

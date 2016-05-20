@@ -1,7 +1,7 @@
-module UI.Bootstrap.Responsiveness
+module UI.Bootstrap.Responsiveness exposing
   ( ScreenSize(..)
   , colResetBlock
-  ) where
+  )
 
 import Html exposing (Html)
 import Html.Attributes as Html

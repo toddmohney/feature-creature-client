@@ -1,8 +1,8 @@
-module App.Products.DomainTerms.DomainTerm
+module App.Products.DomainTerms.DomainTerm exposing
   ( DomainTerm
   , init
   , toSearchQuery
-  ) where
+  )
 
 import App.Search.Types as Search
 

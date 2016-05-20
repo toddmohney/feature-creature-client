@@ -1,11 +1,7 @@
-module App.Products.Requests
-  ( createProduct
-  , getProducts
-  ) where
+module App.Products.Requests exposing ( createProduct, getProducts )
 
 import App.AppConfig             exposing (..)
 import App.Products.Product as P exposing (Product, RepositoryState (..))
-import Effects                   exposing (Effects)
 import Json.Encode
 import Json.Decode as Json       exposing ((:=))
 import Http as Http              exposing (..)

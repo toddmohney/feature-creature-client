@@ -1,10 +1,10 @@
-module UI.Bootstrap.Components.Glyphicons
+module UI.Bootstrap.Components.Glyphicons exposing
   ( fileIcon
   , folderOpenIcon
   , searchIcon
   , editIcon
   , removeIcon
-  ) where
+  )
 
 import Html                    exposing (Attribute, Html)
 import Html.Attributes as Html

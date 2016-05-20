@@ -1,7 +1,4 @@
-module UI.App.Primitives.Buttons
-  ( primaryBtn
-  , secondaryBtn
-  ) where
+module UI.App.Primitives.Buttons exposing ( primaryBtn , secondaryBtn )
 
 import Html exposing (Html, Attribute)
 import UI.Bootstrap.CSS.Buttons as BS

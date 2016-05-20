@@ -1,4 +1,4 @@
-module App.Products.Show.View where
+module App.Products.Show.View exposing (..)
 
 import Html                                        exposing (Html)
 import App.Products.DomainTerms.Index.View as DTV

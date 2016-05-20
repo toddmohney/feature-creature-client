@@ -1,8 +1,8 @@
-module App.Products.UserRoles.UserRole
+module App.Products.UserRoles.UserRole exposing
   ( UserRole
   , init
   , toSearchQuery
-  ) where
+  )
 
 import App.Search.Types as Search
 

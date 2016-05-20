@@ -1,4 +1,4 @@
-module App.Products.Navigation where
+module App.Products.Navigation exposing (..)
 
 import App.Products.Product exposing (Product)
 

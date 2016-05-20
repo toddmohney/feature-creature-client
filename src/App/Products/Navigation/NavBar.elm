@@ -1,6 +1,5 @@
-module App.Products.Navigation.NavBar where
+module App.Products.Navigation.NavBar exposing (..)
 
-import Effects                               exposing (Effects)
 import Html                                  exposing (Html)
 import Html.Attributes                       exposing (attribute, class, classList, href, id)
 import Html.Events                           exposing (onClick)

@@ -1,4 +1,4 @@
-module App.App where
+module App.App exposing (..)
 
 import App.Actions                                exposing (..)
 import App.AppConfig                              exposing (..)
@@ -9,7 +9,6 @@ import App.Products.Navigation      as Navigation
 import App.Products.Show.ViewModel  as PV         exposing (ProductView)
 import App.Products.Show.View       as PV
 import Data.External                              exposing (External(..))
-import Effects                                    exposing (Effects)
 import Html                                       exposing (Html)
 import Html.Attributes as Html
 

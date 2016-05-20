@@ -1,14 +1,13 @@
-module App.Products.Features.Requests
+module App.Products.Features.Requests exposing
   ( getFeaturesList
   , getFeature
-  ) where
+  )
 
 import App.AppConfig                       exposing (..)
 import App.Products.Features.Feature       exposing (Feature)
 import App.Products.Product                exposing (Product)
 import App.Search.Types as Search
 import Data.DirectoryTree as DT            exposing (DirectoryTree)
-import Effects                             exposing (Effects)
 import Http                                exposing (..)
 import Json.Decode as Json                 exposing ((:=))
 import Task                                exposing (..)

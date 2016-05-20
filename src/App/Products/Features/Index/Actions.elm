@@ -1,4 +1,4 @@
-module App.Products.Features.Index.Actions where
+module App.Products.Features.Index.Actions exposing (..)
 
 import App.Products.Features.FeatureList as FL
 import App.Products.Features.Feature           exposing (Feature)

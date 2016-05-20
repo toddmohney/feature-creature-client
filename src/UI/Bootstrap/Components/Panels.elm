@@ -1,6 +1,4 @@
-module UI.Bootstrap.Components.Panels
-  ( panelWithHeading
-  ) where
+module UI.Bootstrap.Components.Panels exposing ( panelWithHeading )
 
 import Html exposing (Html)
 import UI.Bootstrap.CSS.Panels as BS

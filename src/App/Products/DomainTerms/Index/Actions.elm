@@ -1,4 +1,4 @@
-module App.Products.DomainTerms.Index.Actions where
+module App.Products.DomainTerms.Index.Actions exposing (..)
 
 import App.Products.DomainTerms.DomainTerm exposing (DomainTerm)
 import App.Products.DomainTerms.Forms.Actions as DTF

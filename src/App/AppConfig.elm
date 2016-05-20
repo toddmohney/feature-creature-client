@@ -1,4 +1,4 @@
-module App.AppConfig where
+module App.AppConfig exposing (..)
 
 type alias AppConfig =
   { apiPath : String

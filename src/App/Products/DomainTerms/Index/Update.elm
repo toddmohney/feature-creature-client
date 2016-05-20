@@ -1,6 +1,4 @@
-module App.Products.DomainTerms.Index.Update
-  ( update
-  ) where
+module App.Products.DomainTerms.Index.Update exposing ( update )
 
 import App.AppConfig                                     exposing (..)
 import App.Products.DomainTerms.DomainTerm    as DT
@@ -12,7 +10,6 @@ import App.Products.DomainTerms.Index.ViewModel          exposing (DomainTermsVi
 import App.Products.DomainTerms.Requests                 exposing (getDomainTerms, removeDomainTerm)
 import Data.External                                     exposing (External(..))
 import Debug                                             exposing (crash, log)
-import Effects                                           exposing (Effects)
 
 update : DomainTermAction -> DomainTermsView -> AppConfig -> (DomainTermsView, Effects DomainTermAction)
 update action domainTermsView appConfig =

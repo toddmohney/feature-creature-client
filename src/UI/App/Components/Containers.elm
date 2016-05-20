@@ -1,4 +1,4 @@
-module UI.App.Components.Containers where
+module UI.App.Components.Containers exposing (..)
 
 import Html                    exposing (Html)
 import Html.Attributes as Html

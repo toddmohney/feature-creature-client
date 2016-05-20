@@ -1,5 +1,4 @@
-module App.Products.UserRoles.Forms.Update
-  ( update ) where
+module App.Products.UserRoles.Forms.Update exposing ( update )
 
 import App.AppConfig                                 exposing (..)
 import App.Products.UserRoles.Forms.Actions          exposing (..)
@@ -8,7 +7,6 @@ import App.Products.UserRoles.Forms.Validation       exposing (hasErrors, valida
 import App.Products.UserRoles.Requests               exposing (createUserRole, editUserRole)
 import App.Products.UserRoles.UserRole as UR
 import Debug                                         exposing (crash)
-import Effects                                       exposing (Effects)
 import Task
 
 update : Action -> UserRoleForm -> AppConfig -> (UserRoleForm, Effects Action)

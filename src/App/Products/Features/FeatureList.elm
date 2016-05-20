@@ -1,8 +1,8 @@
-module App.Products.Features.FeatureList
+module App.Products.Features.FeatureList exposing
   ( FeatureList
   , Action(..)
   , render
-  ) where
+  )
 
 import App.Products.Features.Feature exposing (Feature)
 import Data.DirectoryTree            exposing (..)

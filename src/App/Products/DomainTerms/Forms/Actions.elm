@@ -1,6 +1,4 @@
-module App.Products.DomainTerms.Forms.Actions
-  ( DomainTermFormAction(..)
-  ) where
+module App.Products.DomainTerms.Forms.Actions exposing ( DomainTermFormAction(..) )
 
 import App.Products.DomainTerms.DomainTerm exposing (DomainTerm)
 import Http                                exposing (Error)

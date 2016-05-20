@@ -1,4 +1,4 @@
-module App.Products.Product where
+module App.Products.Product exposing (..)
 
 import Data.External                       exposing (External(..))
 import App.Products.DomainTerms.DomainTerm exposing (..)

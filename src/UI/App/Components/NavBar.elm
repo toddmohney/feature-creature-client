@@ -1,4 +1,4 @@
-module UI.App.Components.NavBar where
+module UI.App.Components.NavBar exposing (..)
 
 import Html exposing (Html, Attribute)
 import Html.Attributes exposing (attribute, class, classList, href, id)

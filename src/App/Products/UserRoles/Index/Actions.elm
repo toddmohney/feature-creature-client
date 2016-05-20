@@ -1,4 +1,4 @@
-module App.Products.UserRoles.Index.Actions where
+module App.Products.UserRoles.Index.Actions exposing (..)
 
 import App.Products.UserRoles.Forms.Actions as URF
 import App.Search.Types as Search

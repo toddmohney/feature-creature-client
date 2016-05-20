@@ -1,4 +1,4 @@
-module UI.Bootstrap.CSS.Buttons where
+module UI.Bootstrap.CSS.Buttons exposing (..)
 
 import Html            exposing (Attribute)
 import Html.Attributes exposing (..)

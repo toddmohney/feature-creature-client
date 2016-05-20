@@ -1,4 +1,4 @@
-module App.Products.Show.Actions where
+module App.Products.Show.Actions exposing (..)
 
 import App.Products.DomainTerms.Index.Actions exposing (DomainTermAction)
 import App.Products.Features.Index.Actions    as FV

@@ -1,4 +1,4 @@
-module App.Products.Show.Update where
+module App.Products.Show.Update exposing (..)
 
 import App.AppConfig                                  exposing (..)
 import App.Products.DomainTerms.Index.Actions as DT
@@ -14,7 +14,6 @@ import App.Products.Show.ViewModel as PV              exposing (ProductView)
 import App.Products.UserRoles.Index.Actions as URV
 import App.Products.UserRoles.Index.Update as URV
 import App.Search.Types as Search
-import Effects                                        exposing (Effects)
 
 update : Action -> ProductView -> AppConfig -> (ProductView, Effects Action)
 update action productView appConfig =

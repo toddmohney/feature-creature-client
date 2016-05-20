@@ -1,6 +1,4 @@
-module App.Products.UserRoles.Forms.View
-  ( view
-  ) where
+module App.Products.UserRoles.Forms.View exposing ( view )
 
 import App.Products.UserRoles.Forms.Actions   exposing (..)
 import App.Products.UserRoles.Forms.ViewModel exposing (UserRoleForm, FormMode(..))

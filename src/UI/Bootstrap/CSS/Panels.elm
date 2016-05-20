@@ -1,4 +1,4 @@
-module UI.Bootstrap.CSS.Panels where
+module UI.Bootstrap.CSS.Panels exposing (..)
 
 import Html            exposing (Attribute)
 import Html.Attributes exposing (..)

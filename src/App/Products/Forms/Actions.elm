@@ -1,5 +1,4 @@
-module App.Products.Forms.Actions
-  ( Action(..) ) where
+module App.Products.Forms.Actions exposing ( Action(..) )
 
 import Http                 exposing (Error)
 import App.Products.Product exposing (Product)

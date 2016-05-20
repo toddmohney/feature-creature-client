@@ -1,6 +1,4 @@
-module App.Products.UserRoles.Index.Update
-  ( update
-  ) where
+module App.Products.UserRoles.Index.Update exposing ( update )
 
 import App.AppConfig                                 exposing (..)
 import App.Products.UserRoles.Forms.Actions as FormActions
@@ -12,7 +10,6 @@ import App.Products.UserRoles.Requests               exposing (getUserRolesList,
 import App.Products.UserRoles.UserRole    as UR
 import Data.External                                 exposing (External(..))
 import Debug                                         exposing (crash)
-import Effects                                       exposing (Effects)
 
 update : Actions.UserRoleAction -> UserRolesView -> AppConfig -> (UserRolesView, Effects Actions.UserRoleAction)
 update action userRolesView appConfig =

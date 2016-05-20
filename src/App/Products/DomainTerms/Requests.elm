@@ -1,15 +1,14 @@
-module App.Products.DomainTerms.Requests
+module App.Products.DomainTerms.Requests exposing
   ( createDomainTerm
   , editDomainTerm
   , getDomainTerms
   , removeDomainTerm
-  ) where
+  )
 
 import App.AppConfig                       exposing (..)
 import App.Products.Product                exposing (Product)
 import App.Products.DomainTerms.DomainTerm exposing (DomainTerm)
 import CoreExtensions.Maybe                exposing (fromJust)
-import Effects                             exposing (Effects)
 import Http                                exposing (Error, Request)
 import Json.Encode
 import Json.Decode as Json                 exposing ((:=))
