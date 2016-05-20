@@ -18,7 +18,7 @@ update action userRolesView appConfig =
       case userRolesResult of
         Ok userRoleList ->
           let product           = userRolesView.product
-              userRoleForm    = userRolesView.userRoleForm
+              userRoleForm      = userRolesView.userRoleForm
               updatedProduct    = { product | userRoles = Loaded userRoleList }
               newUserRoleForm = Maybe.map2 URF.setProduct userRoleForm (Just updatedProduct)
               newView = { userRolesView |
@@ -32,7 +32,9 @@ update action userRolesView appConfig =
     Actions.UserRoleFormAction dtFormAction ->
       case dtFormAction of
         FormActions.UserRoleAdded userRole   -> (userRolesView, getUserRolesList appConfig userRolesView.product Actions.UpdateUserRoles)
+
         FormActions.UserRoleUpdated userRole -> (userRolesView, getUserRolesList appConfig userRolesView.product Actions.UpdateUserRoles)
+
         _ ->
           case userRolesView.userRoleForm of
             Nothing             -> (userRolesView, Effects.none)

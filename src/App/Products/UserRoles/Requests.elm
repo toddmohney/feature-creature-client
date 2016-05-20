@@ -15,51 +15,54 @@ import Json.Decode as Json             exposing ((:=))
 import Task                            exposing (Task)
 import Utils.Http
 
-getUserRolesList : AppConfig -> Product -> (Result Error (List UserRole) -> a) -> Effects a
-getUserRolesList appConfig product action =
-  let url = userRolesUrl appConfig product
-  in
-    Http.get parseUserRoles url
-      |> Task.toResult
-      |> Task.map action
-      |> Effects.task
 
-createUserRole : AppConfig -> Product -> UserRole -> (Result Error UserRole -> a) -> Effects a
-createUserRole appConfig product userRole action =
-  let request = createUserRoleRequest appConfig product userRole
+type Msg = FetchUserRolesSucceeded (List UserRole)
+         | FetchUserRolesFailed Error
+         | CreateUserRoleSucceeded UserRole
+         | CreateUserRoleFailed Error
+         | UpdateUserRoleSucceeded UserRole
+         | UpdateUserRoleFailed Error
+         | DeleteUserRoleSucceeded UserRole
+         | DeleteUserRoleFailed Error
+
+getUserRolesList : AppConfig -> Product -> Cmd Msg
+getUserRolesList appConfig product =
+  let successMsg = FetchUserRolesSucceeded
+      failureMsg = FetchUserRolesFailed
+      url = userRolesUrl appConfig product
+      request = Http.get parseUserRoles url
   in
-    Http.send Http.defaultSettings request
-      |> Http.fromJson parseUserRole
-      |> Task.toResult
-      |> Task.map action
-      |> Effects.task
+    Task.perform failureMsg successMsg request
+
+createUserRole : AppConfig -> Product -> UserRole -> Cmd Msg
+createUserRole appConfig product userRole =
+  let successMsg = CreateUserRoleSucceeded
+      failureMsg = CreateUserRoleFailed
+      request = createUserRoleRequest appConfig product userRole
+  in
+    Task.perform failureMsg successMsg ((Http.send Http.defaultSettings request) |> Http.fromJson parseUserRole)
 
 editUserRole : AppConfig
             -> Product
             -> UserRole
-            -> (Result Error UserRole -> a)
-            -> Effects a
-editUserRole appConfig product userRole action =
-  let request = editUserRoleRequest appConfig product userRole
-  in Http.send Http.defaultSettings request
-     |> Http.fromJson parseUserRole
-     |> Task.toResult
-     |> Task.map action
-     |> Effects.task
+            -> Cmd Msg
+editUserRole appConfig product userRole =
+  let successMsg = UpdateUserRoleSucceeded
+      failureMsg = UpdateUserRoleFailed
+      request = editUserRoleRequest appConfig product userRole
+  in
+    Task.perform failureMsg successMsg (Http.send Http.defaultSettings request |> Http.fromJson parseUserRole)
 
 removeUserRole : AppConfig
               -> Product
               -> UserRole
-              -> (Result Error UserRole -> a)
-              -> Effects a
-removeUserRole appConfig product userRole action =
-  let request = removeUserRoleRequest appConfig product userRole
+              -> Cmd Msg
+removeUserRole appConfig product userRole =
+  let successMsg = DeleteUserRoleSucceeded
+      failureMsg = DeleteUserRoleFailed
+      request = removeUserRoleRequest appConfig product userRole
   in
-    Http.send Http.defaultSettings request
-      |> Http.fromJson (Json.succeed userRole)
-      |> Task.toResult
-      |> Task.map action
-      |> Effects.task
+    Task.perform failureMsg successMsg (Http.send Http.defaultSettings request |> Http.fromJson (Json.succeed userRole))
 
 removeUserRoleRequest : AppConfig -> Product -> UserRole -> Request
 removeUserRoleRequest appConfig product userRole =
