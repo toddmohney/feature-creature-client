@@ -1,14 +1,14 @@
 module App.Products.Features.FeatureList exposing
   ( FeatureList
-  , Action(..)
   , render
   )
 
-import App.Products.Features.Feature exposing (Feature)
-import Data.DirectoryTree            exposing (..)
-import Html                          exposing (..)
-import Html.Attributes as Html       exposing (..)
-import Html.Events                   exposing (onClick)
+import App.Products.Features.Feature  exposing (Feature)
+import App.Products.Features.Messages exposing (Msg(..))
+import Data.DirectoryTree             exposing (..)
+import Html                           exposing (..)
+import Html.Attributes as Html        exposing (..)
+import Html.Events                    exposing (onClick)
 import String
 import UI.Bootstrap.Components.Glyphicons as Glyph
 
@@ -21,18 +21,16 @@ type alias DirectoryTreeRenderOptions =
   , currentRenderDepth : Int
   }
 
-type Action = ShowFeature FileDescription
-
 type FileType = File FileDescription
               | Directory FileDescription (List DirectoryTree)
 
-render : FeatureList -> Maybe Feature -> Html Action
+render : FeatureList -> Maybe Feature -> Html Msg
 render featureList selectedFeature =
   Html.div
   [ class "directory-tree" ]
   [ Html.ul [] [ drawTree (treeRenderOpts selectedFeature 2) featureList.features ] ]
 
-drawTree : DirectoryTreeRenderOptions -> DirectoryTree -> Html Action
+drawTree : DirectoryTreeRenderOptions -> DirectoryTree -> Html Msg
 drawTree renderOpts tree =
   case fileType tree of
     File fileDesc ->
@@ -40,13 +38,13 @@ drawTree renderOpts tree =
     Directory fileDesc directoryContents ->
       drawDirectory renderOpts fileDesc directoryContents
 
-drawFile : Maybe Feature -> FileDescription -> Html Action
+drawFile : Maybe Feature -> FileDescription -> Html Msg
 drawFile selectedFeature fileDesc =
   fileListItem
     <| drawFeatureFile fileDesc
     <| isEmphasized fileDesc selectedFeature
 
-drawDirectory : DirectoryTreeRenderOptions -> FileDescription -> List DirectoryTree -> Html Action
+drawDirectory : DirectoryTreeRenderOptions -> FileDescription -> List DirectoryTree -> Html Msg
 drawDirectory renderOpts directory directoryContents =
   let dirContentsID = directoryContentsID directory.filePath
   in
@@ -57,7 +55,7 @@ drawDirectory renderOpts directory directoryContents =
 fileListItem : Html a -> Html a
 fileListItem content = Html.li [] [ content ]
 
-directoryList : String -> DirectoryTreeRenderOptions -> List DirectoryTree -> Html Action
+directoryList : String -> DirectoryTreeRenderOptions -> List DirectoryTree -> Html Msg
 directoryList dirContentsID renderOpts directoryContents =
   let elemID = Html.id dirContentsID
       nextRenderOpts = { renderOpts | currentRenderDepth = renderOpts.currentRenderDepth + 1 }
@@ -89,13 +87,13 @@ isEmphasized fileDesc selectedFeature =
     Nothing      -> False
     Just feature -> feature.featureID == fileDesc.filePath
 
-drawFeatureFile : FileDescription -> Bool -> Html Action
+drawFeatureFile : FileDescription -> Bool -> Html Msg
 drawFeatureFile fileDesc isEmphasized =
   Html.div
   [ classList [ ("feature-file", True), ("selected", isEmphasized) ] ]
   [ (drawFeatureFile' fileDesc) ]
 
-drawFeatureFile' : FileDescription -> Html Action
+drawFeatureFile' : FileDescription -> Html Msg
 drawFeatureFile' fileDesc =
   Html.a
   [ href "#", onClick (ShowFeature fileDesc) ]
@@ -103,7 +101,7 @@ drawFeatureFile' fileDesc =
   , Html.text fileDesc.fileName
   ]
 
-drawFeatureDirectory : FileDescription -> String -> Html Action
+drawFeatureDirectory : FileDescription -> String -> Html Msg
 drawFeatureDirectory fileDesc directoryContentsID =
   Html.a
   [ href ("#" ++ directoryContentsID)
@@ -112,7 +110,7 @@ drawFeatureDirectory fileDesc directoryContentsID =
   ]
   [ (drawFeatureDirectory' fileDesc) ]
 
-drawFeatureDirectory' : FileDescription -> Html Action
+drawFeatureDirectory' : FileDescription -> Html Msg
 drawFeatureDirectory' fileDesc =
   Html.div
   []

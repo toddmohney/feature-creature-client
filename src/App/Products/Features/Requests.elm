@@ -5,6 +5,7 @@ module App.Products.Features.Requests exposing
 
 import App.AppConfig                       exposing (..)
 import App.Products.Features.Feature       exposing (Feature)
+import App.Products.Features.Messages      exposing (Msg(..))
 import App.Products.Product                exposing (Product)
 import App.Search.Types as Search
 import Data.DirectoryTree as DT            exposing (DirectoryTree)
@@ -15,29 +16,27 @@ import Task                                exposing (..)
 getFeaturesList : AppConfig
                -> Product
                -> Maybe Search.Query
-               -> (Result Error DirectoryTree -> a)
-               -> Effects a
+               -> Cmd Msg
 getFeaturesList appConfig product query action =
-  let url = featuresUrl appConfig product query
+  let successMsg = FetchFeaturesSucceeded
+      failureMsg = FetchFeaturesFailed
+      url = featuresUrl appConfig product query
+      request = Http.get DT.parseFeatureTree url
   in
-    Http.get DT.parseFeatureTree url
-      |> Task.toResult
-      |> Task.map action
-      |> Effects.task
+    Task.perform failureMsg successMsg request
 
 
 getFeature : AppConfig
           -> Product
           -> DT.FilePath
-          -> (Result Error Feature -> a)
-          -> Effects a
+          -> Cmd Msg
 getFeature appConfig product path action =
-  let url = featureUrl appConfig product path
+  let successMsg = FetchFeatureSucceeded
+      failureMsg = FetchFeatureFailed
+      url = featureUrl appConfig product path
+      request = Http.get parseFeature url
   in
-    Http.get parseFeature url
-      |> Task.toResult
-      |> Task.map action
-      |> Effects.task
+    Task.perform failureMsg successMsg request
 
 
 featuresUrl : AppConfig

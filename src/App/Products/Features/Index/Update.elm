@@ -3,7 +3,7 @@ module App.Products.Features.Index.Update exposing (..)
 import App.AppConfig                           exposing (..)
 import App.Products.Features.FeatureList as FL
 import App.Products.Features.Requests as F
-import App.Products.Features.Index.Actions     exposing (Action(..))
+import App.Products.Features.Messages     exposing (Msg(..))
 import App.Products.Features.Index.ViewModel   exposing (FeaturesView)
 import App.Products.Navigation as Navigation
 import Data.External                           exposing (External(..))
@@ -11,22 +11,9 @@ import Debug                                   exposing (crash, log)
 import UI.SyntaxHighlighting as Highlight      exposing (highlightSyntaxMailbox)
 import Task                                    exposing (..)
 
-update : AppConfig -> Action -> FeaturesView -> (FeaturesView, Effects Action)
+update : AppConfig -> Msg -> FeaturesView -> (FeaturesView, Cmd Msg)
 update appConfig action featuresView =
   case action of
-    FeatureListAction featureListAction ->
-      case featureListAction of
-        FL.ShowFeature fileDescription ->
-          let product = featuresView.product
-              filePath = fileDescription.filePath
-              fx = F.getFeature appConfig product filePath ShowFeatureDetails
-          in
-            -- reset the current feature until the request comes back
-            -- we need this to avoid appending to the view rather than
-            -- replacing it.
-            -- https://github.com/gust/feature-creature/issues/65
-            ({ featuresView | selectedFeature = Nothing }, fx)
-
     RequestFeatures ->
       let query = Nothing
           action = UpdateFeatures query
@@ -65,11 +52,23 @@ update appConfig action featuresView =
     NavigationAction navAction ->
       case navAction of
         Navigation.SelectFeaturesView -> (featuresView, highlightFeatureSyntax)
-        _                  -> (featuresView, Effects.none)
+        _                  -> (featuresView, Cmd.none)
 
-    Noop -> ( featuresView, Effects.none )
+    Noop -> ( featuresView, Cmd.none )
 
-highlightFeatureSyntax : Effects Action
+    ShowFeature fileDescription ->
+      let product = featuresView.product
+          filePath = fileDescription.filePath
+          fx = F.getFeature appConfig product filePath
+      in
+        -- reset the current feature until the request comes back
+        -- we need this to avoid appending to the view rather than
+        -- replacing it.
+        -- https://github.com/gust/feature-creature/issues/65
+        ({ featuresView | selectedFeature = Nothing }, fx)
+
+
+highlightFeatureSyntax : Cmd Msg
 highlightFeatureSyntax =
   Effects.task
     <| Task.succeed
