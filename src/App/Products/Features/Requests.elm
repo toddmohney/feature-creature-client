@@ -17,7 +17,7 @@ getFeaturesList : AppConfig
                -> Product
                -> Maybe Search.Query
                -> Cmd Msg
-getFeaturesList appConfig product query action =
+getFeaturesList appConfig product query =
   let successMsg = FetchFeaturesSucceeded
       failureMsg = FetchFeaturesFailed
       url = featuresUrl appConfig product query
@@ -30,7 +30,7 @@ getFeature : AppConfig
           -> Product
           -> DT.FilePath
           -> Cmd Msg
-getFeature appConfig product path action =
+getFeature appConfig product path =
   let successMsg = FetchFeatureSucceeded
       failureMsg = FetchFeatureFailed
       url = featureUrl appConfig product path

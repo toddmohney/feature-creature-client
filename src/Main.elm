@@ -1,11 +1,11 @@
 module Main exposing (..)
 
-import App.Actions as App
 import App.App  as App
+import App.Messages as App
 import App.Update  as App
 import App.AppConfig      exposing (..)
 import Html               exposing (..)
-import UI.SyntaxHighlighting exposing (highlightSyntaxMailbox)
+-- import UI.SyntaxHighlighting exposing (highlightSyntaxMailbox)
 import Task               exposing (Task)
 
 
@@ -25,5 +25,5 @@ port tasks = app.tasks
 
 port initAppConfig : Signal AppConfig
 
-port highlightSyntaxPort : Signal (Maybe ())
-port highlightSyntaxPort = highlightSyntaxMailbox.signal
+-- port highlightSyntaxPort : Signal (Maybe ())
+-- port highlightSyntaxPort = highlightSyntaxMailbox.signal

@@ -1,12 +1,12 @@
 module App.Products.Forms.View exposing (..)
 
-import App.Products.Forms.Actions        exposing (..)
+import App.Products.Messages             exposing (Msg(..))
 import App.Products.Forms.ViewModel      exposing (CreateProductForm)
 import Html                              exposing (Html)
 import Html.Events                       exposing (onClick)
 import UI.App.Primitives.Forms     as UI exposing (..)
 
-view : CreateProductForm -> Html Action
+view : CreateProductForm -> Html Msg
 view createProductForm =
   Html.div
     []

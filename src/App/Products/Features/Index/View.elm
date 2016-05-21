@@ -50,7 +50,7 @@ featureListHtml featuresView featureList =
           <| UI.listDetailView listHtml
           <| featureHtml selectedFeature
       Just query ->
-        let listHtmlWithSearchFilterIndicator = (renderCurrentSearchTerm query address) :: listHtml
+        let listHtmlWithSearchFilterIndicator = (renderCurrentSearchTerm query) :: listHtml
         in
           listDetailViewContainer
             <| UI.listDetailView listHtmlWithSearchFilterIndicator

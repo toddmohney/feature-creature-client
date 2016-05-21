@@ -1,6 +1,6 @@
 module App.App exposing (..)
 
-import App.Actions                                exposing (..)
+import App.Messages                               exposing (Msg(..))
 import App.AppConfig                              exposing (..)
 import App.Products.Product         as P          exposing (Product)
 import App.Products.Forms.ViewModel as CPF        exposing (CreateProductForm)
@@ -10,6 +10,7 @@ import App.Products.Show.ViewModel  as PV         exposing (ProductView)
 import App.Products.Show.View       as PV
 import Data.External                              exposing (External(..))
 import Html                                       exposing (Html)
+import Html.App as Html
 import Html.Attributes as Html
 
 type alias App =
@@ -20,7 +21,7 @@ type alias App =
   , productView : Maybe ProductView
   }
 
-init : (App, Effects Action)
+init : (App, Cmd Msg)
 init =
   let initialState = { appConfig   = Nothing
                      , products    = NotLoaded
@@ -29,42 +30,34 @@ init =
                      , productView = Nothing
                      }
   in
-    (initialState, Effects.none)
+    (initialState, Cmd.none)
 
-view : Signal.Address Action -> App -> Html
-view address app =
+view : App -> Html Msg
+view app =
   case app.currentView of
     Navigation.LoadingView           -> renderLoadingView
     Navigation.ErrorView err         -> renderErrorView err
-    Navigation.CreateProductFormView -> renderProductsForm address app
-    Navigation.ProductView           -> renderProductView address app
-    Navigation.DomainTermsView       -> renderProductView address app
-    Navigation.UserRolesView         -> renderProductView address app
+    Navigation.CreateProductFormView -> renderProductsForm app
+    Navigation.ProductView           -> renderProductView app
+    Navigation.DomainTermsView       -> renderProductView app
+    Navigation.UserRolesView         -> renderProductView app
 
-renderLoadingView : Html
+renderLoadingView : Html Msg
 renderLoadingView = Html.div [] [ Html.text "loading..." ]
 
-renderErrorView : String -> Html
+renderErrorView : String -> Html Msg
 renderErrorView err = Html.div [] [ Html.text err ]
 
-renderProductsForm : Signal.Address Action -> App -> Html
-renderProductsForm address app =
-  let forwardedAddress  = (Signal.forwardTo address ProductFormActions)
-      productFormHtml   = CPF.view forwardedAddress app.productForm
-  in
-    mainContent [ productFormHtml ]
+renderProductsForm : App -> Html Msg
+renderProductsForm app = mainContent [ Html.map ProductFormActions (CPF.view app.productForm) ]
 
-renderProductView : Signal.Address Action -> App -> Html
-renderProductView address app =
+renderProductView : App -> Html Msg
+renderProductView app =
   case app.productView of
     Nothing -> Html.div [] [ Html.text "No products found" ]
-    Just pv ->
-      let forwardedAddress = (Signal.forwardTo address ProductViewActions)
-          productViewHtml  = PV.view forwardedAddress pv
-      in
-        mainContent  [ productViewHtml ]
+    Just pv -> mainContent  [ Html.map ProductViewActions (PV.view pv) ]
 
-mainContent : List Html -> Html
+mainContent : List (Html Msg) -> Html Msg
 mainContent content =
   Html.div
     [ Html.id "main_content"

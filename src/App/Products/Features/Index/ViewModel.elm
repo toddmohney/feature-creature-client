@@ -21,8 +21,8 @@ init appConfig prod =
                      , currentSearchTerm = query
                      }
       fx = case prod.repoState of
-             Error   -> Effects.none
-             Unready -> Effects.none
+             Error   -> Cmd.none
+             Unready -> Cmd.none
              Ready   -> getFeaturesList appConfig prod query
   in
     (featuresView, fx)

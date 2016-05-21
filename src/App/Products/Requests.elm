@@ -1,6 +1,7 @@
 module App.Products.Requests exposing ( createProduct, getProducts )
 
 import App.AppConfig             exposing (..)
+import App.Products.Messages              exposing (Msg(..))
 import App.Products.Product as P exposing (Product, RepositoryState (..))
 import Json.Encode
 import Json.Decode as Json       exposing ((:=))
@@ -8,22 +9,21 @@ import Http as Http              exposing (..)
 import Task as Task              exposing (..)
 import Utils.Http
 
-getProducts : AppConfig -> (Result Error (List Product) -> a) -> Effects a
-getProducts appConfig action =
-  Http.get parseProducts (productsUrl appConfig)
-    |> Task.toResult
-    |> Task.map action
-    |> Effects.task
-
-createProduct : AppConfig -> Product -> (Result Error Product -> a) -> Effects a
-createProduct appConfig newProduct action =
-  let request = Utils.Http.jsonPostRequest (productsUrl appConfig) (encodeProduct newProduct)
+getProducts : AppConfig -> Cmd Msg
+getProducts appConfig =
+  let successMsg = FetchProductsSucceeded
+      failureMsg = FetchProductsFailed
+      request = Http.get parseProducts (productsUrl appConfig)
   in
-    Http.send Http.defaultSettings request
-      |> Http.fromJson parseProduct
-      |> Task.toResult
-      |> Task.map action
-      |> Effects.task
+    Task.perform failureMsg successMsg request
+
+createProduct : AppConfig -> Product -> Cmd Msg
+createProduct appConfig newProduct =
+  let successMsg = CreateProductsSucceeded
+      failureMsg = CreateProductsFailed
+      requestOptions = Utils.Http.jsonPostRequest (productsUrl appConfig) (encodeProduct newProduct)
+  in
+    Task.perform failureMsg successMsg ((Http.send Http.defaultSettings requestOptions) |> Http.fromJson parseProduct)
 
 parseProducts : Json.Decoder (List Product)
 parseProducts = parseProduct |> Json.list
