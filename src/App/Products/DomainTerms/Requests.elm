@@ -8,6 +8,7 @@ module App.Products.DomainTerms.Requests exposing
 import App.AppConfig                       exposing (..)
 import App.Products.Product                exposing (Product)
 import App.Products.DomainTerms.DomainTerm exposing (DomainTerm)
+import App.Products.DomainTerms.Messages   exposing (Msg(..))
 import CoreExtensions.Maybe                exposing (fromJust)
 import Http                                exposing (Error, Request)
 import Json.Encode
@@ -17,53 +18,50 @@ import Utils.Http
 
 getDomainTerms : AppConfig
               -> Product
-              -> (Result Error (List DomainTerm) -> a)
-              -> Effects a
-getDomainTerms appConfig product action =
-  Http.get parseDomainTerms (domainTermsUrl appConfig product)
-   |> Task.toResult
-   |> Task.map action
-   |> Effects.task
+              -> Cmd Msg
+getDomainTerms appConfig product =
+  let successMsg = FetchDomainTermsSucceeded
+      failureMsg = FetchDomainTermsFailed
+      url = domainTermsUrl appConfig product
+      request = Http.get parseDomainTerms url
+  in
+    Task.perform failureMsg successMsg request
 
 createDomainTerm : AppConfig
                 -> Product
                 -> DomainTerm
-                -> (Result Error DomainTerm -> a)
-                -> Effects a
-createDomainTerm appConfig product domainTerm action =
-  let request = createDomainTermRequest appConfig product domainTerm
-  in Http.send Http.defaultSettings request
-     |> Http.fromJson parseDomainTerm
-     |> Task.toResult
-     |> Task.map action
-     |> Effects.task
+                -> Cmd Msg
+createDomainTerm appConfig product domainTerm =
+  let successMsg = CreateDomainTermSucceeded
+      failureMsg = CreateDomainTermFailed
+      requestOptions = createDomainTermRequest appConfig product domainTerm
+      request = Http.send Http.defaultSettings requestOptions |> Http.fromJson parseDomainTerm
+  in
+    Task.perform failureMsg successMsg request
 
 editDomainTerm : AppConfig
               -> Product
               -> DomainTerm
-              -> (Result Error DomainTerm -> a)
-              -> Effects a
-editDomainTerm appConfig product domainTerm action =
-  let request = editDomainTermRequest appConfig product domainTerm
-  in Http.send Http.defaultSettings request
-     |> Http.fromJson parseDomainTerm
-     |> Task.toResult
-     |> Task.map action
-     |> Effects.task
+              -> Cmd Msg
+editDomainTerm appConfig product domainTerm =
+  let successMsg = UpdateDomainTermSucceeded
+      failureMsg = UpdateDomainTermFailed
+      requestOptions = editDomainTermRequest appConfig product domainTerm
+      request = Http.send Http.defaultSettings requestOptions |> Http.fromJson parseDomainTerm
+  in
+    Task.perform failureMsg successMsg request
 
 removeDomainTerm : AppConfig
                 -> Product
                 -> DomainTerm
-                -> (Result Error DomainTerm -> a)
-                -> Effects a
-removeDomainTerm appConfig product domainTerm action =
-  let request = removeDomainTermRequest appConfig product domainTerm
+                -> Cmd Msg
+removeDomainTerm appConfig product domainTerm =
+  let successMsg = DeleteDomainTermSucceeded
+      failureMsg = DeleteDomainTermFailed
+      requestOptions = removeDomainTermRequest appConfig product domainTerm
+      request = Http.send Http.defaultSettings requestOptions |> Http.fromJson (Json.succeed domainTerm)
   in
-    Http.send Http.defaultSettings request
-      |> Http.fromJson (Json.succeed domainTerm)
-      |> Task.toResult
-      |> Task.map action
-      |> Effects.task
+    Task.perform failureMsg successMsg request
 
 removeDomainTermRequest : AppConfig -> Product -> DomainTerm -> Request
 removeDomainTermRequest appConfig product domainTerm =

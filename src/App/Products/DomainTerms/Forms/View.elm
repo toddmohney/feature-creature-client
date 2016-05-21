@@ -1,6 +1,6 @@
 module App.Products.DomainTerms.Forms.View exposing ( view )
 
-import App.Products.DomainTerms.Forms.Actions   exposing (..)
+import App.Products.DomainTerms.Messages   exposing (Msg(..))
 import App.Products.DomainTerms.Forms.ViewModel exposing (DomainTermForm, FormMode(..))
 import Data.Actions                             exposing (..)
 import Html                                     exposing (Html)
@@ -10,7 +10,7 @@ import UI.App.Components.Containers as UI
 import UI.App.Components.Panels    as UI
 import UI.App.Primitives.Forms     as UI
 
-view : ForwardedAction DomainTermFormAction -> DomainTermForm -> Html DomainTermFormAction
+view : ForwardedAction Msg -> DomainTermForm -> Html Msg
 view hideAction domainTermForm =
   let domainTermFormHtml = formContainer <| renderDomainTermForm hideAction domainTermForm
   in
@@ -24,7 +24,7 @@ formContainer content =
     ]
     [ content ]
 
-renderDomainTermForm : ForwardedAction DomainTermFormAction -> DomainTermForm -> Html DomainTermFormAction
+renderDomainTermForm : ForwardedAction Msg -> DomainTermForm -> Html Msg
 renderDomainTermForm hideAction domainTermForm =
   let bodyContent    = renderForm hideAction domainTermForm
   in UI.panelWithHeading (headingContent domainTermForm.formMode) bodyContent
@@ -35,7 +35,7 @@ headingContent formMode =
     Create -> Html.text "Create A New Domain Term"
     Edit   -> Html.text "Edit Domain Term"
 
-renderForm : ForwardedAction DomainTermFormAction -> DomainTermForm -> Html DomainTermFormAction
+renderForm : ForwardedAction Msg -> DomainTermForm -> Html Msg
 renderForm hideAction domainTermForm =
   Html.div
     []

@@ -1,7 +1,7 @@
 module App.Products.Show.Update exposing (..)
 
 import App.AppConfig                                  exposing (..)
-import App.Products.DomainTerms.Index.Actions as DT
+import App.Products.DomainTerms.Messages as DT
 import App.Products.DomainTerms.Index.Update as DT
 import App.Products.Features.Index.Actions as FeaturesActions
 import App.Products.Features.Index.Update as F
