@@ -17,10 +17,11 @@ import CoreExtensions.Maybe                               exposing (fromJust)
 import Data.External                                      exposing (External(..))
 import Http as Http                                       exposing (Error)
 import List                                               exposing (head, length)
+import Debug exposing (log)
 
 update : Msg -> App -> (App, Cmd Msg)
 update action app =
-  case action of
+  case log "App.Update - action: " action of
     ConfigLoaded appConfig               -> processAppConfig appConfig app
     NavigationActions  navAction         -> processNavigationAction navAction app
     ProductFormActions productFormAction -> processFormAction productFormAction app
@@ -33,8 +34,8 @@ update action app =
 processAppConfig : AppConfig -> App -> (App, Cmd Msg)
 processAppConfig appConfig app =
   (,)
-  { app | appConfig = Just appConfig }
-  (Cmd.map (\_ -> TempProductsLoaded) (P.getProducts appConfig))
+    { app | appConfig = Just appConfig }
+    (Cmd.map (\_ -> TempProductsLoaded) (P.getProducts appConfig))
 
 processProductsResponse : Result Error (List Product) -> App -> (App, Cmd Msg)
 processProductsResponse result app =

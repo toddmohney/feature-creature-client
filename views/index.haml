@@ -47,13 +47,13 @@
       }
 
       // var app = Elm.fullscreen(Elm.Main, { initAppConfig: { apiPath: "" } });
-      var app = Elm.Main.fullscreen({ initAppConfig: { apiPath: "" } });
+      var app = Elm.Main.fullscreen({ apiPath: "#{ENV['FC_API_PATH']}" });
 
-      app.ports.highlightSyntaxPort.subscribe(highlightSyntax);
+      // app.ports.highlightSyntaxPort.subscribe(highlightSyntax);
 
-      app.ports.initAppConfig.send(
-        { apiPath: "#{ENV['FC_API_PATH']}" }
-      );
+      // app.ports.appConfig.send(
+      //   { apiPath: "#{ENV['FC_API_PATH']}" }
+      // );
 
       $(document).ready(function() {
         // disable bootstrap transition animations

@@ -12,6 +12,7 @@ import Data.External                              exposing (External(..))
 import Html                                       exposing (Html)
 import Html.App as Html
 import Html.Attributes as Html
+import Debug exposing (log)
 
 type alias App =
   { appConfig   : Maybe AppConfig
@@ -21,16 +22,16 @@ type alias App =
   , productView : Maybe ProductView
   }
 
-init : (App, Cmd Msg)
-init =
-  let initialState = { appConfig   = Nothing
+init : AppConfig -> (App, Cmd Msg)
+init appConfig =
+  let initialState = { appConfig   = Just appConfig
                      , products    = NotLoaded
                      , currentView = Navigation.LoadingView
                      , productForm = CPF.init P.newProduct
                      , productView = Nothing
                      }
   in
-    (initialState, Cmd.none)
+    log "App.init - initial state: " (initialState, Cmd.none)
 
 view : App -> Html Msg
 view app =
