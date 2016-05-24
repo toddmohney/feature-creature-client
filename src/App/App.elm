@@ -6,6 +6,7 @@ import App.Products.Product         as P          exposing (Product)
 import App.Products.Forms.ViewModel as CPF        exposing (CreateProductForm)
 import App.Products.Forms.View      as CPF
 import App.Products.Navigation      as Navigation
+import App.Products.Requests        as P
 import App.Products.Show.ViewModel  as PV         exposing (ProductView)
 import App.Products.Show.View       as PV
 import Data.External                              exposing (External(..))
@@ -31,7 +32,7 @@ init appConfig =
                      , productView = Nothing
                      }
   in
-    log "App.init - initial state: " (initialState, Cmd.none)
+    initialState ! [P.getProducts appConfig]
 
 view : App -> Html Msg
 view app =

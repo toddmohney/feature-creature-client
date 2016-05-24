@@ -1,7 +1,7 @@
 module App.Products.Requests exposing ( createProduct, getProducts )
 
 import App.AppConfig             exposing (..)
-import App.Products.Messages              exposing (Msg(..))
+import App.Messages              exposing (Msg(..))
 import App.Products.Product as P exposing (Product, RepositoryState (..))
 import Json.Encode
 import Json.Decode as Json       exposing ((:=))

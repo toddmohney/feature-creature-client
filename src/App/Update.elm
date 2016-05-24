@@ -1,56 +1,41 @@
 module App.Update exposing ( update )
 
 import App.App                                            exposing (App)
-import App.AppConfig                                      exposing (..)
 import App.Messages                                       exposing (Msg(..))
 import App.Products.Product         as P                  exposing (Product)
-import App.Products.Requests        as P
 import App.Products.Forms.ViewModel as CPF                exposing (CreateProductForm)
 import App.Products.Forms.Update    as CPF
 import App.Products.Navigation      as Navigation
--- import App.Products.Forms.Actions   as ProductFormActions
--- import App.Products.Show.Actions    as ProductViewActions
 import App.Products.Messages        as P
 import App.Products.Show.ViewModel  as PV                 exposing (ProductView)
 import App.Products.Show.Update     as PV
 import CoreExtensions.Maybe                               exposing (fromJust)
 import Data.External                                      exposing (External(..))
 import Http as Http                                       exposing (Error)
-import List                                               exposing (head, length)
 import Debug exposing (log)
 
 update : Msg -> App -> (App, Cmd Msg)
 update action app =
   case log "App.Update - action: " action of
-    ConfigLoaded appConfig               -> processAppConfig appConfig app
     NavigationActions  navAction         -> processNavigationAction navAction app
     ProductFormActions productFormAction -> processFormAction productFormAction app
     ProductViewActions productViewAction -> processProductViewAction productViewAction app
-    ProductsLoaded resultProducts        -> processProductsResponse resultProducts app
-    TempProductsLoaded                   -> (app, Cmd.none)
+    FetchProductsSucceeded products      -> handleProductsLoaded products app
+    FetchProductsFailed err              -> showError err app
+    _                                    -> (app, Cmd.none)
 
 
+handleProductsLoaded : List Product -> App -> (App, Cmd Msg)
+handleProductsLoaded products app =
+  case products of
+    []     -> setCreateProductView app products
+    p::_  -> setProductView app products p
 
-processAppConfig : AppConfig -> App -> (App, Cmd Msg)
-processAppConfig appConfig app =
-  (,)
-    { app | appConfig = Just appConfig }
-    (Cmd.map (\_ -> TempProductsLoaded) (P.getProducts appConfig))
-
-processProductsResponse : Result Error (List Product) -> App -> (App, Cmd Msg)
-processProductsResponse result app =
-  case result of
-    Ok products ->
-      let selectedProduct = head products
-          (newState, fx) = case selectedProduct of
-            Just p  -> setProductView app products p
-            Nothing -> setCreateProductView app products
-      in
-        (newState, fx)
-    Err err ->
-      let newState = setErrorView app "Error loading products"
-      in
-        (newState, Cmd.none)
+showError : Error -> App -> (App, Cmd Msg)
+showError _ app =
+  let newState = setErrorView app "Error loading products"
+  in
+    (newState, Cmd.none)
 
 processProductViewAction : P.Msg -> App -> (App, Cmd Msg)
 processProductViewAction productViewAction app =

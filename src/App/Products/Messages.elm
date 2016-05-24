@@ -16,9 +16,9 @@ type Msg = DomainTermsViewAction DT.Msg
          | SetRepositoryUrl String
          | ProductCreated (Result Error Product)
          | NewProductCreated Product
-         | FetchProductsSucceeded (List Product)
-         | FetchProductsFailed Error
-         | CreateProductsSucceeded Product
-         | CreateProductsFailed Error
+         -- | FetchProductsSucceeded (List Product)
+         -- | FetchProductsFailed Error
+         -- | CreateProductsSucceeded Product
+         -- | CreateProductsFailed Error
 
 
