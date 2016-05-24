@@ -1,6 +1,6 @@
 module App.Products.Forms.View exposing (..)
 
-import App.Products.Messages             exposing (Msg(..))
+import App.Messages             exposing (Msg(..))
 import App.Products.Forms.ViewModel      exposing (CreateProductForm)
 import Html                              exposing (Html)
 import Html.Events                       exposing (onClick)

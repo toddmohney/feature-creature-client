@@ -6,7 +6,7 @@ module App.Products.Forms.ViewModel exposing
   )
 
 import App.Products.Product as P  exposing (Product)
-import App.Products.Messages      exposing (Msg(..))
+import App.Messages               exposing (Msg(..))
 import Html                       exposing (Html)
 import UI.App.Primitives.Forms    exposing (InputField)
 

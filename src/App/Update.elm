@@ -18,10 +18,14 @@ update : Msg -> App -> (App, Cmd Msg)
 update action app =
   case log "App.Update - action: " action of
     NavigationActions  navAction         -> processNavigationAction navAction app
-    ProductFormActions productFormAction -> processFormAction productFormAction app
+    -- ProductFormActions productFormAction -> processFormAction productFormAction app
     ProductViewActions productViewAction -> processProductViewAction productViewAction app
     FetchProductsSucceeded products      -> handleProductsLoaded products app
     FetchProductsFailed err              -> showError err app
+    CreateProductsSucceeded product      -> addNewProduct product app
+    SetName _                            -> processFormAction action app
+    SetRepositoryUrl _                   -> processFormAction action app
+    SubmitForm                           -> processFormAction action app
     _                                    -> (app, Cmd.none)
 
 
@@ -103,23 +107,43 @@ processNavigationAction navAction app =
       in
         (newApp, Cmd.map ProductViewActions fx)
 
+addNewProduct : Product -> App -> (App, Cmd Msg)
+addNewProduct product app =
+  let (newProductView, fx) = PV.init (fromJust app.appConfig) (extractProducts app.products) product
+      newApp = { app | currentView = Navigation.ProductView
+                     , productView = Just newProductView
+                     , productForm = CPF.init P.newProduct
+               }
+  in
+    (newApp, Cmd.map ProductViewActions fx)
 
-processFormAction : P.Msg -> App -> (App, Cmd Msg)
+processFormAction : Msg -> App -> (App, Cmd Msg)
 processFormAction formAction app =
-  case formAction of
-    P.NewProductCreated product ->
-      let (newProductView, fx) = PV.init (fromJust app.appConfig) (extractProducts app.products) product
-          newApp = { app | currentView = Navigation.ProductView
-                         , productView = Just newProductView
-                         , productForm = CPF.init P.newProduct
-                   }
-      in
-        (newApp, Cmd.map ProductViewActions fx)
-    _ ->
-      let (newCreateProductForm, fx) = CPF.update formAction app.productForm (fromJust app.appConfig)
-          newApp = { app | productForm = newCreateProductForm }
-      in
-        (newApp, Cmd.map ProductFormActions fx)
+  let (newCreateProductForm, fx) = CPF.update formAction app.productForm (fromJust app.appConfig)
+      newApp = { app | productForm = newCreateProductForm }
+  in
+    (newApp, fx)
+
+-- processFormAction : P.Msg -> App -> (App, Cmd Msg)
+-- processFormAction formAction app =
+  -- let (newCreateProductForm, fx) = CPF.update formAction app.productForm (fromJust app.appConfig)
+      -- newApp = { app | productForm = newCreateProductForm }
+  -- in
+    -- (newApp, fx)
+  -- case formAction of
+    -- P.NewProductCreated product ->
+      -- let (newProductView, fx) = PV.init (fromJust app.appConfig) (extractProducts app.products) product
+          -- newApp = { app | currentView = Navigation.ProductView
+                         -- , productView = Just newProductView
+                         -- , productForm = CPF.init P.newProduct
+                   -- }
+      -- in
+        -- (newApp, Cmd.map ProductViewActions fx)
+    -- _ ->
+      -- let (newCreateProductForm, fx) = CPF.update formAction app.productForm (fromJust app.appConfig)
+          -- newApp = { app | productForm = newCreateProductForm }
+      -- in
+        -- (newApp, Cmd.map ProductFormActions fx)
 
 extractProducts : External (List Product) -> List Product
 extractProducts exData =

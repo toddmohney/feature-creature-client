@@ -12,3 +12,6 @@ type Msg = ProductFormActions P.Msg
          | FetchProductsFailed Error
          | CreateProductsSucceeded Product
          | CreateProductsFailed Error
+         | SetName String
+         | SetRepositoryUrl String
+         | SubmitForm

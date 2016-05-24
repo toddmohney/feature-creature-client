@@ -13,7 +13,6 @@ import Data.External                              exposing (External(..))
 import Html                                       exposing (Html)
 import Html.App as Html
 import Html.Attributes as Html
-import Debug exposing (log)
 
 type alias App =
   { appConfig   : Maybe AppConfig
@@ -51,7 +50,7 @@ renderErrorView : String -> Html Msg
 renderErrorView err = Html.div [] [ Html.text err ]
 
 renderProductsForm : App -> Html Msg
-renderProductsForm app = mainContent [ Html.map ProductFormActions (CPF.view app.productForm) ]
+renderProductsForm app = mainContent [ CPF.view app.productForm ]
 
 renderProductView : App -> Html Msg
 renderProductView app =
