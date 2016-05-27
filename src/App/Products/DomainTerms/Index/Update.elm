@@ -54,8 +54,6 @@ update action domainTermsView appConfig =
     HideDomainTermForm ->
       ({ domainTermsView | domainTermForm = Nothing }, Cmd.none)
 
-    SearchFeatures searchQuery -> (domainTermsView, Cmd.none)
-
     -- TODO: what's this for?
     _ ->
       case domainTermsView.domainTermForm of

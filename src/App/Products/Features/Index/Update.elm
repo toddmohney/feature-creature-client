@@ -9,13 +9,11 @@ import App.Products.Features.Index.ViewModel   exposing (FeaturesView)
 import Data.External                           exposing (External(..))
 import Debug                                   exposing (crash, log)
 -- import UI.SyntaxHighlighting as Highlight      exposing (highlightSyntaxMailbox)
--- import Task                                    exposing (..)
 
 update : AppConfig -> Msg -> FeaturesView -> (FeaturesView, Cmd Msg)
 update appConfig action featuresView =
   case log "features.index.view: " action of
-    -- need to re-wire the query display
-    FetchFeaturesSucceeded featureTree ->
+    FetchFeaturesSucceeded query featureTree ->
       let newFeatureList    = Loaded { features = featureTree }
           currentProduct    = featuresView.product
           newCurrentProduct = { currentProduct | featureList = newFeatureList }

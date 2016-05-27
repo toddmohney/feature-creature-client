@@ -18,7 +18,7 @@ getFeaturesList : AppConfig
                -> Maybe Search.Query
                -> Cmd Msg
 getFeaturesList appConfig product query =
-  let successMsg = FetchFeaturesSucceeded
+  let successMsg = FetchFeaturesSucceeded query
       failureMsg = FetchFeaturesFailed
       url = featuresUrl appConfig product query
       request = Http.get DT.parseFeatureTree url

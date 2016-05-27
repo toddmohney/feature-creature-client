@@ -13,7 +13,7 @@ type Msg = ShowFeature FileDescription
          | ShowFeatureDetails (Result Error Feature)
          | SyntaxHighlightingAction Highlight.Action
          | UpdateFeatures (Maybe Query) (Result Error DirectoryTree)
-         | FetchFeaturesSucceeded DirectoryTree
+         | FetchFeaturesSucceeded (Maybe Query) DirectoryTree
          | FetchFeaturesFailed Error
          | FetchFeatureSucceeded Feature
          | FetchFeatureFailed Error

@@ -3,6 +3,7 @@ module App.Update exposing ( update )
 import App.App                                            exposing (App)
 import App.Messages                                       exposing (Msg(..))
 import App.Products.Product         as P                  exposing (Product)
+import App.Products.Features.Messages as F
 import App.Products.Forms.ViewModel as CPF                exposing (CreateProductForm)
 import App.Products.Forms.Update    as CPF
 import App.Products.Navigation      as Navigation
@@ -12,7 +13,7 @@ import App.Products.Show.Update     as PV
 import CoreExtensions.Maybe                               exposing (fromJust)
 import Data.External                                      exposing (External(..))
 import Http as Http                                       exposing (Error)
-import Debug exposing (log)
+import Debug exposing (crash, log)
 
 update : Msg -> App -> (App, Cmd Msg)
 update action app =
@@ -26,6 +27,7 @@ update action app =
     SetName _                            -> processFormAction action app
     SetRepositoryUrl _                   -> processFormAction action app
     SubmitForm                           -> processFormAction action app
+    CreateProductsFailed _               -> crash "Unable to create new product"
     _                                    -> log "App.Update: ignoring..." (app, Cmd.none)
 
 
@@ -58,10 +60,16 @@ showNewProductForm productViewAction app =
 
 forwardToProductView : P.Msg -> App -> (App, Cmd Msg)
 forwardToProductView  productViewAction app =
-  let (newProductView, fx) = PV.update productViewAction (fromJust app.productView) (fromJust app.appConfig)
-      newState = { app | productView = Just newProductView }
+  let nextView = case productViewAction of
+                   P.FeaturesViewAction (F.FetchFeaturesSucceeded _ _) -> Navigation.ProductView
+                   _ -> app.currentView
   in
-    (newState, Cmd.map ProductViewActions fx)
+    let (newProductView, fx) = PV.update productViewAction (fromJust app.productView) (fromJust app.appConfig)
+        newState = { app | productView = Just newProductView
+                   , currentView = nextView
+                   }
+    in
+      (newState, Cmd.map ProductViewActions fx)
 
 creatingNewProduct : P.Msg -> Bool
 creatingNewProduct productViewAction =
@@ -123,9 +131,7 @@ processFormAction : Msg -> App -> (App, Cmd Msg)
 processFormAction formAction app =
   let (newCreateProductForm, fx) = CPF.update formAction app.productForm (fromJust app.appConfig)
   in
-    ( { app | productForm = newCreateProductForm }
-    , fx
-    )
+    ({ app | productForm = newCreateProductForm }, fx)
 
 -- processFormAction : P.Msg -> App -> (App, Cmd Msg)
 -- processFormAction formAction app =
