@@ -31,10 +31,8 @@ update action domainTermForm appConfig =
       let newDomainTermForm = validateForm domainTermForm
       in
         case hasErrors newDomainTermForm of
-          True ->
-            (newDomainTermForm , Cmd.none)
-          False ->
-            submitDomainTermForm newDomainTermForm appConfig
+          True  -> (newDomainTermForm , Cmd.none)
+          False -> submitDomainTermForm newDomainTermForm appConfig
 
     _ -> (domainTermForm, Cmd.none)
 
