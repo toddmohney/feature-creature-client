@@ -1,15 +1,16 @@
 module App.Products.Features.Index.View exposing (..)
 
-import App.Products.Features.Feature as F      exposing (Feature)
-import App.Products.Features.FeatureList as FL exposing (FeatureList)
-import App.Products.Features.Messages          exposing (Msg(..))
-import App.Products.Features.Index.ViewModel   exposing (FeaturesView)
-import App.Products.Product                    exposing (Product, RepositoryState (..))
-import App.Search.Types                        exposing (..)
-import Data.External                           exposing (External(..))
-import Html                                    exposing (..)
-import Html.Attributes                         exposing (classList)
-import Html.Events                             exposing (onClick)
+import App.Products.Features.Feature as F                exposing (Feature)
+import App.Products.Features.FeatureList.View as FL      exposing (..)
+import App.Products.Features.FeatureList.ViewModel as FL exposing (..)
+import App.Products.Features.Messages                    exposing (Msg(..))
+import App.Products.Features.Index.ViewModel             exposing (FeaturesView)
+import App.Products.Product                              exposing (Product, RepositoryState (..))
+import App.Search.Types                                  exposing (..)
+import Data.External                                     exposing (External(..))
+import Html                                              exposing (..)
+import Html.Attributes                                   exposing (classList)
+import Html.Events                                       exposing (onClick)
 import UI.App.Components.ListDetailView as UI
 import UI.App.Primitives.Buttons as UI
 

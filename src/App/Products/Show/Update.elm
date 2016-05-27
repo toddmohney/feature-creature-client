@@ -7,14 +7,13 @@ import App.Products.Features.Messages as FeaturesMessages
 import App.Products.Features.Index.Update as F
 import App.Products.Features.Requests as F
 import App.Products.Navigation as Navigation
--- import App.Products.Navigation.NavBar as NavBar
+import App.Products.Navigation.NavBar as NavBar
 import App.Products.Product                           exposing (Product)
 import App.Products.Messages                          exposing (Msg(..))
 import App.Products.Show.ViewModel as PV              exposing (ProductView)
 import App.Products.UserRoles.Messages as UR
 import App.Products.UserRoles.Index.Update as URV
 import App.Search.Types as Search
-import Debug exposing (crash)
 
 update : Msg -> ProductView -> AppConfig -> (ProductView, Cmd Msg)
 update action productView appConfig =
@@ -67,17 +66,17 @@ searchFeatures appConfig product query =
   F.getFeaturesList appConfig product (Just query)
 
 handleNavigation : AppConfig -> Navigation.Action -> ProductView -> (ProductView, Cmd Msg)
-handleNavigation appConfig navBarAction productView = crash "unable to handle this event"
-  -- let (updatedNavBar, navBarFx) = NavBar.update navBarAction productView.navBar
-      -- newSelectedProduct        = updatedNavBar.selectedProduct
-      -- (newFeaturesView, featFX) = F.update appConfig (FeaturesMessages.NavigationAction navBarAction) productView.featuresView
-      -- switchingProducts         = productView.navBar.selectedProduct == newSelectedProduct
-  -- in
-    -- case switchingProducts of
-      -- True -> ( { productView | navBar = updatedNavBar, featuresView = newFeaturesView }
-              -- , Cmd.batch [ Cmd.map NavBarAction navBarFx
-                          -- , Cmd.map FeaturesViewAction featFX
-                          -- ]
-              -- )
-      -- False ->
-        -- PV.init appConfig productView.navBar.products newSelectedProduct
+handleNavigation appConfig navBarAction productView =
+  let (updatedNavBar, navBarFx) = NavBar.update navBarAction productView.navBar
+      (newFeaturesView, featFX) = F.update appConfig (FeaturesMessages.NavigationAction navBarAction) productView.featuresView
+      newSelectedProduct        = updatedNavBar.selectedProduct
+      switchingProducts         = productView.navBar.selectedProduct == newSelectedProduct
+  in
+    case switchingProducts of
+      True ->
+        let model = { productView | navBar = updatedNavBar, featuresView = newFeaturesView }
+            cmd = Cmd.batch [ Cmd.map NavBarAction navBarFx , Cmd.map FeaturesViewAction featFX ]
+        in
+          (model, cmd)
+      False ->
+        PV.init appConfig productView.navBar.products newSelectedProduct

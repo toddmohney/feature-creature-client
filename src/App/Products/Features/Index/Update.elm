@@ -37,39 +37,11 @@ update appConfig action featuresView =
     RequestFeatures ->
       (featuresView, F.getFeaturesList appConfig featuresView.product Nothing)
 
-    -- ShowFeatureDetails resultFeature ->
-      -- case resultFeature of
-        -- Ok feature ->
-          -- ({ featuresView | selectedFeature = Just feature }, Cmd.none)
-          -- -- ({ featuresView | selectedFeature = Just feature }
-          -- -- , highlightFeatureSyntax
-          -- -- )
-        -- Err _ ->
-          -- crash "Error handling FeaturesView.ShowFeatureDetails"
-
     SyntaxHighlightingAction _ -> (featuresView, Cmd.none)
       -- let highlightSyntax = Signal.send highlightSyntaxMailbox.address Nothing
       -- in ( featuresView
          -- , Effects.task <| highlightSyntax `andThen` (\_ -> (Task.succeed Noop))
          -- )
-
-    -- UpdateFeatures query resultFeatureTree ->
-      -- let newFeatureList    = case resultFeatureTree of
-                                -- Ok featureTree -> Loaded { features = featureTree }
-                                -- Err _ -> LoadedWithError "An error occurred while loading features"
-          -- currentProduct    = featuresView.product
-          -- newCurrentProduct = { currentProduct | featureList = newFeatureList }
-          -- newFeaturesView   = { featuresView | product = newCurrentProduct, currentSearchTerm = query }
-      -- in
-        -- ( newFeaturesView
-        -- , Cmd.none
-        -- )
-        -- this can't work. refactor Messages to past tense reports of what
-        -- happend rather than commands of what to do next
-        --
-        -- ( newFeaturesView
-        -- , Cmd.map (\_ -> SelectFeaturesView) Cmd.none
-        -- )
 
     -- NavigationAction navAction ->
       -- case navAction of

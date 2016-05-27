@@ -1,19 +1,14 @@
-module App.Products.Features.FeatureList exposing
-  ( FeatureList
-  , render
-  )
+module App.Products.Features.FeatureList.View exposing ( render )
 
-import App.Products.Features.Feature  exposing (Feature)
-import App.Products.Features.Messages exposing (Msg(..))
-import Data.DirectoryTree             exposing (..)
-import Html                           exposing (..)
-import Html.Attributes as Html        exposing (..)
-import Html.Events                    exposing (onClick)
+import App.Products.Features.Feature               exposing (Feature)
+import App.Products.Features.Messages              exposing (Msg(..))
+import App.Products.Features.FeatureList.ViewModel exposing (..)
+import Data.DirectoryTree                          exposing (..)
+import Html                                        exposing (..)
+import Html.Attributes as Html                     exposing (..)
+import Html.Events                                 exposing (onClick)
 import String
 import UI.Bootstrap.Components.Glyphicons as Glyph
-
-type alias FeatureList =
-  { features: DirectoryTree }
 
 type alias DirectoryTreeRenderOptions =
   { selectedFeature    : Maybe Feature

@@ -103,26 +103,29 @@ processNavigationAction navAction app =
     Nothing -> (app, Cmd.none)
     Just pv ->
       let (newProductView, fx) = PV.update (P.NavBarAction navAction) pv (fromJust app.appConfig)
-          newApp = { app | productView = Just newProductView }
       in
-        (newApp, Cmd.map ProductViewActions fx)
+        ( { app | productView = Just newProductView }
+        , Cmd.map ProductViewActions fx
+        )
 
 addNewProduct : Product -> App -> (App, Cmd Msg)
 addNewProduct product app =
   let (newProductView, fx) = PV.init (fromJust app.appConfig) (extractProducts app.products) product
-      newApp = { app | currentView = Navigation.ProductView
-                     , productView = Just newProductView
-                     , productForm = CPF.init P.newProduct
-               }
   in
-    (newApp, Cmd.map ProductViewActions fx)
+    ( { app | currentView = Navigation.ProductView
+            , productView = Just newProductView
+            , productForm = CPF.init P.newProduct
+      }
+    , Cmd.map ProductViewActions fx
+    )
 
 processFormAction : Msg -> App -> (App, Cmd Msg)
 processFormAction formAction app =
   let (newCreateProductForm, fx) = CPF.update formAction app.productForm (fromJust app.appConfig)
-      newApp = { app | productForm = newCreateProductForm }
   in
-    (newApp, fx)
+    ( { app | productForm = newCreateProductForm }
+    , fx
+    )
 
 -- processFormAction : P.Msg -> App -> (App, Cmd Msg)
 -- processFormAction formAction app =
