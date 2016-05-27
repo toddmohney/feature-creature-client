@@ -27,26 +27,10 @@ init products selectedProduct =
 update : Navigation.Action -> ProductViewNavBar -> (ProductViewNavBar, Cmd Navigation.Action)
 update action navBar =
   case action of
-    Navigation.SelectFeaturesView ->
-      ( { navBar | selectedView = FeaturesViewOption }
-      , Cmd.none
-      )
-
-    Navigation.SelectDomainTermsView ->
-      ( { navBar | selectedView = DomainTermsViewOption }
-      , Cmd.none
-      )
-
-    Navigation.SelectUserRolesView ->
-      ( { navBar | selectedView = UserRolesViewOption }
-      , Cmd.none
-      )
-
-    Navigation.SetSelectedProduct product ->
-      ( { navBar | selectedProduct = product }
-      , Cmd.none
-      )
-
+    Navigation.SelectFeaturesView         -> ({ navBar | selectedView = FeaturesViewOption } , Cmd.none)
+    Navigation.SelectDomainTermsView      -> ({ navBar | selectedView = DomainTermsViewOption } , Cmd.none)
+    Navigation.SelectUserRolesView        -> ({ navBar | selectedView = UserRolesViewOption } , Cmd.none)
+    Navigation.SetSelectedProduct product -> ({ navBar | selectedProduct = product } , Cmd.none)
     Navigation.ShowCreateNewProductForm ->
       -- noop, we want someone higher up the chain to react to this effect
       ( navBar, Cmd.none )

@@ -4,11 +4,7 @@ import App.Products.DomainTerms.DomainTerm exposing (DomainTerm)
 import App.Search.Types as Search
 import Http                                exposing (Error)
 
-type Msg = DomainTermAdded DomainTerm
-         | DomainTermUpdated DomainTerm
-         | DomainTermCreated (Result Error DomainTerm)
-         | DomainTermModified (Result Error DomainTerm)
-         | SubmitDomainTermForm
+type Msg = SubmitDomainTermForm
          | SetDomainTermTitle String
          | SetDomainTermDescription String
          | SearchFeatures Search.Query
@@ -17,7 +13,6 @@ type Msg = DomainTermAdded DomainTerm
          | ShowCreateDomainTermForm
          | ShowEditDomainTermForm DomainTerm
          | HideDomainTermForm
-         | UpdateDomainTerms (Result Error (List DomainTerm))
          | FetchDomainTermsSucceeded (List DomainTerm)
          | FetchDomainTermsFailed Error
          | CreateDomainTermSucceeded DomainTerm

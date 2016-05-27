@@ -7,26 +7,37 @@ import App.Products.DomainTerms.Forms.Update  as DTF
 import App.Products.DomainTerms.Index.ViewModel          exposing (DomainTermsView)
 import App.Products.DomainTerms.Messages                 exposing (Msg(..))
 import App.Products.DomainTerms.Requests                 exposing (getDomainTerms, removeDomainTerm)
+import App.Products.Product                              exposing (Product)
 import Data.External                                     exposing (External(..))
 import Debug                                             exposing (crash, log)
 
 update : Msg -> DomainTermsView -> AppConfig -> (DomainTermsView, Cmd Msg)
 update action domainTermsView appConfig =
   case action of
-    UpdateDomainTerms domainTermsResult ->
-      case domainTermsResult of
-        Ok domainTermList ->
-          let product           = domainTermsView.product
-              domainTermForm    = domainTermsView.domainTermForm
-              updatedProduct    = { product | domainTerms = Loaded domainTermList }
-              newDomainTermForm = Maybe.map2 DTF.setProduct domainTermForm (Just updatedProduct)
-              newView = { domainTermsView |
-                          product = updatedProduct
-                        , domainTermForm = newDomainTermForm
-                        }
-          in (newView, Cmd.none)
-        Err _ ->
-          crash "Something went wrong!"
+    FetchDomainTermsSucceeded domainTerms ->
+      let product           = domainTermsView.product
+          domainTermForm    = domainTermsView.domainTermForm
+          updatedProduct    = { product | domainTerms = Loaded domainTerms }
+          newDomainTermForm = Maybe.map2 DTF.setProduct domainTermForm (Just updatedProduct)
+          newView = { domainTermsView |
+                      product = updatedProduct
+                    , domainTermForm = newDomainTermForm
+                    }
+      in (newView, Cmd.none)
+
+    DeleteDomainTermSucceeded _ -> (domainTermsView, fetchDomainTerms domainTermsView.product appConfig)
+
+    CreateDomainTermSucceeded _ -> (domainTermsView, fetchDomainTerms domainTermsView.product appConfig)
+
+    UpdateDomainTermSucceeded _ -> (domainTermsView, fetchDomainTerms domainTermsView.product appConfig)
+
+    FetchDomainTermsFailed _ -> crash "Unable to fetch domain terms"
+
+    DeleteDomainTermFailed _ -> crash "Unable to delete domain term"
+
+    RemoveDomainTerm domainTerm -> (domainTermsView, removeDomainTerm appConfig domainTermsView.product domainTerm)
+
+    DomainTermRemoved _ -> (domainTermsView, fetchDomainTerms domainTermsView.product appConfig)
 
     ShowCreateDomainTermForm ->
       let product = domainTermsView.product
@@ -45,30 +56,7 @@ update action domainTermsView appConfig =
 
     SearchFeatures searchQuery -> (domainTermsView, Cmd.none)
 
-    RemoveDomainTerm domainTerm ->
-      (,)
-      domainTermsView
-      (removeDomainTerm appConfig domainTermsView.product domainTerm)
-
-    DomainTermRemoved result ->
-      -- This always results in an error, even with a 200 response
-      -- because Elm cannot parse an empty response body.
-      -- We can make this better, however.
-      -- see: https://github.com/evancz/elm-http/issues/5
-      case result of
-        Ok a ->
-          (,)
-          domainTermsView
-          (getDomainTerms appConfig domainTermsView.product)
-        Err err ->
-          (,)
-          domainTermsView
-          (getDomainTerms appConfig domainTermsView.product)
-
-    DomainTermAdded domainTerm   -> (domainTermsView, getDomainTerms appConfig domainTermsView.product)
-
-    DomainTermUpdated domainTerm -> (domainTermsView, getDomainTerms appConfig domainTermsView.product)
-
+    -- TODO: what's this for?
     _ ->
       case domainTermsView.domainTermForm of
         Nothing             -> (domainTermsView, Cmd.none)
@@ -78,3 +66,6 @@ update action domainTermsView appConfig =
             ( { domainTermsView | domainTermForm = Just dtForm }
             , dtFormFx
             )
+
+fetchDomainTerms : Product -> AppConfig -> Cmd Msg
+fetchDomainTerms product config = getDomainTerms config product

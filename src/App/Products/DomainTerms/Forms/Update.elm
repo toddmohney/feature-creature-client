@@ -11,32 +11,21 @@ import Debug                                           exposing (crash)
 update : Msg -> DomainTermForm -> AppConfig -> (DomainTermForm, Cmd Msg)
 update action domainTermForm appConfig =
   case action of
-    DomainTermAdded domainTerm   -> (domainTermForm, Cmd.none)
-    DomainTermUpdated domainTerm -> (domainTermForm, Cmd.none)
+    CreateDomainTermSucceeded domainTerm ->
+      (DTF.init domainTermForm.product DT.init DTF.Create , Cmd.none)
 
-    DomainTermCreated domainTermResult ->
-      case domainTermResult of
-        Ok domainTerm ->
-          let newForm = DTF.init domainTermForm.product DT.init DTF.Create
-              cmd = Cmd.map (\_-> DomainTermAdded domainTerm) Cmd.none
-          in
-            (newForm, cmd)
-        Err _ -> crash "Something went wrong!"
+    CreateDomainTermFailed err -> crash "Failed to create new domain term."
 
-    DomainTermModified domainTermResult ->
-      case domainTermResult of
-        Ok domainTerm ->
-          let newForm = DTF.init domainTermForm.product DT.init DTF.Create
-              cmd = Cmd.map (\_-> DomainTermUpdated domainTerm) Cmd.none
-          in
-            (newForm, cmd)
-        Err _ -> crash "Something went wrong!"
+    UpdateDomainTermSucceeded domainTerm ->
+      ( DTF.init domainTermForm.product DT.init DTF.Create
+      , Cmd.none
+      )
 
-    SetDomainTermTitle newTitle ->
-      (DTF.setTitle domainTermForm newTitle, Cmd.none)
+    UpdateDomainTermFailed err -> crash "Unable to update domain term."
 
-    SetDomainTermDescription newDescription ->
-      (DTF.setDescription domainTermForm newDescription, Cmd.none)
+    SetDomainTermTitle newTitle -> (DTF.setTitle domainTermForm newTitle, Cmd.none)
+
+    SetDomainTermDescription newDescription -> (DTF.setDescription domainTermForm newDescription, Cmd.none)
 
     SubmitDomainTermForm ->
       let newDomainTermForm = validateForm domainTermForm
