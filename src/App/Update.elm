@@ -26,14 +26,14 @@ update action app =
     SetName _                            -> processFormAction action app
     SetRepositoryUrl _                   -> processFormAction action app
     SubmitForm                           -> processFormAction action app
-    _                                    -> (app, Cmd.none)
+    _                                    -> log "App.Update: ignoring..." (app, Cmd.none)
 
 
 handleProductsLoaded : List Product -> App -> (App, Cmd Msg)
 handleProductsLoaded products app =
   case products of
     []     -> setCreateProductView app products
-    p::_  -> setProductView app products p
+    p::_   -> setProductView app products p
 
 showError : Error -> App -> (App, Cmd Msg)
 showError _ app =
@@ -86,7 +86,7 @@ setCreateProductView app products =
 
 setProductView : App -> List Product -> Product -> (App, Cmd Msg)
 setProductView app products selectedProduct =
-  let (productView, fx) = PV.init (fromJust app.appConfig) products selectedProduct
+  let (productView, fx) = log "setProductView" PV.init (fromJust app.appConfig) products selectedProduct
   in
     (,)
     { app | products    = Loaded products

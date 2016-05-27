@@ -46,16 +46,10 @@
         setTimeout(applyHighlight, 10);
       }
 
-      // var app = Elm.fullscreen(Elm.Main, { initAppConfig: { apiPath: "" } });
-      var app = Elm.Main.fullscreen({ apiPath: "#{ENV['FC_API_PATH']}" });
-
-      // app.ports.highlightSyntaxPort.subscribe(highlightSyntax);
-
-      // app.ports.appConfig.send(
-      //   { apiPath: "#{ENV['FC_API_PATH']}" }
-      // );
+      var app;
 
       $(document).ready(function() {
+        app = Elm.Main.fullscreen({ apiPath: "#{ENV['FC_API_PATH']}" });
         // disable bootstrap transition animations
         $.support.transition = false;
       });

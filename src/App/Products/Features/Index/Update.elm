@@ -13,19 +13,39 @@ import Debug                                   exposing (crash, log)
 
 update : AppConfig -> Msg -> FeaturesView -> (FeaturesView, Cmd Msg)
 update appConfig action featuresView =
-  case action of
+  case log "features.index.view: " action of
+    -- need to re-wire the query display
+    FetchFeaturesSucceeded featureTree ->
+      let newFeatureList    = Loaded { features = featureTree }
+          currentProduct    = featuresView.product
+          newCurrentProduct = { currentProduct | featureList = newFeatureList }
+          newFeaturesView   = { featuresView | product = newCurrentProduct, currentSearchTerm = Nothing }
+      in
+        (newFeaturesView , Cmd.none)
+
+    FetchFeatureSucceeded feature ->
+      ({ featuresView | selectedFeature = Just feature }
+      , Cmd.none
+      )
+      -- ({ featuresView | selectedFeature = Just feature }
+      -- , highlightFeatureSyntax
+      -- )
+
+    FetchFeaturesFailed err -> crash "Failed to load feature list"
+    FetchFeatureFailed err  -> crash "Failed to load feature list"
+
     RequestFeatures ->
       (featuresView, F.getFeaturesList appConfig featuresView.product Nothing)
 
-    ShowFeatureDetails resultFeature ->
-      case resultFeature of
-        Ok feature ->
-          ({ featuresView | selectedFeature = Just feature }, Cmd.none)
-          -- ({ featuresView | selectedFeature = Just feature }
-          -- , highlightFeatureSyntax
-          -- )
-        Err _ ->
-          crash "Error handling FeaturesView.ShowFeatureDetails"
+    -- ShowFeatureDetails resultFeature ->
+      -- case resultFeature of
+        -- Ok feature ->
+          -- ({ featuresView | selectedFeature = Just feature }, Cmd.none)
+          -- -- ({ featuresView | selectedFeature = Just feature }
+          -- -- , highlightFeatureSyntax
+          -- -- )
+        -- Err _ ->
+          -- crash "Error handling FeaturesView.ShowFeatureDetails"
 
     SyntaxHighlightingAction _ -> (featuresView, Cmd.none)
       -- let highlightSyntax = Signal.send highlightSyntaxMailbox.address Nothing
@@ -33,17 +53,17 @@ update appConfig action featuresView =
          -- , Effects.task <| highlightSyntax `andThen` (\_ -> (Task.succeed Noop))
          -- )
 
-    UpdateFeatures query resultFeatureTree ->
-      let newFeatureList    = case resultFeatureTree of
-                                Ok featureTree -> Loaded { features = featureTree }
-                                Err _ -> LoadedWithError "An error occurred while loading features"
-          currentProduct    = featuresView.product
-          newCurrentProduct = { currentProduct | featureList = newFeatureList }
-          newFeaturesView   = { featuresView | product = newCurrentProduct, currentSearchTerm = query }
-      in
-        ( newFeaturesView
-        , Cmd.none
-        )
+    -- UpdateFeatures query resultFeatureTree ->
+      -- let newFeatureList    = case resultFeatureTree of
+                                -- Ok featureTree -> Loaded { features = featureTree }
+                                -- Err _ -> LoadedWithError "An error occurred while loading features"
+          -- currentProduct    = featuresView.product
+          -- newCurrentProduct = { currentProduct | featureList = newFeatureList }
+          -- newFeaturesView   = { featuresView | product = newCurrentProduct, currentSearchTerm = query }
+      -- in
+        -- ( newFeaturesView
+        -- , Cmd.none
+        -- )
         -- this can't work. refactor Messages to past tense reports of what
         -- happend rather than commands of what to do next
         --
