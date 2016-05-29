@@ -59,8 +59,6 @@ update action productView appConfig =
            , Cmd.map UserRolesViewAction urvFx
           )
 
-    -- _ -> (productView, Cmd.none)
-
 searchFeatures : AppConfig -> Product -> Search.Query -> Cmd FeaturesMessages.Msg
 searchFeatures appConfig product query =
   F.getFeaturesList appConfig product (Just query)

@@ -5,8 +5,7 @@ import App.Products.Navigation as Navigation
 import App.Products.Messages   as P
 import Http as Http exposing (Error)
 
-type Msg = ProductFormActions P.Msg
-         | ProductViewActions P.Msg
+type Msg = ProductViewActions P.Msg
          | NavigationActions Navigation.Action
          | FetchProductsSucceeded (List Product)
          | FetchProductsFailed Error

@@ -1,25 +1,24 @@
 module App.Update exposing ( update )
 
-import App.App                                            exposing (App)
-import App.Messages                                       exposing (Msg(..))
-import App.Products.Product         as P                  exposing (Product)
+import App.App                                    exposing (App)
+import App.Messages                               exposing (Msg(..))
+import App.Products.Product         as P          exposing (Product)
 import App.Products.Features.Messages as F
-import App.Products.Forms.ViewModel as CPF                exposing (CreateProductForm)
+import App.Products.Forms.ViewModel as CPF        exposing (CreateProductForm)
 import App.Products.Forms.Update    as CPF
 import App.Products.Navigation      as Navigation
 import App.Products.Messages        as P
-import App.Products.Show.ViewModel  as PV                 exposing (ProductView)
+import App.Products.Show.ViewModel  as PV         exposing (ProductView)
 import App.Products.Show.Update     as PV
-import CoreExtensions.Maybe                               exposing (fromJust)
-import Data.External                                      exposing (External(..))
-import Http as Http                                       exposing (Error)
+import CoreExtensions.Maybe                       exposing (fromJust)
+import Data.External                              exposing (External(..))
+import Http as Http                               exposing (Error)
 import Debug exposing (crash, log)
 
 update : Msg -> App -> (App, Cmd Msg)
 update action app =
   case log "App.Update - action: " action of
     NavigationActions  navAction         -> processNavigationAction navAction app
-    -- ProductFormActions productFormAction -> processFormAction productFormAction app
     ProductViewActions productViewAction -> processProductViewAction productViewAction app
     FetchProductsSucceeded products      -> handleProductsLoaded products app
     FetchProductsFailed err              -> showError err app
@@ -28,8 +27,6 @@ update action app =
     SetRepositoryUrl _                   -> processFormAction action app
     SubmitForm                           -> processFormAction action app
     CreateProductsFailed _               -> crash "Unable to create new product"
-    _                                    -> log "App.Update: ignoring..." (app, Cmd.none)
-
 
 handleProductsLoaded : List Product -> App -> (App, Cmd Msg)
 handleProductsLoaded products app =
@@ -94,16 +91,14 @@ setCreateProductView app products =
 
 setProductView : App -> List Product -> Product -> (App, Cmd Msg)
 setProductView app products selectedProduct =
-  let (productView, fx) = log "setProductView" PV.init (fromJust app.appConfig) products selectedProduct
+  let (productView, fx) = PV.init (fromJust app.appConfig) products selectedProduct
   in
-    (,)
-    { app | products    = Loaded products
-          , productView = Just productView
-          , currentView = Navigation.ProductView
-    }
-    (Cmd.map ProductViewActions fx)
-
-
+    ( { app | products    = Loaded products
+      , productView = Just productView
+      , currentView = Navigation.ProductView
+      }
+    , Cmd.map ProductViewActions fx
+    )
 
 processNavigationAction : Navigation.Action -> App -> (App, Cmd Msg)
 processNavigationAction navAction app =
@@ -132,27 +127,6 @@ processFormAction formAction app =
   let (newCreateProductForm, fx) = CPF.update formAction app.productForm (fromJust app.appConfig)
   in
     ({ app | productForm = newCreateProductForm }, fx)
-
--- processFormAction : P.Msg -> App -> (App, Cmd Msg)
--- processFormAction formAction app =
-  -- let (newCreateProductForm, fx) = CPF.update formAction app.productForm (fromJust app.appConfig)
-      -- newApp = { app | productForm = newCreateProductForm }
-  -- in
-    -- (newApp, fx)
-  -- case formAction of
-    -- P.NewProductCreated product ->
-      -- let (newProductView, fx) = PV.init (fromJust app.appConfig) (extractProducts app.products) product
-          -- newApp = { app | currentView = Navigation.ProductView
-                         -- , productView = Just newProductView
-                         -- , productForm = CPF.init P.newProduct
-                   -- }
-      -- in
-        -- (newApp, Cmd.map ProductViewActions fx)
-    -- _ ->
-      -- let (newCreateProductForm, fx) = CPF.update formAction app.productForm (fromJust app.appConfig)
-          -- newApp = { app | productForm = newCreateProductForm }
-      -- in
-        -- (newApp, Cmd.map ProductFormActions fx)
 
 extractProducts : External (List Product) -> List Product
 extractProducts exData =
