@@ -3,7 +3,6 @@ module App.Update exposing ( update )
 import App.App                                    exposing (App)
 import App.Messages                               exposing (Msg(..))
 import App.Products.Product         as P          exposing (Product)
-import App.Products.Features.Messages as F
 import App.Products.Forms.ViewModel as CPF        exposing (CreateProductForm)
 import App.Products.Forms.Update    as CPF
 import App.Products.Navigation      as Navigation
@@ -17,7 +16,7 @@ import Debug exposing (crash, log)
 
 update : Msg -> App -> (App, Cmd Msg)
 update action app =
-  case log "App.Update - action: " action of
+  case action of
     NavigationActions  navAction         -> processNavigationAction navAction app
     ProductViewActions productViewAction -> processProductViewAction productViewAction app
     FetchProductsSucceeded products      -> handleProductsLoaded products app
@@ -57,16 +56,10 @@ showNewProductForm productViewAction app =
 
 forwardToProductView : P.Msg -> App -> (App, Cmd Msg)
 forwardToProductView  productViewAction app =
-  let nextView = case productViewAction of
-                   P.FeaturesViewAction (F.FetchFeaturesSucceeded _ _) -> Navigation.ProductView
-                   _ -> app.currentView
+  let (newProductView, fx) = PV.update productViewAction (fromJust app.productView) (fromJust app.appConfig)
+      newState = { app | productView = Just newProductView }
   in
-    let (newProductView, fx) = PV.update productViewAction (fromJust app.productView) (fromJust app.appConfig)
-        newState = { app | productView = Just newProductView
-                   , currentView = nextView
-                   }
-    in
-      (newState, Cmd.map ProductViewActions fx)
+    (newState, Cmd.map ProductViewActions fx)
 
 creatingNewProduct : P.Msg -> Bool
 creatingNewProduct productViewAction =

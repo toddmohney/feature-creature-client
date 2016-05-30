@@ -3,7 +3,7 @@ module App.Products.Show.Update exposing ( update )
 import App.AppConfig                                  exposing (..)
 import App.Products.DomainTerms.Messages as DT
 import App.Products.DomainTerms.Index.Update as DT
-import App.Products.Features.Messages as FeaturesMessages
+import App.Products.Features.Messages as F
 import App.Products.Features.Index.Update as F
 import App.Products.Features.Requests as F
 import App.Products.Navigation as Navigation
@@ -23,9 +23,16 @@ update action productView appConfig =
     FeaturesViewAction fvAction ->
       let (featView, fvFx) = F.update appConfig fvAction productView.featuresView
       in case fvAction of
-        -- This is a duplication of the action above
-        -- how can we make this better?
-        -- FeaturesMessages.NavigationAction navAction -> handleNavigation appConfig navAction productView
+        (F.FetchFeaturesSucceeded _ _) ->
+          let navBar = productView.navBar
+              updatedNavBar = { navBar | selectedView = NavBar.FeaturesViewOption }
+          in
+            ( { productView | featuresView = featView
+                            , navBar = updatedNavBar
+              }
+              , Cmd.map FeaturesViewAction fvFx
+            )
+
         _ ->
           ( { productView | featuresView = featView }
             , Cmd.map FeaturesViewAction fvFx
@@ -59,14 +66,14 @@ update action productView appConfig =
            , Cmd.map UserRolesViewAction urvFx
           )
 
-searchFeatures : AppConfig -> Product -> Search.Query -> Cmd FeaturesMessages.Msg
+searchFeatures : AppConfig -> Product -> Search.Query -> Cmd F.Msg
 searchFeatures appConfig product query =
   F.getFeaturesList appConfig product (Just query)
 
 handleNavigation : AppConfig -> Navigation.Action -> ProductView -> (ProductView, Cmd Msg)
 handleNavigation appConfig navBarAction productView =
   let (updatedNavBar, navBarFx) = NavBar.update navBarAction productView.navBar
-      (newFeaturesView, featFX) = F.update appConfig (FeaturesMessages.NavigationAction navBarAction) productView.featuresView
+      (newFeaturesView, featFX) = F.update appConfig (F.NavigationAction navBarAction) productView.featuresView
       newSelectedProduct        = updatedNavBar.selectedProduct
       switchingProducts         = productView.navBar.selectedProduct == newSelectedProduct
   in

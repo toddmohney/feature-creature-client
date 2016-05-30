@@ -17,6 +17,7 @@ import Data.External                              exposing (External(..))
 import Html                                       exposing (Html)
 import Html.App as Html
 import Html.Attributes as Html
+import Debug exposing (log)
 
 type alias App =
   { appConfig   : Maybe AppConfig
@@ -39,7 +40,7 @@ init appConfig =
 
 view : App -> Html Msg
 view app =
-  case app.currentView of
+  case log "currentView: " app.currentView of
     Navigation.LoadingView           -> renderLoadingView
     Navigation.ErrorView err         -> renderErrorView err
     Navigation.CreateProductFormView -> renderProductsForm app
