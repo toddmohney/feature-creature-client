@@ -1,4 +1,7 @@
-module App.Products.Show.ViewModel exposing (..)
+module App.Products.Show.ViewModel exposing
+  ( ProductView
+  , init
+  )
 
 import App.AppConfig                                   exposing (..)
 import App.Products.DomainTerms.Index.ViewModel as DTV exposing (DomainTermsView)

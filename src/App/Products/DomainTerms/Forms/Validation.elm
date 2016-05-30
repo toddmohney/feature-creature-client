@@ -1,4 +1,7 @@
-module App.Products.DomainTerms.Forms.Validation exposing (validateForm, hasErrors)
+module App.Products.DomainTerms.Forms.Validation exposing
+  ( validateForm
+  , hasErrors
+  )
 
 import App.Products.DomainTerms.Forms.ViewModel exposing (..)
 import UI.App.Primitives.Forms     as UI        exposing (..)

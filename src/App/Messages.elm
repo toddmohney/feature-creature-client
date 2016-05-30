@@ -1,4 +1,4 @@
-module App.Messages exposing ( Msg(..) )
+module App.Messages exposing ( Msg (..) )
 
 import App.Products.Product    as P exposing (Product)
 import App.Products.Navigation as Navigation

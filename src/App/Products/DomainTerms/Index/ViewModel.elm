@@ -1,4 +1,7 @@
-module App.Products.DomainTerms.Index.ViewModel exposing ( DomainTermsView, init )
+module App.Products.DomainTerms.Index.ViewModel exposing
+  ( DomainTermsView
+  , init
+  )
 
 import App.AppConfig                                   exposing (..)
 import App.Products.DomainTerms.Messages               exposing (Msg)

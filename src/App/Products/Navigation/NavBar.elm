@@ -1,4 +1,10 @@
-module App.Products.Navigation.NavBar exposing (..)
+module App.Products.Navigation.NavBar exposing
+  ( ProductViewNavBar
+  , ProductViewOption (..)
+  , init
+  , update
+  , view
+  )
 
 import Html                                  exposing (Html)
 import Html.Attributes                       exposing (attribute, class, classList, href, id)

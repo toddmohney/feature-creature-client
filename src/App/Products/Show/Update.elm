@@ -1,4 +1,4 @@
-module App.Products.Show.Update exposing (..)
+module App.Products.Show.Update exposing ( update )
 
 import App.AppConfig                                  exposing (..)
 import App.Products.DomainTerms.Messages as DT

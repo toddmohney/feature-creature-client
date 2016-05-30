@@ -1,4 +1,4 @@
-module App.Products.Messages exposing (..)
+module App.Products.Messages exposing ( Msg (..) )
 
 import App.Products.DomainTerms.Messages   as DT
 import App.Products.Features.Messages      as F

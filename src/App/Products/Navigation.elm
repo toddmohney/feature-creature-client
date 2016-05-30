@@ -1,4 +1,7 @@
-module App.Products.Navigation exposing (..)
+module App.Products.Navigation exposing
+  ( Action (..)
+  , CurrentView (..)
+  )
 
 import App.Products.Product exposing (Product)
 

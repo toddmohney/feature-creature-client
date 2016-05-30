@@ -1,4 +1,8 @@
-module App.App exposing (..)
+module App.App exposing
+  ( App
+  , init
+  , view
+  )
 
 import App.Messages                               exposing (Msg(..))
 import App.AppConfig                              exposing (..)

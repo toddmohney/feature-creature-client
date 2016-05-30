@@ -1,4 +1,7 @@
-module App.Products.UserRoles.Forms.Validation exposing (validateForm, hasErrors)
+module App.Products.UserRoles.Forms.Validation exposing
+  ( validateForm
+  , hasErrors
+  )
 
 import App.Products.UserRoles.Forms.ViewModel exposing (..)
 import UI.App.Primitives.Forms     as UI      exposing (requiredStringFieldValidation)

@@ -1,4 +1,4 @@
-module App.Products.Features.Index.Update exposing (..)
+module App.Products.Features.Index.Update exposing ( update )
 
 import App.AppConfig                           exposing (..)
 -- import App.Products.Features.FeatureList as FL

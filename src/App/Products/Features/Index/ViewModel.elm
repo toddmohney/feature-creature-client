@@ -1,4 +1,7 @@
-module App.Products.Features.Index.ViewModel exposing (..)
+module App.Products.Features.Index.ViewModel exposing
+  ( FeaturesView
+  , init
+  )
 
 import App.AppConfig                  exposing (..)
 import App.Products.Product           exposing (Product, RepositoryState (..))

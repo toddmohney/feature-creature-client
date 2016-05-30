@@ -1,4 +1,11 @@
-module App.Products.Product exposing (..)
+module App.Products.Product exposing
+  ( Product
+  , RepositoryState (..)
+  , newProduct
+  , init
+  , init'
+  , view
+  )
 
 import Data.External                               exposing (External(..))
 import App.Products.DomainTerms.DomainTerm         exposing (..)

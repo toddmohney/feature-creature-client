@@ -14,18 +14,16 @@ update action domainTermForm appConfig =
     CreateDomainTermSucceeded domainTerm ->
       (DTF.init domainTermForm.product DT.init DTF.Create , Cmd.none)
 
-    CreateDomainTermFailed err -> crash "Failed to create new domain term."
-
     UpdateDomainTermSucceeded domainTerm ->
       ( DTF.init domainTermForm.product DT.init DTF.Create
       , Cmd.none
       )
 
-    UpdateDomainTermFailed err -> crash "Unable to update domain term."
+    SetDomainTermTitle newTitle ->
+      (DTF.setTitle domainTermForm newTitle, Cmd.none)
 
-    SetDomainTermTitle newTitle -> (DTF.setTitle domainTermForm newTitle, Cmd.none)
-
-    SetDomainTermDescription newDescription -> (DTF.setDescription domainTermForm newDescription, Cmd.none)
+    SetDomainTermDescription newDescription ->
+      (DTF.setDescription domainTermForm newDescription, Cmd.none)
 
     SubmitDomainTermForm ->
       let newDomainTermForm = validateForm domainTermForm
@@ -33,6 +31,10 @@ update action domainTermForm appConfig =
         case hasErrors newDomainTermForm of
           True  -> (newDomainTermForm , Cmd.none)
           False -> submitDomainTermForm newDomainTermForm appConfig
+
+    CreateDomainTermFailed err -> crash "Failed to create new domain term."
+
+    UpdateDomainTermFailed err -> crash "Unable to update domain term."
 
     _ -> (domainTermForm, Cmd.none)
 

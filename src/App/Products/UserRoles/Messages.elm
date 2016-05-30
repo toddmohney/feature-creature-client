@@ -1,4 +1,4 @@
-module App.Products.UserRoles.Messages exposing (..)
+module App.Products.UserRoles.Messages exposing ( Msg (..) )
 
 import App.Search.Types as Search
 import App.Products.UserRoles.UserRole exposing (UserRole)

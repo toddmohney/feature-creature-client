@@ -23,17 +23,3 @@ submitForm form appConfig =
     case hasErrors newProductForm of
       True -> (newProductForm, Cmd.none)
       False -> (newProductForm, P.createProduct appConfig newProductForm.newProduct)
-
-    -- ProductCreated createProductResult ->
-      -- (form, Cmd.none)
-      -- case createProductResult of
-        -- Ok product ->
-          -- (,)
-          -- { form | newProduct = product }
-          -- (Cmd.map (\_ -> NewProductCreated product) Cmd.none)
-        -- Err _ ->
-          -- crash "Failed to create product"
-
-    -- this may now be unused
-    -- NewProductCreated product -> (form, Cmd.none)
-

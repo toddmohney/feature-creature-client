@@ -1,4 +1,4 @@
-module App.Products.Show.View exposing (..)
+module App.Products.Show.View exposing ( view )
 
 import Html                                        exposing (Html)
 import Html.App as Html

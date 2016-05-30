@@ -1,6 +1,6 @@
 module App.Products.UserRoles.Forms.ViewModel exposing
   ( UserRoleForm
-  , FormMode(..)
+  , FormMode (..)
   , init
   , setProduct
   , setTitle

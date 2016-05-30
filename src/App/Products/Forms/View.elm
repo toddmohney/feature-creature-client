@@ -1,4 +1,4 @@
-module App.Products.Forms.View exposing (..)
+module App.Products.Forms.View exposing ( view )
 
 import App.Messages             exposing (Msg(..))
 import App.Products.Forms.ViewModel      exposing (CreateProductForm)

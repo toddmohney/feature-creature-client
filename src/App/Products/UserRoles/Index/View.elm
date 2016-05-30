@@ -1,6 +1,5 @@
 module App.Products.UserRoles.Index.View exposing ( view )
 
--- import App.Products.UserRoles.Index.Actions as Actions exposing (UserRoleAction(..))
 import App.Products.UserRoles.Index.ViewModel          exposing (UserRolesView)
 import App.Products.UserRoles.Forms.View as URF
 import App.Products.UserRoles.Forms.ViewModel          exposing (UserRoleForm)

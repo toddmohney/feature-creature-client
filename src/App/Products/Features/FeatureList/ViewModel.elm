@@ -1,4 +1,4 @@
-module App.Products.Features.FeatureList.ViewModel exposing (..)
+module App.Products.Features.FeatureList.ViewModel exposing ( FeatureList )
 
 import Data.DirectoryTree exposing (DirectoryTree(..))
 

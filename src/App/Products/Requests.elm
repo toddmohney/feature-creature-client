@@ -16,10 +16,10 @@ getProducts appConfig =
 
 createProduct : AppConfig -> Product -> Cmd Msg
 createProduct appConfig newProduct =
-  let requestOptions = Utils.Http.jsonPostRequest (productsUrl appConfig) (encodeProduct newProduct)
-  in
-    ((Http.send Http.defaultSettings requestOptions) |> Http.fromJson parseProduct)
-      |> Task.perform CreateProductsFailed CreateProductsSucceeded
+  Utils.Http.jsonPostRequest (productsUrl appConfig) (encodeProduct newProduct)
+    |> Http.send Http.defaultSettings
+    |> Http.fromJson parseProduct
+    |> Task.perform CreateProductsFailed CreateProductsSucceeded
 
 parseProducts : Json.Decoder (List Product)
 parseProducts = parseProduct |> Json.list
@@ -31,7 +31,7 @@ parseProduct =
     ("productId"   := Json.int)
     ("productName" := Json.string)
     ("repoUrl"     := Json.string)
-    (("repoState"   := Json.string) `Json.andThen` decodeState)
+    (("repoState"  := Json.string) `Json.andThen` decodeState)
     ("repoError"   := nullOr Json.string)
 
 decodeState : String -> Json.Decoder RepositoryState
