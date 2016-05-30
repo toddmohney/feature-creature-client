@@ -11,19 +11,15 @@ import Utils.Http
 
 getProducts : AppConfig -> Cmd Msg
 getProducts appConfig =
-  let successMsg = FetchProductsSucceeded
-      failureMsg = FetchProductsFailed
-      request = Http.get parseProducts (productsUrl appConfig)
-  in
-    Task.perform failureMsg successMsg request
+  Http.get parseProducts (productsUrl appConfig)
+    |> Task.perform FetchProductsFailed FetchProductsSucceeded
 
 createProduct : AppConfig -> Product -> Cmd Msg
 createProduct appConfig newProduct =
-  let successMsg = CreateProductsSucceeded
-      failureMsg = CreateProductsFailed
-      requestOptions = Utils.Http.jsonPostRequest (productsUrl appConfig) (encodeProduct newProduct)
+  let requestOptions = Utils.Http.jsonPostRequest (productsUrl appConfig) (encodeProduct newProduct)
   in
-    Task.perform failureMsg successMsg ((Http.send Http.defaultSettings requestOptions) |> Http.fromJson parseProduct)
+    ((Http.send Http.defaultSettings requestOptions) |> Http.fromJson parseProduct)
+      |> Task.perform CreateProductsFailed CreateProductsSucceeded
 
 parseProducts : Json.Decoder (List Product)
 parseProducts = parseProduct |> Json.list

@@ -18,26 +18,18 @@ getFeaturesList : AppConfig
                -> Maybe Search.Query
                -> Cmd Msg
 getFeaturesList appConfig product query =
-  let successMsg = FetchFeaturesSucceeded query
-      failureMsg = FetchFeaturesFailed
-      url = featuresUrl appConfig product query
-      request = Http.get DT.parseFeatureTree url
-  in
-    Task.perform failureMsg successMsg request
-
+  featuresUrl appConfig product query
+    |> Http.get DT.parseFeatureTree
+    |> Task.perform FetchFeaturesFailed (FetchFeaturesSucceeded query)
 
 getFeature : AppConfig
           -> Product
           -> DT.FilePath
           -> Cmd Msg
 getFeature appConfig product path =
-  let successMsg = FetchFeatureSucceeded
-      failureMsg = FetchFeatureFailed
-      url = featureUrl appConfig product path
-      request = Http.get parseFeature url
-  in
-    Task.perform failureMsg successMsg request
-
+  featureUrl appConfig product path
+    |> Http.get parseFeature
+    |> Task.perform FetchFeatureFailed FetchFeatureSucceeded
 
 featuresUrl : AppConfig
            -> Product
@@ -50,14 +42,12 @@ featuresUrl appConfig product query =
       Nothing  -> featuresEndpoint
       (Just q) -> featuresEndpoint ++ "?search=" ++ q.term
 
-
 featureUrl : AppConfig
           -> Product
           -> DT.FilePath
           -> String
 featureUrl appConfig product path =
   appConfig.apiPath ++ "/products/" ++ (toString product.id) ++ "/feature?path=" ++ path
-
 
 parseFeature : Json.Decoder Feature
 parseFeature =

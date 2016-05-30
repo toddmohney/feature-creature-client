@@ -20,53 +20,44 @@ getDomainTerms : AppConfig
               -> Product
               -> Cmd Msg
 getDomainTerms appConfig product =
-  let successMsg = FetchDomainTermsSucceeded
-      failureMsg = FetchDomainTermsFailed
-      url = domainTermsUrl appConfig product
-      request = Http.get parseDomainTerms url
-  in
-    Task.perform failureMsg successMsg request
+  domainTermsUrl appConfig product
+    |> Http.get parseDomainTerms
+    |> Task.perform FetchDomainTermsFailed FetchDomainTermsSucceeded
 
 createDomainTerm : AppConfig
                 -> Product
                 -> DomainTerm
                 -> Cmd Msg
 createDomainTerm appConfig product domainTerm =
-  let successMsg = CreateDomainTermSucceeded
-      failureMsg = CreateDomainTermFailed
-      requestOptions = createDomainTermRequest appConfig product domainTerm
-      request = Http.send Http.defaultSettings requestOptions |> Http.fromJson parseDomainTerm
-  in
-    Task.perform failureMsg successMsg request
+  createDomainTermRequest appConfig product domainTerm
+    |> Http.send Http.defaultSettings
+    |> Http.fromJson parseDomainTerm
+    |> Task.perform CreateDomainTermFailed CreateDomainTermSucceeded
 
 editDomainTerm : AppConfig
               -> Product
               -> DomainTerm
               -> Cmd Msg
 editDomainTerm appConfig product domainTerm =
-  let successMsg = UpdateDomainTermSucceeded
-      failureMsg = UpdateDomainTermFailed
-      requestOptions = editDomainTermRequest appConfig product domainTerm
-      request = Http.send Http.defaultSettings requestOptions |> Http.fromJson parseDomainTerm
-  in
-    Task.perform failureMsg successMsg request
+  editDomainTermRequest appConfig product domainTerm
+    |> Http.send Http.defaultSettings
+    |> Http.fromJson parseDomainTerm
+    |> Task.perform UpdateDomainTermFailed UpdateDomainTermSucceeded
 
 removeDomainTerm : AppConfig
                 -> Product
                 -> DomainTerm
                 -> Cmd Msg
 removeDomainTerm appConfig product domainTerm =
-  let successMsg = DeleteDomainTermSucceeded
-      failureMsg = DeleteDomainTermFailed
-      requestOptions = removeDomainTermRequest appConfig product domainTerm
-      request = Http.send Http.defaultSettings requestOptions |> Http.fromJson (Json.succeed domainTerm)
-  in
-    Task.perform failureMsg successMsg request
+  removeDomainTermRequest appConfig product domainTerm
+    |> Http.send Http.defaultSettings
+    |> Http.fromJson (Json.succeed domainTerm)
+    |> Task.perform DeleteDomainTermFailed DeleteDomainTermSucceeded
 
 removeDomainTermRequest : AppConfig -> Product -> DomainTerm -> Request
 removeDomainTermRequest appConfig product domainTerm =
-  Utils.Http.jsonDeleteRequest
-    <| domainTermUrl appConfig product domainTerm
+  domainTermUrl appConfig product domainTerm
+    |> Utils.Http.jsonDeleteRequest
 
 createDomainTermRequest : AppConfig -> Product -> DomainTerm -> Request
 createDomainTermRequest appConfig product domainTerm =
