@@ -20,7 +20,7 @@ import Html.Attributes as Html
 import Debug exposing (log)
 
 type alias App =
-  { appConfig   : Maybe AppConfig
+  { appConfig   : AppConfig
   , products    : External (List Product)
   , currentView : Navigation.CurrentView
   , productForm : CreateProductForm
@@ -29,7 +29,7 @@ type alias App =
 
 init : AppConfig -> (App, Cmd Msg)
 init appConfig =
-  let initialState = { appConfig   = Just appConfig
+  let initialState = { appConfig   = appConfig
                      , products    = NotLoaded
                      , currentView = Navigation.LoadingView
                      , productForm = CPF.init P.newProduct

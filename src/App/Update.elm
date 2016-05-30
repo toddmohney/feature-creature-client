@@ -47,7 +47,7 @@ processProductViewAction productViewAction app =
 
 showNewProductForm : P.Msg -> App -> (App, Cmd Msg)
 showNewProductForm productViewAction app =
-  let (newProductView, fx) = PV.update productViewAction (fromJust app.productView) (fromJust app.appConfig)
+  let (newProductView, fx) = PV.update productViewAction (fromJust app.productView) app.appConfig
       newState = { app | productView = Just newProductView
                        , currentView = Navigation.CreateProductFormView
                  }
@@ -56,7 +56,7 @@ showNewProductForm productViewAction app =
 
 forwardToProductView : P.Msg -> App -> (App, Cmd Msg)
 forwardToProductView  productViewAction app =
-  let (newProductView, fx) = PV.update productViewAction (fromJust app.productView) (fromJust app.appConfig)
+  let (newProductView, fx) = PV.update productViewAction (fromJust app.productView) app.appConfig
       newState = { app | productView = Just newProductView }
   in
     (newState, Cmd.map ProductViewActions fx)
@@ -84,7 +84,7 @@ setCreateProductView app products =
 
 setProductView : App -> List Product -> Product -> (App, Cmd Msg)
 setProductView app products selectedProduct =
-  let (productView, fx) = PV.init (fromJust app.appConfig) products selectedProduct
+  let (productView, fx) = PV.init app.appConfig products selectedProduct
   in
     ( { app | products    = Loaded products
       , productView = Just productView
@@ -98,7 +98,7 @@ processNavigationAction navAction app =
   case app.productView of
     Nothing -> (app, Cmd.none)
     Just pv ->
-      let (newProductView, fx) = PV.update (P.NavBarAction navAction) pv (fromJust app.appConfig)
+      let (newProductView, fx) = PV.update (P.NavBarAction navAction) pv app.appConfig
       in
         ( { app | productView = Just newProductView }
         , Cmd.map ProductViewActions fx
@@ -106,7 +106,7 @@ processNavigationAction navAction app =
 
 addNewProduct : Product -> App -> (App, Cmd Msg)
 addNewProduct product app =
-  let (newProductView, fx) = PV.init (fromJust app.appConfig) (extractProducts app.products) product
+  let (newProductView, fx) = PV.init app.appConfig (extractProducts app.products) product
   in
     ( { app | currentView = Navigation.ProductView
             , productView = Just newProductView
@@ -117,7 +117,7 @@ addNewProduct product app =
 
 processFormAction : Msg -> App -> (App, Cmd Msg)
 processFormAction formAction app =
-  let (newCreateProductForm, fx) = CPF.update formAction app.productForm (fromJust app.appConfig)
+  let (newCreateProductForm, fx) = CPF.update formAction app.productForm app.appConfig
   in
     ({ app | productForm = newCreateProductForm }, fx)
 

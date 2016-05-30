@@ -15,7 +15,7 @@ update appConfig action featuresView =
       let newFeatureList    = Loaded { features = featureTree }
           currentProduct    = featuresView.product
           newCurrentProduct = { currentProduct | featureList = newFeatureList }
-          newFeaturesView   = { featuresView | product = newCurrentProduct, currentSearchTerm = Nothing }
+          newFeaturesView   = { featuresView | product = newCurrentProduct, currentSearchTerm = query }
       in
         (newFeaturesView , Cmd.none)
 
