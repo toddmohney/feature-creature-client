@@ -1,11 +1,9 @@
-module App.Products.UserRoles.Index.View
-  ( view
-  ) where
+module App.Products.UserRoles.Index.View exposing ( view )
 
-import App.Products.UserRoles.Index.Actions as Actions exposing (UserRoleAction(..))
 import App.Products.UserRoles.Index.ViewModel          exposing (UserRolesView)
 import App.Products.UserRoles.Forms.View as URF
 import App.Products.UserRoles.Forms.ViewModel          exposing (UserRoleForm)
+import App.Products.UserRoles.Messages                 exposing (Msg(..))
 import App.Products.UserRoles.UserRole as UR           exposing (UserRole, toSearchQuery)
 import Data.Actions                                    exposing (..)
 import Data.External                                   exposing (External(..))
@@ -17,8 +15,8 @@ import UI.App.Components.Panels as UI
 import UI.Bootstrap.Components.Glyphicons as Glyph
 import UI.Bootstrap.Responsiveness as UI                exposing (ScreenSize(..))
 
-view : Signal.Address UserRoleAction -> UserRolesView -> Html
-view address userRolesView =
+view : UserRolesView -> Html Msg
+view userRolesView =
   let userRoles =
     case userRolesView.product.userRoles of
       Loaded dts -> dts
@@ -26,33 +24,32 @@ view address userRolesView =
   in
     Html.div
     []
-    [ userRoleFormUI address userRolesView.userRoleForm
+    [ userRoleFormUI userRolesView.userRoleForm
     , Html.div
         [ Html.classList [ ("row", True) ] ]
-        (renderUserRoles address userRoles [])
+        (renderUserRoles userRoles [])
     ]
 
-userRoleFormUI : Signal.Address UserRoleAction -> Maybe UserRoleForm -> Html
-userRoleFormUI address userRoleForm =
+userRoleFormUI : Maybe UserRoleForm -> Html Msg
+userRoleFormUI userRoleForm =
   case userRoleForm of
     Nothing ->
-      createUserRoleUI address
+      createUserRoleUI
     Just userRoleForm ->
-      let forwardedAddress  = Signal.forwardTo address Actions.UserRoleFormAction
-          hideFormAction = ForwardedAction address Actions.HideUserRoleForm
+      let hideFormAction = ForwardedAction HideUserRoleForm
       in
-        URF.view forwardedAddress hideFormAction userRoleForm
+        URF.view hideFormAction userRoleForm
 
-createUserRoleUI : Signal.Address UserRoleAction -> Html
-createUserRoleUI address =
+createUserRoleUI : Html Msg
+createUserRoleUI =
   UI.clearfix
   [("fc-margin--bottom--medium", True)]
-  [ createUserRoleButton address ]
+  [ createUserRoleButton ]
 
-createUserRoleButton : Signal.Address UserRoleAction -> Html
-createUserRoleButton address =
+createUserRoleButton : Html Msg
+createUserRoleButton =
   Html.a
-  [ href "#", onClick address Actions.ShowCreateUserRoleForm
+  [ href "#", onClick ShowCreateUserRoleForm
   , Html.classList [ ("pull-right", True)
                    , ("btn", True)
                    , ("btn-primary", True)
@@ -60,32 +57,32 @@ createUserRoleButton address =
   ]
   [ Html.text "Create User Role" ]
 
-renderUserRoles : Signal.Address UserRoleAction -> List UserRole -> List Html -> List Html
-renderUserRoles address userRoles collection =
+renderUserRoles : List UserRole -> List (Html Msg) -> List (Html Msg)
+renderUserRoles userRoles collection =
   case userRoles of
     []       -> collection
     x::[]    ->
       collection
-        ++ [(renderUserRole address x)]
+        ++ [(renderUserRole x)]
     x::y::[] ->
       collection
-        ++ [(renderUserRole address x)]
-        ++ [(renderUserRole address y)]
+        ++ [(renderUserRole x)]
+        ++ [(renderUserRole y)]
         ++ [UI.colResetBlock Medium]
     x::y::z::xs ->
-      renderUserRoles address xs
+      renderUserRoles xs
         <| collection
-          ++ [(renderUserRole address x)]
-          ++ [(renderUserRole address y)]
+          ++ [(renderUserRole x)]
+          ++ [(renderUserRole y)]
           ++ [UI.colResetBlock Medium]
-          ++ [(renderUserRole address z)]
+          ++ [(renderUserRole z)]
           ++ [UI.colResetBlock Large]
 
-renderUserRole : Signal.Address UserRoleAction -> UserRole -> Html
-renderUserRole address userRole =
-  let searchFeaturesUI   = searchFeaturesLink address userRole
-      editUserRoleUI   = editUserRoleLink address userRole
-      removeUserRoleUI = removeUserRoleLink address userRole
+renderUserRole : UserRole -> Html Msg
+renderUserRole userRole =
+  let searchFeaturesUI   = searchFeaturesLink userRole
+      editUserRoleUI   = editUserRoleLink userRole
+      removeUserRoleUI = removeUserRoleLink userRole
       responsiveClasses = Html.classList [ ("col-lg-4", True)
                                          , ("col-md-6", True)
                                          , ("col-sm-12", True)
@@ -98,32 +95,31 @@ renderUserRole address userRole =
         (Html.text userRole.description)
     ]
 
-searchFeaturesLink : Signal.Address UserRoleAction -> UserRole -> Html
-searchFeaturesLink address userRole =
+searchFeaturesLink : UserRole -> Html Msg
+searchFeaturesLink userRole =
   let linkAction = SearchFeatures (toSearchQuery userRole)
   in
     Html.a
-    [ href "#", onClick address linkAction ]
+    [ href "#", onClick linkAction ]
     [ Glyph.searchIcon ]
 
-editUserRoleLink : Signal.Address UserRoleAction -> UserRole -> Html
-editUserRoleLink address userRole =
+editUserRoleLink : UserRole -> Html Msg
+editUserRoleLink userRole =
   let linkAction = ShowEditUserRoleForm userRole
   in
     Html.a
-    [ href "#", onClick address linkAction ]
+    [ href "#", onClick linkAction ]
     [ Glyph.editIcon ]
 
-removeUserRoleLink : Signal.Address UserRoleAction -> UserRole -> Html
-removeUserRoleLink address userRole =
+removeUserRoleLink : UserRole -> Html Msg
+removeUserRoleLink userRole =
   let linkAction = RemoveUserRole userRole
   in
     Html.a
-    [ href "#", onClick address linkAction ]
+    [ href "#", onClick linkAction ]
     [ Glyph.removeIcon ]
 
--- inject panelHeaderActions
-userRolePanelHeading : UserRole -> Html -> Html -> Html -> Html
+userRolePanelHeading : UserRole -> Html a -> Html a -> Html a -> Html a
 userRolePanelHeading userRole searchFeaturesLink editUserRoleLink removeUserRoleLink =
   Html.div
   [ class "clearfix" ]
@@ -131,7 +127,7 @@ userRolePanelHeading userRole searchFeaturesLink editUserRoleLink removeUserRole
   , panelHeaderActions searchFeaturesLink editUserRoleLink removeUserRoleLink
   ]
 
-panelHeaderActions : Html -> Html -> Html -> Html
+panelHeaderActions : Html a -> Html a -> Html a -> Html a
 panelHeaderActions searchFeaturesLink editUserRoleLink removeUserRoleLink =
   Html.div
   [ class "pull-right" ]
@@ -140,7 +136,7 @@ panelHeaderActions searchFeaturesLink editUserRoleLink removeUserRoleLink =
   , removeUserRoleLink
   ]
 
-panelHeaderInfo : UserRole -> Html
+panelHeaderInfo : UserRole -> Html a
 panelHeaderInfo userRole =
   Html.div
   [ class "pull-left" ]

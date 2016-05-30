@@ -1,7 +1,7 @@
-module App.Products.Forms.Validation
+module App.Products.Forms.Validation exposing
   ( validateForm
   , hasErrors
-  ) where
+  )
 
 import App.Products.Forms.ViewModel exposing (CreateProductForm)
 import UI.App.Primitives.Forms      exposing (requiredStringFieldValidation)

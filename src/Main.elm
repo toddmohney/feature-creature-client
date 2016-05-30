@@ -1,31 +1,14 @@
-module Main where
+module Main exposing (..)
 
-import App.Actions as App
 import App.App  as App
 import App.Update  as App
 import App.AppConfig      exposing (..)
-import Effects            exposing (Never)
-import Html               exposing (Html)
-import UI.SyntaxHighlighting exposing (highlightSyntaxMailbox)
-import StartApp as SA     exposing (start)
-import Task               exposing (Task)
+import Html.App as Html
 
-
-app : SA.App App.App
-app = SA.start
+main : Program AppConfig
+main = Html.programWithFlags
   { init   = App.init
   , update = App.update
   , view   = App.view
-  , inputs = [(Signal.map App.ConfigLoaded initAppConfig)]
+  , subscriptions = (\_ -> Sub.none)
   }
-
-main : Signal Html.Html
-main = app.html
-
-port tasks : Signal (Task.Task Never ())
-port tasks = app.tasks
-
-port initAppConfig : Signal AppConfig
-
-port highlightSyntaxPort : Signal (Maybe ())
-port highlightSyntaxPort = highlightSyntaxMailbox.signal

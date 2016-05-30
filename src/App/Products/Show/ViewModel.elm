@@ -1,11 +1,13 @@
-module App.Products.Show.ViewModel where
+module App.Products.Show.ViewModel exposing
+  ( ProductView
+  , init
+  )
 
 import App.AppConfig                                   exposing (..)
-import Effects                                         exposing (Effects)
 import App.Products.DomainTerms.Index.ViewModel as DTV exposing (DomainTermsView)
 import App.Products.Features.Index.ViewModel as FV     exposing (FeaturesView)
 import App.Products.Product                            exposing (Product)
-import App.Products.Show.Actions                       exposing (Action(..))
+import App.Products.Messages                           exposing (Msg(..))
 import App.Products.UserRoles.Index.ViewModel as URV   exposing (UserRolesView)
 import App.Products.Navigation.NavBar as NavBar        exposing (ProductViewNavBar)
 
@@ -17,11 +19,11 @@ type alias ProductView =
   , userRolesView   : UserRolesView
   }
 
-init : AppConfig -> List Product -> Product -> (ProductView, Effects Action)
+init : AppConfig -> List Product -> Product -> (ProductView, Cmd Msg)
 init appConfig products selectedProduct =
-  let (featView, featuresViewFx)       = FV.init appConfig selectedProduct
-      (domainTermsView, domainTermsFx) = DTV.init selectedProduct appConfig
-      (userRolesView, userRolesFx)     = URV.init selectedProduct appConfig
+  let (featView, featuresViewCmd)       = FV.init appConfig selectedProduct
+      (domainTermsView, domainTermsCmd) = DTV.init selectedProduct appConfig
+      (userRolesView, userRolesCmd)     = URV.init selectedProduct appConfig
       productView = { product          = selectedProduct
                     , navBar           = NavBar.init products selectedProduct
                     , featuresView     = featView
@@ -29,9 +31,9 @@ init appConfig products selectedProduct =
                     , userRolesView    = userRolesView
                     }
   in ( productView
-     , Effects.batch [
-         Effects.map FeaturesViewAction featuresViewFx
-       , Effects.map DomainTermsViewAction domainTermsFx
-       , Effects.map UserRolesViewAction userRolesFx
+     , Cmd.batch [
+         Cmd.map FeaturesViewAction featuresViewCmd
+       , Cmd.map DomainTermsViewAction domainTermsCmd
+       , Cmd.map UserRolesViewAction userRolesCmd
        ]
      )

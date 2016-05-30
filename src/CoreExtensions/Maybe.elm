@@ -1,4 +1,4 @@
-module CoreExtensions.Maybe where
+module CoreExtensions.Maybe exposing (..)
 
 import Debug exposing (crash)
 

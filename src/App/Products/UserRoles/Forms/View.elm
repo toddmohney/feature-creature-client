@@ -1,8 +1,6 @@
-module App.Products.UserRoles.Forms.View
-  ( view
-  ) where
+module App.Products.UserRoles.Forms.View exposing ( view )
 
-import App.Products.UserRoles.Forms.Actions   exposing (..)
+import App.Products.UserRoles.Messages        exposing (..)
 import App.Products.UserRoles.Forms.ViewModel exposing (UserRoleForm, FormMode(..))
 import Data.Actions                           exposing (..)
 import Html                                   exposing (Html)
@@ -12,13 +10,13 @@ import UI.App.Components.Containers as UI
 import UI.App.Components.Panels    as UI
 import UI.App.Primitives.Forms     as UI
 
-view : Signal.Address Action -> ForwardedAction a -> UserRoleForm -> Html
-view address hideAction userRoleForm =
-  let userRoleFormHtml = formContainer <| renderUserRoleForm address hideAction userRoleForm
+view : ForwardedAction Msg -> UserRoleForm -> Html Msg
+view hideAction userRoleForm =
+  let userRoleFormHtml = formContainer <| renderUserRoleForm hideAction userRoleForm
   in
     UI.clearfix [] [ userRoleFormHtml ]
 
-formContainer : Html -> Html
+formContainer : Html a -> Html a
 formContainer content =
   Html.div
     [ classList [ ("pull-right", True) ]
@@ -26,23 +24,23 @@ formContainer content =
     ]
     [ content ]
 
-renderUserRoleForm : Signal.Address Action -> ForwardedAction a -> UserRoleForm -> Html
-renderUserRoleForm address hideAction userRoleForm =
-  let bodyContent    = renderForm address hideAction userRoleForm
+renderUserRoleForm : ForwardedAction Msg -> UserRoleForm -> Html Msg
+renderUserRoleForm hideAction userRoleForm =
+  let bodyContent    = renderForm hideAction userRoleForm
   in UI.panelWithHeading (headingContent userRoleForm.formMode) bodyContent
 
-headingContent : FormMode -> Html
+headingContent : FormMode -> Html a
 headingContent formMode =
   case formMode of
     Create -> Html.text "Create A New User Role"
     Edit   -> Html.text "Edit User Role"
 
-renderForm : Signal.Address Action -> ForwardedAction a -> UserRoleForm -> Html
-renderForm address hideAction userRoleForm =
+renderForm : ForwardedAction Msg -> UserRoleForm -> Html Msg
+renderForm hideAction userRoleForm =
   Html.div
     []
-    [ UI.input address userRoleForm.titleField
-    , UI.textarea address userRoleForm.descriptionField
-    , UI.cancelButton (onClick hideAction.address hideAction.action)
-    , UI.submitButton (onClick address SubmitUserRoleForm)
+    [ UI.input userRoleForm.titleField
+    , UI.textarea userRoleForm.descriptionField
+    , UI.cancelButton (onClick hideAction.action)
+    , UI.submitButton (onClick SubmitUserRoleForm)
     ]

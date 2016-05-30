@@ -1,4 +1,4 @@
-module UI.App.Primitives.Forms where
+module UI.App.Primitives.Forms exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -10,7 +10,7 @@ type alias InputField a =
   { defaultValue     : String
   , inputName        : String
   , inputParser      : (String -> a)
-  , labelContent     : Html
+  , labelContent     : Html a
   , validationErrors : (List String)
   }
 
@@ -20,54 +20,51 @@ requiredStringFieldValidation str =
     True  -> [ "This field cannot be blank." ]
     False -> []
 
-input : Signal.Address a -> InputField a -> Html
-input address { defaultValue, inputName, inputParser, labelContent, validationErrors } =
+input : InputField a -> Html a
+input { defaultValue, inputName, inputParser, labelContent, validationErrors } =
   let hasErrors = not <| List.isEmpty validationErrors
       errorMsgs = List.map Html.text validationErrors
       formGroup =
         formGroupContainer
           [ Html.label [ for inputName ] [ labelContent ]
-          , Html.input [ class "form-control", id inputName, name inputName, value defaultValue, onInput address inputParser ] []
+          , Html.input [ class "form-control", id inputName, name inputName, value defaultValue, onInput inputParser ] []
           , inputErrorIcon hasErrors
           ]
           hasErrors
   in
     Html.div [] [ formGroup, (errorHelpText errorMsgs) ]
 
-textarea : Signal.Address a -> InputField a -> Html
-textarea address { defaultValue, inputName, inputParser, labelContent, validationErrors } =
+textarea : InputField a -> Html a
+textarea { defaultValue, inputName, inputParser, labelContent, validationErrors } =
   let hasErrors = not <| List.isEmpty validationErrors
       errorMsgs = List.map Html.text validationErrors
       formGroup =
         formGroupContainer
           [ Html.label [ for inputName ] [ labelContent ]
-          , Html.textarea [ class "form-control", id inputName, name inputName, value defaultValue, onInput address inputParser ] []
+          , Html.textarea [ class "form-control", id inputName, name inputName, value defaultValue, onInput inputParser ] []
           , inputErrorIcon hasErrors
           ]
           hasErrors
   in
     Html.div [] [ formGroup, (errorHelpText errorMsgs) ]
 
-cancelButton : Attribute -> Html
+cancelButton : Attribute a -> Html a
 cancelButton cancelAction =
   let cancelBtnAttributes = cancelAction :: [ BS.btn ]
   in
     Html.button cancelBtnAttributes [ text "Cancel" ]
 
-submitButton : Attribute -> Html
+submitButton : Attribute a -> Html a
 submitButton submitAction =
   let submitBtnAttributes = submitAction :: [ BS.primaryBtn ]
   in
     Html.button submitBtnAttributes [ text "Submit" ]
 
-onInput : Signal.Address a -> (String -> a) -> Attribute
-onInput address contentToValue =
-  Html.Events.on
-    "input"
-    Html.Events.targetValue
-    (\str -> Signal.message address (contentToValue str))
+onInput : (String -> a) -> Attribute a
+onInput contentToValue =
+  Html.Events.onInput contentToValue
 
-inputErrorIcon : Bool -> Html
+inputErrorIcon : Bool -> Html a
 inputErrorIcon hasErrors =
   let inputErrorClasses = classList
                             [ ("glyphicon", hasErrors)
@@ -77,13 +74,13 @@ inputErrorIcon hasErrors =
   in
     Html.span [ inputErrorClasses ] []
 
-errorHelpText : List Html -> Html
+errorHelpText : List (Html a) -> Html a
 errorHelpText errorMsgs =
   Html.span
     [ classList [("help-block", True)] ]
     errorMsgs
 
-formGroupContainer : List Html -> Bool -> Html
+formGroupContainer : List (Html a) -> Bool -> Html a
 formGroupContainer content hasErrors =
   let formGroupClasses = classList
                            [ ("form-group", True)

@@ -1,7 +1,7 @@
-module UI.Bootstrap.Responsiveness
+module UI.Bootstrap.Responsiveness exposing
   ( ScreenSize(..)
   , colResetBlock
-  ) where
+  )
 
 import Html exposing (Html)
 import Html.Attributes as Html
@@ -11,7 +11,7 @@ type ScreenSize = Large
                 | Small
                 | XSmall
 
-colResetBlock : ScreenSize -> Html
+colResetBlock : ScreenSize -> Html a
 colResetBlock size =
   let blockClass =
     case size of

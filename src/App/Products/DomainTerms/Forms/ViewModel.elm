@@ -1,14 +1,14 @@
-module App.Products.DomainTerms.Forms.ViewModel
+module App.Products.DomainTerms.Forms.ViewModel exposing
   ( DomainTermForm
   , FormMode(..)
   , init
   , setDescription
   , setProduct
   , setTitle
-  ) where
+  )
 
 import App.Products.DomainTerms.DomainTerm as DT exposing (DomainTerm)
-import App.Products.DomainTerms.Forms.Actions    exposing (..)
+import App.Products.DomainTerms.Messages         exposing (Msg(..))
 import App.Products.Product                      exposing (Product)
 import Html                                      exposing (Html)
 import UI.App.Primitives.Forms                   exposing (InputField)
@@ -20,8 +20,8 @@ type alias DomainTermForm =
   { formMode         : FormMode
   , formObject       : DomainTerm
   , product          : Product
-  , titleField       : InputField DomainTermFormAction
-  , descriptionField : InputField DomainTermFormAction
+  , titleField       : InputField Msg
+  , descriptionField : InputField Msg
   }
 
 init : Product -> DomainTerm -> FormMode -> DomainTermForm
@@ -55,7 +55,7 @@ setDescription domainTermForm newDescription =
     -- correctly initialized fields
     init domainTermForm.product updatedDomainTerm domainTermForm.formMode
 
-defaultTitleField : DomainTerm -> InputField DomainTermFormAction
+defaultTitleField : DomainTerm -> InputField Msg
 defaultTitleField domainTerm =
   { defaultValue     = domainTerm.title
   , inputName        = "domainTermTitle"
@@ -64,7 +64,7 @@ defaultTitleField domainTerm =
   , validationErrors = []
   }
 
-defaultDescriptionField : DomainTerm -> InputField DomainTermFormAction
+defaultDescriptionField : DomainTerm -> InputField Msg
 defaultDescriptionField domainTerm =
   { defaultValue     = domainTerm.description
   , inputName        = "domainTermDescription"

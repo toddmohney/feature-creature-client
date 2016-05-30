@@ -1,10 +1,17 @@
-module App.Products.Product where
+module App.Products.Product exposing
+  ( Product
+  , RepositoryState (..)
+  , newProduct
+  , init
+  , init'
+  , view
+  )
 
-import Data.External                       exposing (External(..))
-import App.Products.DomainTerms.DomainTerm exposing (..)
-import App.Products.Features.FeatureList   exposing (..)
-import App.Products.UserRoles.UserRole     exposing (..)
-import Html                                exposing (..)
+import Data.External                               exposing (External(..))
+import App.Products.DomainTerms.DomainTerm         exposing (..)
+import App.Products.Features.FeatureList.ViewModel exposing (..)
+import App.Products.UserRoles.UserRole             exposing (..)
+import Html                                        exposing (..)
 
 type alias Product =
   { id          : Int
@@ -39,6 +46,6 @@ init' prodID prodName prodRepoUrl prodRepoState prodRepoError =
   , userRoles   = NotLoaded
   }
 
-view : Product -> Html
+view : Product -> Html a
 view product =
   Html.div [] [ text product.name ]

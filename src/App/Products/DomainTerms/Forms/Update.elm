@@ -1,64 +1,52 @@
-module App.Products.DomainTerms.Forms.Update
-  ( update ) where
+module App.Products.DomainTerms.Forms.Update exposing ( update )
 
 import App.AppConfig                                   exposing (..)
 import App.Products.DomainTerms.DomainTerm as DT
-import App.Products.DomainTerms.Forms.Actions          exposing (..)
 import App.Products.DomainTerms.Forms.ViewModel as DTF exposing (DomainTermForm)
 import App.Products.DomainTerms.Forms.Validation       exposing (validateForm, hasErrors)
+import App.Products.DomainTerms.Messages               exposing (Msg(..))
 import App.Products.DomainTerms.Requests               exposing (createDomainTerm, editDomainTerm)
 import Debug                                           exposing (crash)
-import Effects                                         exposing (Effects)
-import Task
 
-update : DomainTermFormAction -> DomainTermForm -> AppConfig -> (DomainTermForm, Effects DomainTermFormAction)
+update : Msg -> DomainTermForm -> AppConfig -> (DomainTermForm, Cmd Msg)
 update action domainTermForm appConfig =
   case action of
-    DomainTermAdded domainTerm   -> (domainTermForm, Effects.none)
-    DomainTermUpdated domainTerm -> (domainTermForm, Effects.none)
+    CreateDomainTermSucceeded domainTerm ->
+      (DTF.init domainTermForm.product DT.init DTF.Create , Cmd.none)
 
-    DomainTermCreated domainTermResult ->
-      case domainTermResult of
-        Ok domainTerm ->
-          let newForm = DTF.init domainTermForm.product DT.init DTF.Create
-              effects = Effects.task (Task.succeed (DomainTermAdded domainTerm))
-          in
-            (newForm, effects)
-        Err _ -> crash "Something went wrong!"
-
-    DomainTermModified domainTermResult ->
-      case domainTermResult of
-        Ok domainTerm ->
-          let newForm = DTF.init domainTermForm.product DT.init DTF.Create
-              effects = Effects.task (Task.succeed (DomainTermUpdated domainTerm))
-          in
-            (newForm, effects)
-        Err _ -> crash "Something went wrong!"
+    UpdateDomainTermSucceeded domainTerm ->
+      ( DTF.init domainTermForm.product DT.init DTF.Create
+      , Cmd.none
+      )
 
     SetDomainTermTitle newTitle ->
-      (DTF.setTitle domainTermForm newTitle, Effects.none)
+      (DTF.setTitle domainTermForm newTitle, Cmd.none)
 
     SetDomainTermDescription newDescription ->
-      (DTF.setDescription domainTermForm newDescription, Effects.none)
+      (DTF.setDescription domainTermForm newDescription, Cmd.none)
 
     SubmitDomainTermForm ->
       let newDomainTermForm = validateForm domainTermForm
       in
         case hasErrors newDomainTermForm of
-          True ->
-            (newDomainTermForm , Effects.none)
-          False ->
-            submitDomainTermForm newDomainTermForm appConfig
+          True  -> (newDomainTermForm , Cmd.none)
+          False -> submitDomainTermForm newDomainTermForm appConfig
+
+    CreateDomainTermFailed err -> crash "Failed to create new domain term."
+
+    UpdateDomainTermFailed err -> crash "Unable to update domain term."
+
+    _ -> (domainTermForm, Cmd.none)
 
 
-submitDomainTermForm : DomainTermForm -> AppConfig -> (DomainTermForm, Effects DomainTermFormAction)
+submitDomainTermForm : DomainTermForm -> AppConfig -> (DomainTermForm, Cmd Msg)
 submitDomainTermForm domainTermForm appConfig =
   case domainTermForm.formMode of
     DTF.Create ->
       (,)
       domainTermForm
-      (createDomainTerm appConfig domainTermForm.product domainTermForm.formObject DomainTermCreated)
+      (createDomainTerm appConfig domainTermForm.product domainTermForm.formObject)
     DTF.Edit ->
       (,)
       domainTermForm
-      (editDomainTerm appConfig domainTermForm.product domainTermForm.formObject DomainTermModified)
+      (editDomainTerm appConfig domainTermForm.product domainTermForm.formObject)

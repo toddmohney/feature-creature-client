@@ -1,6 +1,11 @@
-module App.Products.Navigation.NavBar where
+module App.Products.Navigation.NavBar exposing
+  ( ProductViewNavBar
+  , ProductViewOption (..)
+  , init
+  , update
+  , view
+  )
 
-import Effects                               exposing (Effects)
 import Html                                  exposing (Html)
 import Html.Attributes                       exposing (attribute, class, classList, href, id)
 import Html.Events                           exposing (onClick)
@@ -25,44 +30,26 @@ init products selectedProduct =
   , selectedView = FeaturesViewOption
   }
 
-update : Navigation.Action -> ProductViewNavBar -> (ProductViewNavBar, Effects Navigation.Action)
+update : Navigation.Action -> ProductViewNavBar -> (ProductViewNavBar, Cmd Navigation.Action)
 update action navBar =
   case action of
-    Navigation.SelectFeaturesView ->
-      ( { navBar | selectedView = FeaturesViewOption }
-      , Effects.none
-      )
+    Navigation.SelectFeaturesView         -> ({ navBar | selectedView = FeaturesViewOption } , Cmd.none)
+    Navigation.SelectDomainTermsView      -> ({ navBar | selectedView = DomainTermsViewOption } , Cmd.none)
+    Navigation.SelectUserRolesView        -> ({ navBar | selectedView = UserRolesViewOption } , Cmd.none)
+    Navigation.SetSelectedProduct product -> ({ navBar | selectedProduct = product } , Cmd.none)
+    Navigation.ShowCreateNewProductForm   -> ( navBar, Cmd.none )
 
-    Navigation.SelectDomainTermsView ->
-      ( { navBar | selectedView = DomainTermsViewOption }
-      , Effects.none
-      )
-
-    Navigation.SelectUserRolesView ->
-      ( { navBar | selectedView = UserRolesViewOption }
-      , Effects.none
-      )
-
-    Navigation.SetSelectedProduct product ->
-      ( { navBar | selectedProduct = product }
-      , Effects.none
-      )
-
-    Navigation.ShowCreateNewProductForm ->
-      -- noop, we want someone higher up the chain to react to this effect
-      ( navBar, Effects.none )
-
-view : Signal.Address Navigation.Action -> ProductViewNavBar -> Html
-view address navBar =
+view : ProductViewNavBar -> Html Navigation.Action
+view navBar =
   NavBar.renderNavBar
-    [ renderProductsDropdownItem address navBar
-    , renderFeaturesItem address navBar
-    , renderDomainTermsItem address navBar
-    , renderUserRolesItem address navBar
+    [ renderProductsDropdownItem navBar
+    , renderFeaturesItem navBar
+    , renderDomainTermsItem navBar
+    , renderUserRolesItem navBar
     ]
 
-renderProductsDropdownItem : Signal.Address Navigation.Action -> ProductViewNavBar -> NavBarItem
-renderProductsDropdownItem address navBar =
+renderProductsDropdownItem : ProductViewNavBar -> NavBarItem Navigation.Action
+renderProductsDropdownItem navBar =
   { attributes = [ class "dropdown" ]
   , html =
     [ Html.a
@@ -74,40 +61,40 @@ renderProductsDropdownItem address navBar =
         , Html.span [ class "caret" ] []
         ]
     , Html.ul [ class "dropdown-menu" ]
-        <| List.map (renderProductItem address) navBar.products ++
+        <| List.map (renderProductItem) navBar.products ++
         [ Html.li [ class "divider", attribute "role" "separator" ] []
-        , Html.li [] [ Html.a [ onClick address Navigation.ShowCreateNewProductForm ] [ Html.text "Create New Product" ] ]
+        , Html.li [] [ Html.a [ onClick Navigation.ShowCreateNewProductForm ] [ Html.text "Create New Product" ] ]
         ]
     ]
   }
 
-renderFeaturesItem : Signal.Address Navigation.Action -> ProductViewNavBar -> NavBarItem
-renderFeaturesItem address navBar =
+renderFeaturesItem : ProductViewNavBar -> NavBarItem Navigation.Action
+renderFeaturesItem navBar =
   { attributes = [ classList [("active", navBar.selectedView == FeaturesViewOption)] ]
-  , html = [ featuresLink address ]
+  , html = [ featuresLink ]
   }
 
-renderDomainTermsItem : Signal.Address Navigation.Action -> ProductViewNavBar -> NavBarItem
-renderDomainTermsItem address navBar =
+renderDomainTermsItem : ProductViewNavBar -> NavBarItem Navigation.Action
+renderDomainTermsItem navBar =
   { attributes = [ classList [("active", navBar.selectedView == DomainTermsViewOption)] ]
-  , html = [ domainTermsLink address ]
+  , html = [ domainTermsLink ]
   }
 
-renderUserRolesItem : Signal.Address Navigation.Action -> ProductViewNavBar -> NavBarItem
-renderUserRolesItem address navBar =
+renderUserRolesItem : ProductViewNavBar -> NavBarItem Navigation.Action
+renderUserRolesItem navBar =
   { attributes = [ classList [("active", navBar.selectedView == UserRolesViewOption)] ]
-  , html = [ userRolesLink address ]
+  , html = [ userRolesLink ]
   }
 
-renderProductItem : Signal.Address Navigation.Action -> Product -> Html
-renderProductItem address product =
-  Html.li [] [ Html.a [ onClick address (Navigation.SetSelectedProduct product) ] [ Html.text product.name ] ]
+renderProductItem : Product -> Html Navigation.Action
+renderProductItem product =
+  Html.li [] [ Html.a [ onClick (Navigation.SetSelectedProduct product) ] [ Html.text product.name ] ]
 
-featuresLink : Signal.Address Navigation.Action -> Html
-featuresLink address = Html.a [ onClick address Navigation.SelectFeaturesView ] [ Html.text "Features" ]
+featuresLink : Html Navigation.Action
+featuresLink = Html.a [ onClick Navigation.SelectFeaturesView ] [ Html.text "Features" ]
 
-domainTermsLink : Signal.Address Navigation.Action -> Html
-domainTermsLink address = Html.a [ onClick address Navigation.SelectDomainTermsView ] [ Html.text "DomainTerms" ]
+domainTermsLink : Html Navigation.Action
+domainTermsLink = Html.a [ onClick Navigation.SelectDomainTermsView ] [ Html.text "DomainTerms" ]
 
-userRolesLink : Signal.Address Navigation.Action -> Html
-userRolesLink address = Html.a [ onClick address Navigation.SelectUserRolesView ] [ Html.text "UserRoles" ]
+userRolesLink : Html Navigation.Action
+userRolesLink = Html.a [ onClick Navigation.SelectUserRolesView ] [ Html.text "UserRoles" ]

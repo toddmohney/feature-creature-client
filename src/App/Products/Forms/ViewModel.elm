@@ -1,19 +1,19 @@
-module App.Products.Forms.ViewModel
+module App.Products.Forms.ViewModel exposing
   ( CreateProductForm
   , init
   , setName
   , setRepoUrl
-  ) where
+  )
 
 import App.Products.Product as P  exposing (Product)
-import App.Products.Forms.Actions exposing (..)
+import App.Messages               exposing (Msg(..))
 import Html                       exposing (Html)
 import UI.App.Primitives.Forms    exposing (InputField)
 
 type alias CreateProductForm =
   { newProduct   : Product
-  , nameField    : InputField Action
-  , repoUrlField : InputField Action
+  , nameField    : InputField Msg
+  , repoUrlField : InputField Msg
   }
 
 init : Product -> CreateProductForm
@@ -37,7 +37,7 @@ setRepoUrl form newRepoUrl =
   in
     init newProduct
 
-defaultNameField : Product -> InputField Action
+defaultNameField : Product -> InputField Msg
 defaultNameField product =
   { defaultValue = product.name
   , inputName = "name"
@@ -46,7 +46,7 @@ defaultNameField product =
   , validationErrors = []
   }
 
-defaultRepoUrlField : Product -> InputField Action
+defaultRepoUrlField : Product -> InputField Msg
 defaultRepoUrlField product =
   { defaultValue = product.repoUrl
   , inputName = "repoUrl"

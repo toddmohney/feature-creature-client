@@ -1,45 +1,40 @@
-module App.Products.Show.View where
+module App.Products.Show.View exposing ( view )
 
 import Html                                        exposing (Html)
+import Html.App as Html
 import App.Products.DomainTerms.Index.View as DTV
 import App.Products.Features.Index.View as FV
-import App.Products.Show.Actions                   exposing (Action(..))
+import App.Products.Messages                       exposing (Msg(..))
 import App.Products.Show.ViewModel                 exposing (ProductView)
 import App.Products.UserRoles.Index.View as URV
 import App.Products.Navigation.NavBar as NavBar
 import Html.Attributes                       exposing (classList)
 
-view : Signal.Address Action -> ProductView -> Html
-view address productView =
-  let forwardedAddress = Signal.forwardTo address NavBarAction
-      navBar = NavBar.view forwardedAddress productView.navBar
+view : ProductView -> Html Msg
+view productView =
+  let navBar = Html.map NavBarAction (NavBar.view productView.navBar)
       mainContent = case productView.navBar.selectedView of
-                      NavBar.FeaturesViewOption -> renderFeaturesView address productView
-                      NavBar.DomainTermsViewOption -> renderDomainTermsView address productView
-                      NavBar.UserRolesViewOption -> renderUserRolesView address productView
-  in Html.div [] [ navBar, mainContent ]
-
-renderFeaturesView : Signal.Address Action -> ProductView -> Html
-renderFeaturesView address productView =
-  let signal = (Signal.forwardTo address FeaturesViewAction)
+                      NavBar.FeaturesViewOption -> renderFeaturesView productView
+                      NavBar.DomainTermsViewOption -> renderDomainTermsView productView
+                      NavBar.UserRolesViewOption -> renderUserRolesView productView
   in
-    productViewContainer [ FV.view signal productView.featuresView ]
+    Html.div [] [ navBar, mainContent ]
 
-renderDomainTermsView : Signal.Address Action -> ProductView -> Html
-renderDomainTermsView address productView =
-  let signal = (Signal.forwardTo address DomainTermsViewAction)
-  in
-    productViewContainer [ DTV.view signal productView.domainTermsView ]
+renderFeaturesView : ProductView -> Html Msg
+renderFeaturesView productView =
+  Html.map FeaturesViewAction (productViewContainer [ FV.view productView.featuresView ])
 
-renderUserRolesView : Signal.Address Action -> ProductView -> Html
-renderUserRolesView address productView =
-  let signal = (Signal.forwardTo address UserRolesViewAction)
-  in
-    productViewContainer [ URV.view signal productView.userRolesView ]
+renderDomainTermsView : ProductView -> Html Msg
+renderDomainTermsView productView =
+  Html.map DomainTermsViewAction (productViewContainer [ DTV.view productView.domainTermsView ])
 
-productViewContainer : List Html -> Html
+renderUserRolesView : ProductView -> Html Msg
+renderUserRolesView productView =
+  Html.map UserRolesViewAction (productViewContainer [ URV.view productView.userRolesView ])
+
+productViewContainer : List (Html a) -> Html a
 productViewContainer content =
   Html.div
-  [ classList [("fc-padding--horizontal--medium", True)] ]
-  content
+    [ classList [("fc-padding--horizontal--medium", True)] ]
+    content
 

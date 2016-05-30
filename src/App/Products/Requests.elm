@@ -1,33 +1,25 @@
-module App.Products.Requests
-  ( createProduct
-  , getProducts
-  ) where
+module App.Products.Requests exposing ( createProduct, getProducts )
 
 import App.AppConfig             exposing (..)
+import App.Messages              exposing (Msg(..))
 import App.Products.Product as P exposing (Product, RepositoryState (..))
-import Effects                   exposing (Effects)
 import Json.Encode
 import Json.Decode as Json       exposing ((:=))
 import Http as Http              exposing (..)
 import Task as Task              exposing (..)
 import Utils.Http
 
-getProducts : AppConfig -> (Result Error (List Product) -> a) -> Effects a
-getProducts appConfig action =
+getProducts : AppConfig -> Cmd Msg
+getProducts appConfig =
   Http.get parseProducts (productsUrl appConfig)
-    |> Task.toResult
-    |> Task.map action
-    |> Effects.task
+    |> Task.perform FetchProductsFailed FetchProductsSucceeded
 
-createProduct : AppConfig -> Product -> (Result Error Product -> a) -> Effects a
-createProduct appConfig newProduct action =
-  let request = Utils.Http.jsonPostRequest (productsUrl appConfig) (encodeProduct newProduct)
-  in
-    Http.send Http.defaultSettings request
-      |> Http.fromJson parseProduct
-      |> Task.toResult
-      |> Task.map action
-      |> Effects.task
+createProduct : AppConfig -> Product -> Cmd Msg
+createProduct appConfig newProduct =
+  Utils.Http.jsonPostRequest (productsUrl appConfig) (encodeProduct newProduct)
+    |> Http.send Http.defaultSettings
+    |> Http.fromJson parseProduct
+    |> Task.perform CreateProductsFailed CreateProductsSucceeded
 
 parseProducts : Json.Decoder (List Product)
 parseProducts = parseProduct |> Json.list
@@ -39,7 +31,7 @@ parseProduct =
     ("productId"   := Json.int)
     ("productName" := Json.string)
     ("repoUrl"     := Json.string)
-    (("repoState"   := Json.string) `Json.andThen` decodeState)
+    (("repoState"  := Json.string) `Json.andThen` decodeState)
     ("repoError"   := nullOr Json.string)
 
 decodeState : String -> Json.Decoder RepositoryState

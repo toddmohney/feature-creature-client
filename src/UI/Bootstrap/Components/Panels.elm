@@ -1,11 +1,9 @@
-module UI.Bootstrap.Components.Panels
-  ( panelWithHeading
-  ) where
+module UI.Bootstrap.Components.Panels exposing ( panelWithHeading )
 
 import Html exposing (Html)
 import UI.Bootstrap.CSS.Panels as BS
 
-panelWithHeading : Html -> Html -> Html
+panelWithHeading : Html a -> Html a -> Html a
 panelWithHeading headingContent bodyContent =
   Html.div
     [ BS.panelDefault ]
@@ -13,7 +11,7 @@ panelWithHeading headingContent bodyContent =
     , panelBody bodyContent
     ]
 
-panelHeading : Html -> Html
+panelHeading : Html a -> Html a
 panelHeading content =
   Html.div
     [ BS.panelHeading ]
@@ -22,7 +20,7 @@ panelHeading content =
         [ content ]
     ]
 
-panelBody : Html -> Html
+panelBody : Html a -> Html a
 panelBody bodyContent =
   Html.div
     [ BS.panelBody ]
