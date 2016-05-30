@@ -1,14 +1,12 @@
 module App.Products.Features.Index.Update exposing ( update )
 
 import App.AppConfig                           exposing (..)
--- import App.Products.Features.FeatureList as FL
 import App.Products.Features.Requests as F
 import App.Products.Features.Messages     exposing (Msg(..))
 import App.Products.Features.Index.ViewModel   exposing (FeaturesView)
--- import App.Products.Navigation                 exposing (Action(..))
 import Data.External                           exposing (External(..))
 import Debug                                   exposing (crash, log)
--- import UI.SyntaxHighlighting as Highlight      exposing (highlightSyntaxMailbox)
+import Ports exposing (highlightSyntax)
 
 update : AppConfig -> Msg -> FeaturesView -> (FeaturesView, Cmd Msg)
 update appConfig action featuresView =
@@ -23,28 +21,14 @@ update appConfig action featuresView =
 
     FetchFeatureSucceeded feature ->
       ({ featuresView | selectedFeature = Just feature }
-      , Cmd.none
+      , highlightSyntax "dummy"
       )
-      -- ({ featuresView | selectedFeature = Just feature }
-      -- , highlightFeatureSyntax
-      -- )
 
     FetchFeaturesFailed err -> crash "Failed to load feature list"
     FetchFeatureFailed err  -> crash "Failed to load feature list"
 
     RequestFeatures ->
       (featuresView, F.getFeaturesList appConfig featuresView.product Nothing)
-
-    SyntaxHighlightingAction _ -> (featuresView, Cmd.none)
-      -- let highlightSyntax = Signal.send highlightSyntaxMailbox.address Nothing
-      -- in ( featuresView
-         -- , Effects.task <| highlightSyntax `andThen` (\_ -> (Task.succeed Noop))
-         -- )
-
-    -- NavigationAction navAction ->
-      -- case navAction of
-        -- Navigation.SelectFeaturesView -> (featuresView, highlightFeatureSyntax)
-        -- _                  -> (featuresView, Cmd.none)
 
     Noop -> ( featuresView, Cmd.none )
 
@@ -60,10 +44,3 @@ update appConfig action featuresView =
         ({ featuresView | selectedFeature = Nothing }, fx)
 
     _ -> (featuresView, Cmd.none)
-
-
--- highlightFeatureSyntax : Cmd Msg
--- highlightFeatureSyntax =
-  -- Effects.task
-    -- <| Task.succeed
-    -- <| SyntaxHighlightingAction Highlight.HighlightSyntax

@@ -39,6 +39,8 @@
         $('pre code').each(function(i, block) {
           hljs.highlightBlock(block);
         });
+
+        // app.ports.syntaxHighlighter.send("done");
       }
 
       function highlightSyntax(val) {
@@ -50,6 +52,8 @@
 
       $(document).ready(function() {
         app = Elm.Main.fullscreen({ apiPath: "#{ENV['FC_API_PATH']}" });
+        app.ports.highlightSyntax.subscribe(highlightSyntax);
+
         // disable bootstrap transition animations
         $.support.transition = false;
       });
