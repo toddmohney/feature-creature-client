@@ -120,7 +120,6 @@ removeDomainTermLink domainTerm =
     [ href "#", onClick linkAction ]
     [ Glyph.removeIcon ]
 
--- inject panelHeaderActions
 domainTermPanelHeading : DomainTerm -> Html Msg -> Html Msg -> Html Msg -> Html Msg
 domainTermPanelHeading domainTerm searchFeaturesLink editDomainTermLink removeDomainTermLink =
   Html.div

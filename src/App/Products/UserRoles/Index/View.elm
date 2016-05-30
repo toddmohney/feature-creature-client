@@ -119,7 +119,6 @@ removeUserRoleLink userRole =
     [ href "#", onClick linkAction ]
     [ Glyph.removeIcon ]
 
--- inject panelHeaderActions
 userRolePanelHeading : UserRole -> Html a -> Html a -> Html a -> Html a
 userRolePanelHeading userRole searchFeaturesLink editUserRoleLink removeUserRoleLink =
   Html.div

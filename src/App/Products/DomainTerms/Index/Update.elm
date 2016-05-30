@@ -54,7 +54,7 @@ update action domainTermsView appConfig =
     HideDomainTermForm ->
       ({ domainTermsView | domainTermForm = Nothing }, Cmd.none)
 
-    -- TODO: what's this for?
+    -- TODO: Separate and wrap up Domain Term form actions
     _ ->
       case domainTermsView.domainTermForm of
         Nothing             -> (domainTermsView, Cmd.none)

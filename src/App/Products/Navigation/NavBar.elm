@@ -37,9 +37,7 @@ update action navBar =
     Navigation.SelectDomainTermsView      -> ({ navBar | selectedView = DomainTermsViewOption } , Cmd.none)
     Navigation.SelectUserRolesView        -> ({ navBar | selectedView = UserRolesViewOption } , Cmd.none)
     Navigation.SetSelectedProduct product -> ({ navBar | selectedProduct = product } , Cmd.none)
-    Navigation.ShowCreateNewProductForm ->
-      -- noop, we want someone higher up the chain to react to this effect
-      ( navBar, Cmd.none )
+    Navigation.ShowCreateNewProductForm   -> ( navBar, Cmd.none )
 
 view : ProductViewNavBar -> Html Navigation.Action
 view navBar =
