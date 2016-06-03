@@ -9,7 +9,7 @@ import App.Products.DomainTerms.Messages                 exposing (Msg(..))
 import App.Products.DomainTerms.Requests                 exposing (getDomainTerms, removeDomainTerm)
 import App.Products.Product                              exposing (Product)
 import Data.External                                     exposing (External(..))
-import Debug                                             exposing (crash, log)
+import Debug                                             exposing (crash)
 
 update : Msg -> DomainTermsView -> AppConfig -> (DomainTermsView, Cmd Msg)
 update action domainTermsView appConfig =

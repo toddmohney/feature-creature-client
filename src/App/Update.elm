@@ -12,7 +12,7 @@ import App.Products.Show.Update     as PV
 import CoreExtensions.Maybe                       exposing (fromJust)
 import Data.External                              exposing (External(..))
 import Http as Http                               exposing (Error)
-import Debug exposing (crash, log)
+import Debug exposing (crash)
 
 update : Msg -> App -> (App, Cmd Msg)
 update action app =

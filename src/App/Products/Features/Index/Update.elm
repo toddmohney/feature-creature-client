@@ -5,12 +5,12 @@ import App.Products.Features.Requests as F
 import App.Products.Features.Messages     exposing (Msg(..))
 import App.Products.Features.Index.ViewModel   exposing (FeaturesView)
 import Data.External                           exposing (External(..))
-import Debug                                   exposing (crash, log)
+import Debug                                   exposing (crash)
 import Ports exposing (highlightSyntax)
 
 update : AppConfig -> Msg -> FeaturesView -> (FeaturesView, Cmd Msg)
 update appConfig action featuresView =
-  case log "features.index.view: " action of
+  case action of
     FetchFeaturesSucceeded query featureTree ->
       let newFeatureList    = Loaded { features = featureTree }
           currentProduct    = featuresView.product
