@@ -11,6 +11,8 @@ RUN npm install -g elm
 
 COPY . /usr/local/feature-creature-client
 
+VOLUME /usr/local/feature-creature-client
+
 WORKDIR "/usr/local/feature-creature-client"
 
 RUN bundle install
