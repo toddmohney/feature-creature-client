@@ -5,7 +5,7 @@ import App.Products.UserRoles.Forms.View as URF
 import App.Products.UserRoles.Forms.ViewModel          exposing (UserRoleForm)
 import App.Products.UserRoles.Messages                 exposing (Msg(..))
 import App.Products.UserRoles.UserRole as UR           exposing (UserRole, toSearchQuery)
-import Data.Actions                                    exposing (..)
+import Data.Msgs                                    exposing (..)
 import Data.External                                   exposing (External(..))
 import Html                                            exposing (Html)
 import Html.Events                                     exposing (onClick)
@@ -36,9 +36,9 @@ userRoleFormUI userRoleForm =
     Nothing ->
       createUserRoleUI
     Just userRoleForm ->
-      let hideFormAction = ForwardedAction HideUserRoleForm
+      let hideFormMsg = ForwardedMsg HideUserRoleForm
       in
-        URF.view hideFormAction userRoleForm
+        URF.view hideFormMsg userRoleForm
 
 createUserRoleUI : Html Msg
 createUserRoleUI =
@@ -97,26 +97,26 @@ renderUserRole userRole =
 
 searchFeaturesLink : UserRole -> Html Msg
 searchFeaturesLink userRole =
-  let linkAction = SearchFeatures (toSearchQuery userRole)
+  let linkMsg = SearchFeatures (toSearchQuery userRole)
   in
     Html.a
-    [ href "#", onClick linkAction ]
+    [ href "#", onClick linkMsg ]
     [ Glyph.searchIcon ]
 
 editUserRoleLink : UserRole -> Html Msg
 editUserRoleLink userRole =
-  let linkAction = ShowEditUserRoleForm userRole
+  let linkMsg = ShowEditUserRoleForm userRole
   in
     Html.a
-    [ href "#", onClick linkAction ]
+    [ href "#", onClick linkMsg ]
     [ Glyph.editIcon ]
 
 removeUserRoleLink : UserRole -> Html Msg
 removeUserRoleLink userRole =
-  let linkAction = RemoveUserRole userRole
+  let linkMsg = RemoveUserRole userRole
   in
     Html.a
-    [ href "#", onClick linkAction ]
+    [ href "#", onClick linkMsg ]
     [ Glyph.removeIcon ]
 
 userRolePanelHeading : UserRole -> Html a -> Html a -> Html a -> Html a
@@ -124,11 +124,11 @@ userRolePanelHeading userRole searchFeaturesLink editUserRoleLink removeUserRole
   Html.div
   [ class "clearfix" ]
   [ panelHeaderInfo userRole
-  , panelHeaderActions searchFeaturesLink editUserRoleLink removeUserRoleLink
+  , panelHeaderMsgs searchFeaturesLink editUserRoleLink removeUserRoleLink
   ]
 
-panelHeaderActions : Html a -> Html a -> Html a -> Html a
-panelHeaderActions searchFeaturesLink editUserRoleLink removeUserRoleLink =
+panelHeaderMsgs : Html a -> Html a -> Html a -> Html a
+panelHeaderMsgs searchFeaturesLink editUserRoleLink removeUserRoleLink =
   Html.div
   [ class "pull-right" ]
   [ searchFeaturesLink

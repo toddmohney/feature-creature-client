@@ -32,8 +32,8 @@ init appConfig products selectedProduct =
                     }
   in ( productView
      , Cmd.batch [
-         Cmd.map FeaturesViewAction featuresViewCmd
-       , Cmd.map DomainTermsViewAction domainTermsCmd
-       , Cmd.map UserRolesViewAction userRolesCmd
+         Cmd.map FeaturesViewMsg featuresViewCmd
+       , Cmd.map DomainTermsViewMsg domainTermsCmd
+       , Cmd.map UserRolesViewMsg userRolesCmd
        ]
      )

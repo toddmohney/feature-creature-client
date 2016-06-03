@@ -60,7 +60,7 @@ renderProductView : App -> Html Msg
 renderProductView app =
   case app.productView of
     Nothing -> Html.div [] [ Html.text "No products found" ]
-    Just pv -> mainContent  [ Html.map ProductViewActions (PV.view pv) ]
+    Just pv -> mainContent  [ Html.map ProductViewMsgs (PV.view pv) ]
 
 mainContent : List (Html Msg) -> Html Msg
 mainContent content =

@@ -5,7 +5,7 @@ import App.Products.DomainTerms.Messages                 exposing (Msg(..))
 import App.Products.DomainTerms.Index.ViewModel          exposing (DomainTermsView)
 import App.Products.DomainTerms.Forms.View    as DTF
 import App.Products.DomainTerms.Forms.ViewModel          exposing (DomainTermForm)
-import Data.Actions                                      exposing (..)
+import Data.Msgs                                      exposing (..)
 import Data.External                                     exposing (External(..))
 import Html                                              exposing (Html)
 import Html.Events                                       exposing (onClick)
@@ -37,9 +37,9 @@ domainTermFormUI domainTermForm =
     Nothing ->
       createDomainTermUI
     Just domainTermForm ->
-      let hideFormAction = ForwardedAction HideDomainTermForm
+      let hideFormMsg = ForwardedMsg HideDomainTermForm
       in
-        DTF.view hideFormAction domainTermForm
+        DTF.view hideFormMsg domainTermForm
 
 createDomainTermUI : Html Msg
 createDomainTermUI =
@@ -98,26 +98,26 @@ renderDomainTerm domainTerm =
 
 searchFeaturesLink : DomainTerm -> Html Msg
 searchFeaturesLink domainTerm =
-  let linkAction = SearchFeatures (toSearchQuery domainTerm)
+  let linkMsg = SearchFeatures (toSearchQuery domainTerm)
   in
     Html.a
-    [ href "#", onClick linkAction ]
+    [ href "#", onClick linkMsg ]
     [ Glyph.searchIcon ]
 
 editDomainTermLink : DomainTerm -> Html Msg
 editDomainTermLink domainTerm =
-  let linkAction = ShowEditDomainTermForm domainTerm
+  let linkMsg = ShowEditDomainTermForm domainTerm
   in
     Html.a
-    [ href "#", onClick linkAction ]
+    [ href "#", onClick linkMsg ]
     [ Glyph.editIcon ]
 
 removeDomainTermLink : DomainTerm -> Html Msg
 removeDomainTermLink domainTerm =
-  let linkAction = RemoveDomainTerm domainTerm
+  let linkMsg = RemoveDomainTerm domainTerm
   in
     Html.a
-    [ href "#", onClick linkAction ]
+    [ href "#", onClick linkMsg ]
     [ Glyph.removeIcon ]
 
 domainTermPanelHeading : DomainTerm -> Html Msg -> Html Msg -> Html Msg -> Html Msg
@@ -125,11 +125,11 @@ domainTermPanelHeading domainTerm searchFeaturesLink editDomainTermLink removeDo
   Html.div
   [ class "clearfix" ]
   [ panelHeaderInfo domainTerm
-  , panelHeaderActions searchFeaturesLink editDomainTermLink removeDomainTermLink
+  , panelHeaderMsgs searchFeaturesLink editDomainTermLink removeDomainTermLink
   ]
 
-panelHeaderActions : Html Msg -> Html Msg -> Html Msg -> Html Msg
-panelHeaderActions searchFeaturesLink editDomainTermLink removeDomainTermLink =
+panelHeaderMsgs : Html Msg -> Html Msg -> Html Msg -> Html Msg
+panelHeaderMsgs searchFeaturesLink editDomainTermLink removeDomainTermLink =
   Html.div
   [ class "pull-right" ]
   [ searchFeaturesLink

@@ -1,7 +1,7 @@
 module Main exposing (..)
 
 import App.App  as App
-import App.Messages exposing (Msg, Msg (AuthenticationActions))
+import App.Messages exposing (Msg, Msg (AuthenticationMsgs))
 import App.Update  as App
 import App.AppConfig exposing (..)
 import Auth
@@ -18,4 +18,4 @@ main = Html.programWithFlags
 
 subscriptions : a -> Sub Msg
 subscriptions model =
-  Ports.receiveAuthorizationCode (AuthenticationActions << Auth.AuthorizationCodeReceived)
+  Ports.receiveAuthorizationCode (AuthenticationMsgs << Auth.AuthorizationCodeReceived)

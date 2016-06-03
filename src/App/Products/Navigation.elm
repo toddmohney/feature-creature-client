@@ -1,11 +1,11 @@
 module App.Products.Navigation exposing
-  ( Action (..)
+  ( Msg (..)
   , CurrentView (..)
   )
 
 import App.Products.Product exposing (Product)
 
-type Action = SelectFeaturesView
+type Msg = SelectFeaturesView
             | SelectDomainTermsView
             | SelectUserRolesView
             | SetSelectedProduct Product

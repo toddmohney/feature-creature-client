@@ -6,9 +6,9 @@ import App.Products.Navigation as Navigation
 import App.Products.Messages   as P
 import Http as Http exposing (Error)
 
-type Msg = AuthenticationActions Auth.Msg
-         | ProductViewActions P.Msg
-         | NavigationActions Navigation.Action
+type Msg = AuthenticationMsgs Auth.Msg
+         | ProductViewMsgs P.Msg
+         | NavigationMsgs Navigation.Msg
          | FetchProductsSucceeded (List Product)
          | FetchProductsFailed Error
          | CreateProductsSucceeded Product

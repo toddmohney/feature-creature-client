@@ -12,7 +12,7 @@ import Html.Attributes                       exposing (classList)
 
 view : ProductView -> Html Msg
 view productView =
-  let navBar = Html.map NavBarAction (NavBar.view productView.navBar)
+  let navBar = Html.map NavBarMsg (NavBar.view productView.navBar)
       mainContent = case productView.navBar.selectedView of
                       NavBar.FeaturesViewOption -> renderFeaturesView productView
                       NavBar.DomainTermsViewOption -> renderDomainTermsView productView
@@ -22,15 +22,15 @@ view productView =
 
 renderFeaturesView : ProductView -> Html Msg
 renderFeaturesView productView =
-  Html.map FeaturesViewAction (productViewContainer [ FV.view productView.featuresView ])
+  Html.map FeaturesViewMsg (productViewContainer [ FV.view productView.featuresView ])
 
 renderDomainTermsView : ProductView -> Html Msg
 renderDomainTermsView productView =
-  Html.map DomainTermsViewAction (productViewContainer [ DTV.view productView.domainTermsView ])
+  Html.map DomainTermsViewMsg (productViewContainer [ DTV.view productView.domainTermsView ])
 
 renderUserRolesView : ProductView -> Html Msg
 renderUserRolesView productView =
-  Html.map UserRolesViewAction (productViewContainer [ URV.view productView.userRolesView ])
+  Html.map UserRolesViewMsg (productViewContainer [ URV.view productView.userRolesView ])
 
 productViewContainer : List (Html a) -> Html a
 productViewContainer content =

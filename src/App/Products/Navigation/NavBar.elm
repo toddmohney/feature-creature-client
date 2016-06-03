@@ -32,9 +32,9 @@ init products selectedProduct =
   , selectedView = FeaturesViewOption
   }
 
-update : Navigation.Action -> ProductViewNavBar -> (ProductViewNavBar, Cmd Navigation.Action)
-update action navBar =
-  case action of
+update : Navigation.Msg -> ProductViewNavBar -> (ProductViewNavBar, Cmd Navigation.Msg)
+update msg navBar =
+  case msg of
     Navigation.SelectFeaturesView         -> ({ navBar | selectedView = FeaturesViewOption } , Cmd.none)
     Navigation.SelectDomainTermsView      -> ({ navBar | selectedView = DomainTermsViewOption } , Cmd.none)
     Navigation.SelectUserRolesView        -> ({ navBar | selectedView = UserRolesViewOption } , Cmd.none)
@@ -42,7 +42,7 @@ update action navBar =
     Navigation.ShowCreateNewProductForm   -> ( navBar, Cmd.none )
     Navigation.Login                      -> ( navBar, openOAuthWindow "dummy" )
 
-view : ProductViewNavBar -> Html Navigation.Action
+view : ProductViewNavBar -> Html Navigation.Msg
 view navBar =
   NavBar.renderNavBar
     [ renderProductsDropdownItem navBar
@@ -52,13 +52,13 @@ view navBar =
     ]
     [ renderLoginItem ]
 
-renderLoginItem : NavBarItem Navigation.Action
+renderLoginItem : NavBarItem Navigation.Msg
 renderLoginItem =
   { attributes = [ classList [("active", False)] ]
   , html = [ loginLink ]
   }
 
-renderProductsDropdownItem : ProductViewNavBar -> NavBarItem Navigation.Action
+renderProductsDropdownItem : ProductViewNavBar -> NavBarItem Navigation.Msg
 renderProductsDropdownItem navBar =
   { attributes = [ class "dropdown" ]
   , html =
@@ -78,39 +78,39 @@ renderProductsDropdownItem navBar =
     ]
   }
 
-renderFeaturesItem : ProductViewNavBar -> NavBarItem Navigation.Action
+renderFeaturesItem : ProductViewNavBar -> NavBarItem Navigation.Msg
 renderFeaturesItem navBar =
   { attributes = [ classList [("active", navBar.selectedView == FeaturesViewOption)] ]
   , html = [ featuresLink ]
   }
 
-renderDomainTermsItem : ProductViewNavBar -> NavBarItem Navigation.Action
+renderDomainTermsItem : ProductViewNavBar -> NavBarItem Navigation.Msg
 renderDomainTermsItem navBar =
   { attributes = [ classList [("active", navBar.selectedView == DomainTermsViewOption)] ]
   , html = [ domainTermsLink ]
   }
 
-renderUserRolesItem : ProductViewNavBar -> NavBarItem Navigation.Action
+renderUserRolesItem : ProductViewNavBar -> NavBarItem Navigation.Msg
 renderUserRolesItem navBar =
   { attributes = [ classList [("active", navBar.selectedView == UserRolesViewOption)] ]
   , html = [ userRolesLink ]
   }
 
-renderProductItem : Product -> Html Navigation.Action
+renderProductItem : Product -> Html Navigation.Msg
 renderProductItem product =
   Html.li [] [ Html.a [ onClick (Navigation.SetSelectedProduct product) ] [ Html.text product.name ] ]
 
-loginLink : Html Navigation.Action
+loginLink : Html Navigation.Msg
 loginLink =
   let authUrl = Http.url "https://github.com/login/oauth/authorize" [("client_id", "73a5260179f44a8a35ab"), ("scope", "user repo")]
   in
     Html.a [ onClick Navigation.Login ] [ Html.text "Login with GitHub" ]
 
-featuresLink : Html Navigation.Action
+featuresLink : Html Navigation.Msg
 featuresLink = Html.a [ onClick Navigation.SelectFeaturesView ] [ Html.text "Features" ]
 
-domainTermsLink : Html Navigation.Action
+domainTermsLink : Html Navigation.Msg
 domainTermsLink = Html.a [ onClick Navigation.SelectDomainTermsView ] [ Html.text "DomainTerms" ]
 
-userRolesLink : Html Navigation.Action
+userRolesLink : Html Navigation.Msg
 userRolesLink = Html.a [ onClick Navigation.SelectUserRolesView ] [ Html.text "UserRoles" ]

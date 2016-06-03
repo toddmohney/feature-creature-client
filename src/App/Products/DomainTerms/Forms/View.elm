@@ -2,7 +2,7 @@ module App.Products.DomainTerms.Forms.View exposing ( view )
 
 import App.Products.DomainTerms.Messages   exposing (Msg(..))
 import App.Products.DomainTerms.Forms.ViewModel exposing (DomainTermForm, FormMode(..))
-import Data.Actions                             exposing (..)
+import Data.Msgs                             exposing (..)
 import Html                                     exposing (Html)
 import Html.Attributes                          exposing (classList, href, style)
 import Html.Events                              exposing (onClick)
@@ -10,9 +10,9 @@ import UI.App.Components.Containers as UI
 import UI.App.Components.Panels    as UI
 import UI.App.Primitives.Forms     as UI
 
-view : ForwardedAction Msg -> DomainTermForm -> Html Msg
-view hideAction domainTermForm =
-  let domainTermFormHtml = formContainer <| renderDomainTermForm hideAction domainTermForm
+view : ForwardedMsg Msg -> DomainTermForm -> Html Msg
+view hideMsg domainTermForm =
+  let domainTermFormHtml = formContainer <| renderDomainTermForm hideMsg domainTermForm
   in
     UI.clearfix [] [ domainTermFormHtml ]
 
@@ -24,9 +24,9 @@ formContainer content =
     ]
     [ content ]
 
-renderDomainTermForm : ForwardedAction Msg -> DomainTermForm -> Html Msg
-renderDomainTermForm hideAction domainTermForm =
-  let bodyContent    = renderForm hideAction domainTermForm
+renderDomainTermForm : ForwardedMsg Msg -> DomainTermForm -> Html Msg
+renderDomainTermForm hideMsg domainTermForm =
+  let bodyContent    = renderForm hideMsg domainTermForm
   in UI.panelWithHeading (headingContent domainTermForm.formMode) bodyContent
 
 headingContent : FormMode -> Html a
@@ -35,12 +35,12 @@ headingContent formMode =
     Create -> Html.text "Create A New Domain Term"
     Edit   -> Html.text "Edit Domain Term"
 
-renderForm : ForwardedAction Msg -> DomainTermForm -> Html Msg
-renderForm hideAction domainTermForm =
+renderForm : ForwardedMsg Msg -> DomainTermForm -> Html Msg
+renderForm hideMsg domainTermForm =
   Html.div
     []
     [ UI.input domainTermForm.titleField
     , UI.textarea domainTermForm.descriptionField
-    , UI.cancelButton (onClick hideAction.action)
+    , UI.cancelButton (onClick hideMsg.msg)
     , UI.submitButton (onClick SubmitDomainTermForm)
     ]

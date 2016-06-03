@@ -16,21 +16,21 @@ import Http as Http                               exposing (Error)
 import Debug exposing (crash)
 
 update : Msg -> App -> (App, Cmd Msg)
-update action app =
-  case action of
-    NavigationActions  navAction         -> processNavigationAction navAction app
-    ProductViewActions productViewAction -> processProductViewAction productViewAction app
+update msg app =
+  case msg of
+    NavigationMsgs  navMsg         -> processNavigationMsg navMsg app
+    ProductViewMsgs productViewMsg -> processProductViewMsg productViewMsg app
     FetchProductsSucceeded products      -> handleProductsLoaded products app
     FetchProductsFailed err              -> showError err app
     CreateProductsSucceeded product      -> addNewProduct product app
-    SetName _                            -> processFormAction action app
-    SetRepositoryUrl _                   -> processFormAction action app
-    SubmitForm                           -> processFormAction action app
-    AuthenticationActions msg            -> processAuthenticationAction msg app
+    SetName _                            -> processFormMsg msg app
+    SetRepositoryUrl _                   -> processFormMsg msg app
+    SubmitForm                           -> processFormMsg msg app
+    AuthenticationMsgs msg            -> processAuthenticationMsg msg app
     CreateProductsFailed _               -> crash "Unable to create new product"
 
-processAuthenticationAction : Auth.Msg -> App -> (App, Cmd Msg)
-processAuthenticationAction (Auth.AuthorizationCodeReceived code) app = (app, Cmd.none)
+processAuthenticationMsg : Auth.Msg -> App -> (App, Cmd Msg)
+processAuthenticationMsg (Auth.AuthorizationCodeReceived code) app = (app, Cmd.none)
 
 handleProductsLoaded : List Product -> App -> (App, Cmd Msg)
 handleProductsLoaded products app =
@@ -44,33 +44,33 @@ showError _ app =
   in
     (newState, Cmd.none)
 
-processProductViewAction : P.Msg -> App -> (App, Cmd Msg)
-processProductViewAction productViewAction app =
-  case creatingNewProduct productViewAction of
-    True  -> showNewProductForm productViewAction app
-    False -> forwardToProductView productViewAction app
+processProductViewMsg : P.Msg -> App -> (App, Cmd Msg)
+processProductViewMsg productViewMsg app =
+  case creatingNewProduct productViewMsg of
+    True  -> showNewProductForm productViewMsg app
+    False -> forwardToProductView productViewMsg app
 
 showNewProductForm : P.Msg -> App -> (App, Cmd Msg)
-showNewProductForm productViewAction app =
-  let (newProductView, fx) = PV.update productViewAction (fromJust app.productView) app.appConfig
+showNewProductForm productViewMsg app =
+  let (newProductView, fx) = PV.update productViewMsg (fromJust app.productView) app.appConfig
       newState = { app | productView = Just newProductView
                        , currentView = Navigation.CreateProductFormView
                  }
   in
-    (newState, Cmd.map ProductViewActions fx)
+    (newState, Cmd.map ProductViewMsgs fx)
 
 forwardToProductView : P.Msg -> App -> (App, Cmd Msg)
-forwardToProductView  productViewAction app =
-  let (newProductView, fx) = PV.update productViewAction (fromJust app.productView) app.appConfig
+forwardToProductView  productViewMsg app =
+  let (newProductView, fx) = PV.update productViewMsg (fromJust app.productView) app.appConfig
       newState = { app | productView = Just newProductView }
   in
-    (newState, Cmd.map ProductViewActions fx)
+    (newState, Cmd.map ProductViewMsgs fx)
 
 creatingNewProduct : P.Msg -> Bool
-creatingNewProduct productViewAction =
-  case productViewAction of
-    P.NavBarAction navBarAction ->
-      navBarAction == Navigation.ShowCreateNewProductForm
+creatingNewProduct productViewMsg =
+  case productViewMsg of
+    P.NavBarMsg navBarMsg ->
+      navBarMsg == Navigation.ShowCreateNewProductForm
     _ -> False
 
 setErrorView : App -> String -> App
@@ -95,18 +95,18 @@ setProductView app products selectedProduct =
       , productView = Just productView
       , currentView = Navigation.ProductView
       }
-    , Cmd.map ProductViewActions fx
+    , Cmd.map ProductViewMsgs fx
     )
 
-processNavigationAction : Navigation.Action -> App -> (App, Cmd Msg)
-processNavigationAction navAction app =
+processNavigationMsg : Navigation.Msg -> App -> (App, Cmd Msg)
+processNavigationMsg navMsg app =
   case app.productView of
     Nothing -> (app, Cmd.none)
     Just pv ->
-      let (newProductView, fx) = PV.update (P.NavBarAction navAction) pv app.appConfig
+      let (newProductView, fx) = PV.update (P.NavBarMsg navMsg) pv app.appConfig
       in
         ( { app | productView = Just newProductView }
-        , Cmd.map ProductViewActions fx
+        , Cmd.map ProductViewMsgs fx
         )
 
 addNewProduct : Product -> App -> (App, Cmd Msg)
@@ -117,12 +117,12 @@ addNewProduct product app =
             , productView = Just newProductView
             , productForm = CPF.init P.newProduct
       }
-    , Cmd.map ProductViewActions fx
+    , Cmd.map ProductViewMsgs fx
     )
 
-processFormAction : Msg -> App -> (App, Cmd Msg)
-processFormAction formAction app =
-  let (newCreateProductForm, fx) = CPF.update formAction app.productForm app.appConfig
+processFormMsg : Msg -> App -> (App, Cmd Msg)
+processFormMsg formMsg app =
+  let (newCreateProductForm, fx) = CPF.update formMsg app.productForm app.appConfig
   in
     ({ app | productForm = newCreateProductForm }, fx)
 

@@ -16,13 +16,13 @@ import App.Products.UserRoles.Index.Update as URV
 import App.Search.Types as Search
 
 update : Msg -> ProductView -> AppConfig -> (ProductView, Cmd Msg)
-update action productView appConfig =
-  case action of
-    NavBarAction navBarAction -> handleNavigation appConfig navBarAction productView
+update msg productView appConfig =
+  case msg of
+    NavBarMsg navBarMsg -> handleNavigation appConfig navBarMsg productView
 
-    FeaturesViewAction fvAction ->
-      let (featView, fvFx) = F.update appConfig fvAction productView.featuresView
-      in case fvAction of
+    FeaturesViewMsg fvMsg ->
+      let (featView, fvFx) = F.update appConfig fvMsg productView.featuresView
+      in case fvMsg of
         (F.FetchFeaturesSucceeded _ _) ->
           let navBar = productView.navBar
               updatedNavBar = { navBar | selectedView = NavBar.FeaturesViewOption }
@@ -30,57 +30,57 @@ update action productView appConfig =
             ( { productView | featuresView = featView
                             , navBar = updatedNavBar
               }
-              , Cmd.map FeaturesViewAction fvFx
+              , Cmd.map FeaturesViewMsg fvFx
             )
 
         _ ->
           ( { productView | featuresView = featView }
-            , Cmd.map FeaturesViewAction fvFx
+            , Cmd.map FeaturesViewMsg fvFx
           )
 
-    DomainTermsViewAction dtvAction ->
-      let (domainTermsView, dtvFx) = DT.update dtvAction productView.domainTermsView appConfig
+    DomainTermsViewMsg dtvMsg ->
+      let (domainTermsView, dtvFx) = DT.update dtvMsg productView.domainTermsView appConfig
           newProductView = { productView | domainTermsView = domainTermsView }
-      in case dtvAction of
+      in case dtvMsg of
         DT.SearchFeatures query ->
           ( newProductView
-          , Cmd.map FeaturesViewAction (searchFeatures appConfig newProductView.product query)
+          , Cmd.map FeaturesViewMsg (searchFeatures appConfig newProductView.product query)
           )
 
         _ ->
           ( newProductView
-          , Cmd.map DomainTermsViewAction dtvFx
+          , Cmd.map DomainTermsViewMsg dtvFx
           )
 
-    UserRolesViewAction urvAction ->
-      let (userRolesView, urvFx) = URV.update urvAction productView.userRolesView appConfig
+    UserRolesViewMsg urvMsg ->
+      let (userRolesView, urvFx) = URV.update urvMsg productView.userRolesView appConfig
           newProductView = { productView | userRolesView = userRolesView }
-      in case urvAction of
+      in case urvMsg of
         UR.SearchFeatures query ->
           ( newProductView
-          , Cmd.map FeaturesViewAction (searchFeatures appConfig productView.product query)
+          , Cmd.map FeaturesViewMsg (searchFeatures appConfig productView.product query)
           )
 
         _ ->
           ( newProductView
-           , Cmd.map UserRolesViewAction urvFx
+           , Cmd.map UserRolesViewMsg urvFx
           )
 
 searchFeatures : AppConfig -> Product -> Search.Query -> Cmd F.Msg
 searchFeatures appConfig product query =
   F.getFeaturesList appConfig product (Just query)
 
-handleNavigation : AppConfig -> Navigation.Action -> ProductView -> (ProductView, Cmd Msg)
-handleNavigation appConfig navBarAction productView =
-  let (updatedNavBar, navBarFx) = NavBar.update navBarAction productView.navBar
-      (newFeaturesView, featFX) = F.update appConfig (F.NavigationAction navBarAction) productView.featuresView
+handleNavigation : AppConfig -> Navigation.Msg -> ProductView -> (ProductView, Cmd Msg)
+handleNavigation appConfig navBarMsg productView =
+  let (updatedNavBar, navBarFx) = NavBar.update navBarMsg productView.navBar
+      (newFeaturesView, featFX) = F.update appConfig (F.NavigationMsg navBarMsg) productView.featuresView
       newSelectedProduct        = updatedNavBar.selectedProduct
       switchingProducts         = productView.navBar.selectedProduct == newSelectedProduct
   in
     case switchingProducts of
       True ->
         let model = { productView | navBar = updatedNavBar, featuresView = newFeaturesView }
-            cmd = Cmd.batch [ Cmd.map NavBarAction navBarFx , Cmd.map FeaturesViewAction featFX ]
+            cmd = Cmd.batch [ Cmd.map NavBarMsg navBarFx , Cmd.map FeaturesViewMsg featFX ]
         in
           (model, cmd)
       False ->

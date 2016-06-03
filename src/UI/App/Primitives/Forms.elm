@@ -49,14 +49,14 @@ textarea { defaultValue, inputName, inputParser, labelContent, validationErrors 
     Html.div [] [ formGroup, (errorHelpText errorMsgs) ]
 
 cancelButton : Attribute a -> Html a
-cancelButton cancelAction =
-  let cancelBtnAttributes = cancelAction :: [ BS.btn ]
+cancelButton cancelMsg =
+  let cancelBtnAttributes = cancelMsg :: [ BS.btn ]
   in
     Html.button cancelBtnAttributes [ text "Cancel" ]
 
 submitButton : Attribute a -> Html a
-submitButton submitAction =
-  let submitBtnAttributes = submitAction :: [ BS.primaryBtn ]
+submitButton submitMsg =
+  let submitBtnAttributes = submitMsg :: [ BS.primaryBtn ]
   in
     Html.button submitBtnAttributes [ text "Submit" ]
 

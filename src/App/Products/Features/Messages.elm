@@ -15,4 +15,4 @@ type Msg = ShowFeature FileDescription
          | FetchFeaturesFailed Error
          | FetchFeatureSucceeded Feature
          | FetchFeatureFailed Error
-         | NavigationAction Navigation.Action
+         | NavigationMsg Navigation.Msg
