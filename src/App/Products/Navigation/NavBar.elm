@@ -9,6 +9,7 @@ module App.Products.Navigation.NavBar exposing
 import Html                                  exposing (Html)
 import Html.Attributes                       exposing (attribute, class, classList, href, id)
 import Html.Events                           exposing (onClick)
+import Http
 import App.Products.Product                  exposing (Product)
 import App.Products.Navigation as Navigation
 import UI.App.Components.NavBar as NavBar    exposing (NavBarItem)
@@ -47,6 +48,13 @@ view navBar =
     , renderDomainTermsItem navBar
     , renderUserRolesItem navBar
     ]
+    [ renderLoginItem ]
+
+renderLoginItem : NavBarItem Navigation.Action
+renderLoginItem =
+  { attributes = [ classList [("active", False)] ]
+  , html = [ loginLink ]
+  }
 
 renderProductsDropdownItem : ProductViewNavBar -> NavBarItem Navigation.Action
 renderProductsDropdownItem navBar =
@@ -89,6 +97,12 @@ renderUserRolesItem navBar =
 renderProductItem : Product -> Html Navigation.Action
 renderProductItem product =
   Html.li [] [ Html.a [ onClick (Navigation.SetSelectedProduct product) ] [ Html.text product.name ] ]
+
+loginLink : Html Navigation.Action
+loginLink =
+  let authUrl = Http.url "https://github.com/login/oauth/authorize" [("client_id", "73a5260179f44a8a35ab"), ("scope", "user repo")]
+  in
+    Html.a [ href authUrl ] [ Html.text "Login with GitHub" ]
 
 featuresLink : Html Navigation.Action
 featuresLink = Html.a [ onClick Navigation.SelectFeaturesView ] [ Html.text "Features" ]

@@ -8,27 +8,43 @@ type alias NavBarItem a =
   , html       : List (Html a)
   }
 
-renderNavBar : List (NavBarItem a) -> Html a
-renderNavBar navBarItems =
+type OrientedNavItem a = LeftNav (List (NavBarItem a))
+                       | RightNav (List (NavBarItem a))
+
+renderNavBar : List (NavBarItem a) -> List (NavBarItem a) -> Html a
+renderNavBar navBarLeftItems navBarRightItems =
   Html.nav
     [ classList [("navbar", True), ("navbar-inverse", True)] ]
     [ Html.div
         [ class "container-fluid" ]
         [ navBarHeader
-        , renderItems navBarItems
+        , renderItems navBarLeftItems navBarRightItems
         ]
     ]
 
-renderItems : List (NavBarItem a) -> Html a
-renderItems items =
+renderItems : List (NavBarItem a) -> List (NavBarItem a) -> Html a
+renderItems leftItems rightItems =
   Html.div
     [ classList [("collapse", True), ("navbar-collapse", True)]
     , id "main_nav"
     ]
-    [ Html.ul
-        [ classList [("nav", True), ("navbar-nav", True)] ]
-        (List.map renderItem items)
+    [ renderNavItems (LeftNav leftItems)
+    , renderNavItems (RightNav rightItems)
     ]
+
+renderNavItems : OrientedNavItem a -> Html a
+renderNavItems items =
+  let defaultClasses = [("nav", True), ("navbar-nav", True)]
+  in
+    case items of
+      LeftNav leftItems ->
+        Html.ul
+          [ classList (defaultClasses ++ [("navbar-left", True)]) ]
+          (List.map renderItem leftItems)
+      RightNav rightItems ->
+        Html.ul
+          [ classList (defaultClasses ++ [("navbar-right", True)]) ]
+          (List.map renderItem rightItems)
 
 renderItem : NavBarItem a -> Html a
 renderItem item =
