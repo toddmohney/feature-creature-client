@@ -30,7 +30,13 @@ update msg app =
     CreateProductsFailed _               -> crash "Unable to create new product"
 
 processAuthenticationMsg : Auth.Msg -> App -> (App, Cmd Msg)
-processAuthenticationMsg (Auth.AuthorizationCodeReceived code) app = (app, Cmd.none)
+processAuthenticationMsg msg app =
+  case msg of
+    (Auth.AuthorizationCodeReceived code) ->
+      ( app
+      , Cmd.map AuthenticationMsgs (Auth.postAuthorizationCode app.appConfig (Auth.OAuth code))
+      )
+    _ -> (app, Cmd.none)
 
 handleProductsLoaded : List Product -> App -> (App, Cmd Msg)
 handleProductsLoaded products app =
