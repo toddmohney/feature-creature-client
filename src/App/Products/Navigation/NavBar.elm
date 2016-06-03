@@ -6,12 +6,13 @@ module App.Products.Navigation.NavBar exposing
   , view
   )
 
+import App.Products.Product                  exposing (Product)
+import App.Products.Navigation as Navigation
 import Html                                  exposing (Html)
 import Html.Attributes                       exposing (attribute, class, classList, href, id)
 import Html.Events                           exposing (onClick)
 import Http
-import App.Products.Product                  exposing (Product)
-import App.Products.Navigation as Navigation
+import Ports exposing (openOAuthWindow)
 import UI.App.Components.NavBar as NavBar    exposing (NavBarItem)
 
 type alias ProductViewNavBar =
@@ -39,6 +40,7 @@ update action navBar =
     Navigation.SelectUserRolesView        -> ({ navBar | selectedView = UserRolesViewOption } , Cmd.none)
     Navigation.SetSelectedProduct product -> ({ navBar | selectedProduct = product } , Cmd.none)
     Navigation.ShowCreateNewProductForm   -> ( navBar, Cmd.none )
+    Navigation.Login                      -> ( navBar, openOAuthWindow "dummy" )
 
 view : ProductViewNavBar -> Html Navigation.Action
 view navBar =
@@ -102,7 +104,7 @@ loginLink : Html Navigation.Action
 loginLink =
   let authUrl = Http.url "https://github.com/login/oauth/authorize" [("client_id", "73a5260179f44a8a35ab"), ("scope", "user repo")]
   in
-    Html.a [ href authUrl ] [ Html.text "Login with GitHub" ]
+    Html.a [ onClick Navigation.Login ] [ Html.text "Login with GitHub" ]
 
 featuresLink : Html Navigation.Action
 featuresLink = Html.a [ onClick Navigation.SelectFeaturesView ] [ Html.text "Features" ]

@@ -6,5 +6,9 @@ class App < Sinatra::Base
   get '/' do
     haml :index
   end
+
+  get '/oauth-callback' do
+    haml :oauth_callback, locals: { code: params[:code] }
+  end
 end
 

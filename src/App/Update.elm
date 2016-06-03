@@ -9,6 +9,7 @@ import App.Products.Navigation      as Navigation
 import App.Products.Messages        as P
 import App.Products.Show.ViewModel  as PV         exposing (ProductView)
 import App.Products.Show.Update     as PV
+import Auth
 import CoreExtensions.Maybe                       exposing (fromJust)
 import Data.External                              exposing (External(..))
 import Http as Http                               exposing (Error)
@@ -25,7 +26,11 @@ update action app =
     SetName _                            -> processFormAction action app
     SetRepositoryUrl _                   -> processFormAction action app
     SubmitForm                           -> processFormAction action app
+    AuthenticationActions msg            -> processAuthenticationAction msg app
     CreateProductsFailed _               -> crash "Unable to create new product"
+
+processAuthenticationAction : Auth.Msg -> App -> (App, Cmd Msg)
+processAuthenticationAction (Auth.AuthorizationCodeReceived code) app = (app, Cmd.none)
 
 handleProductsLoaded : List Product -> App -> (App, Cmd Msg)
 handleProductsLoaded products app =

@@ -10,6 +10,7 @@ type Action = SelectFeaturesView
             | SelectUserRolesView
             | SetSelectedProduct Product
             | ShowCreateNewProductForm
+            | Login
 
 type CurrentView = LoadingView
                  | ErrorView String

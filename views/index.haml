@@ -39,8 +39,6 @@
         $('pre code').each(function(i, block) {
           hljs.highlightBlock(block);
         });
-
-        // app.ports.syntaxHighlighter.send("done");
       }
 
       function highlightSyntax(val) {
@@ -48,11 +46,21 @@
         setTimeout(applyHighlight, 10);
       }
 
+      function openOAuthWindow(val) {
+        window.open("https://github.com/login/oauth/authorize?client_id=#{ENV['FC_GITHUB_CLIENT_ID']}&scope=user repo",
+          "OAuth", "width=500,height=500");
+      }
+
+      function submitOAuthAuthorizationCode(code) {
+        app.ports.receiveAuthorizationCode.send(code);
+      }
+
       var app;
 
       $(document).ready(function() {
         app = Elm.Main.fullscreen({ apiPath: "#{ENV['FC_API_PATH']}" });
         app.ports.highlightSyntax.subscribe(highlightSyntax);
+        app.ports.openOAuthWindow.subscribe(openOAuthWindow);
 
         // disable bootstrap transition animations
         $.support.transition = false;
