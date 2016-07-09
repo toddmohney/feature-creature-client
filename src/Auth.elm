@@ -9,7 +9,6 @@ import Http as Http exposing (..)
 import Json.Encode
 import Json.Decode as Json exposing ((:=))
 import Task                                exposing (Task)
-import Utils.Http
 
 type Msg = AuthorizationCodeReceived String
          | CreateOAuthTokenFailed Error
@@ -24,14 +23,12 @@ type alias User =
 
 postAuthorizationCode : AppConfig -> OAuth -> Cmd Msg
 postAuthorizationCode appConfig oauth =
-  Utils.Http.jsonPostRequest (authorizationCodeUrl appConfig oauth) (encodeOAuth oauth)
-    |> Http.send Http.defaultSettings
-    |> Http.fromJson parseUser
+  Http.get parseUser (authorizationCodeUrl appConfig oauth)
     |> Task.perform CreateOAuthTokenFailed CreateOAuthTokenSucceeded
 
 authorizationCodeUrl : AppConfig -> OAuth -> String
 authorizationCodeUrl appConfig oauth =
-  Http.url (appConfig.apiPath ++ "/oauth/authorize") [("authToken", oauth.authorizationCode)]
+  Http.url (appConfig.apiPath ++ "/users/authorize") [("authCode", oauth.authorizationCode)]
 
 encodeOAuth : OAuth -> String
 encodeOAuth oauth =

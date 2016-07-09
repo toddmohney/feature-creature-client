@@ -1,0 +1,6 @@
+repo-puller:          APP_NAME=repo-puller repo-puller
+repo-refresher:       APP_NAME=repo-refresher repo-refresher
+search-service:       APP_NAME=search-service search-service
+features-api:         APP_NAME=features-api PORT=8181 features-api
+feature-creature-api: APP_NAME=feature-creature-api PORT=8180 feature-creature-web
+feature-creature-app: APP_NAME=feature-creature-app PORT=9292 rackup --host 0.0.0.0 --port 9292
